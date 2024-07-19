@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  kraken2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kraken2
+    container_name: kraken2_container
+    command: kraken2
+
+volumes:
+  scripts:
+    driver: local
+  data:
+    driver: local

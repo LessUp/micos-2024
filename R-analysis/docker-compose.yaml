@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  combined_analysis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: r_combined_analysis
+    container_name: r_analysis_container
+    command: Rscript
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+
+volumes:
+  scripts:
+    driver: local
+  data:
+    driver: local

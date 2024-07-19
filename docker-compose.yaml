@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  kraken2:
+    build:
+      context: ./kraken2
+      dockerfile: Dockerfile
+    image: kraken2_docker_image
+    container_name: kraken2_container
+    command: kraken2
+
+  krona:
+    build:
+      context: ./krona
+      dockerfile: Dockerfile
+    image: krona_docker_image
+    container_name: krona_container
+    command: ktImportTaxonomy
+
+  combined_analysis:
+    build:
+      context: ./combined_analysis
+      dockerfile: Dockerfile
+    image: r_combined_analysis_docker_image
+    container_name: combined_analysis_container
+    command: Rscript
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+
+volumes:
+  scripts:
+    driver: local
+  data:
+    driver: local

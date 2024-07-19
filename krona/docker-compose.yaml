@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  krona:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - http_proxy=http://172.19.11.241:443
+        - https_proxy=http://172.19.11.241:443
+    image: krona
+    container_name: krona_container
+    command: ktImportTaxonomy
+volumes:
+  scripts:
+    driver: local
+  data:
+    driver: local
