@@ -3,11 +3,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: kraken2
+    image: shuai/kraken2:3.12
     container_name: kraken2_container
-    tty: true
-    stdin_open: true
-    # command: ["/bin/bash", "-c", "/usr/local/bin/kraken2"] 
+    # tty: true
+    # stdin_open: true
+    command: ["kraken2", "--help"] 
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
