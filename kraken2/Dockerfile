@@ -38,5 +38,8 @@ RUN apt-get update && apt-get -y --no-install-recommends install \
     ./install_kraken2.sh . && \
     mkdir /data /kraken2-db
 
-# Set the default command to bash
-CMD ["/bin/bash"]
+# Set the default command to kraken2
+ENTRYPOINT ["kraken2"]
+
+# Set default parameters for ENTRYPOINT
+CMD ["--help"]
