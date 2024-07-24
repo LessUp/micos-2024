@@ -1,16 +1,13 @@
 services:
   krona:
-    # args:
-    #   - http_proxy=http://172.19.11.241:443
-    #   - https_proxy=http://172.19.11.241:443
-    tty: true
-    stdin_open: true
     build:
       context: .
       dockerfile: Dockerfile
-    image: krona
-    container_name: krona_container
-    command: ktImportTaxonomy
+    image: shuai/krona:1.0
+    container_name: krona
+    # tty: true
+    # stdin_open: true
+    command: ["ktImportTaxonomy", "--help"] 
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData

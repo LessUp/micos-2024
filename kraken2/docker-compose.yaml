@@ -4,10 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
     image: shuai/kraken2:3.12
-    container_name: kraken2_container
+    container_name: kraken2
     # tty: true
     # stdin_open: true
-    command: ["kraken2", "--help"] 
+    command: [ "kraken2", "--help" ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData

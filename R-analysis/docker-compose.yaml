@@ -1,16 +1,13 @@
 services:
   combined_analysis:
-    # args:
-    #   - http_proxy=http://172.19.11.241:443
-    #   - https_proxy=http://172.19.11.241:443
-    tty: true
-    stdin_open: true
     build:
       context: .
       dockerfile: Dockerfile
-    image: r_combined_analysis
+    image: shuai/r_combined_analysis:1.0
     container_name: r_analysis_container
-    command: Rscript
+    # tty: true
+    # stdin_open: true
+    command: [ "combined_analysis.R", "--help" ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
