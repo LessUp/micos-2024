@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   kraken2:
     build:
@@ -7,10 +5,20 @@ services:
       dockerfile: Dockerfile
     image: kraken2
     container_name: kraken2_container
-    command: kraken2
-
+    tty: true
+    stdin_open: true
+    # command: ["/bin/bash", "-c", "/usr/local/bin/kraken2"] 
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
 volumes:
-  scripts:
+  RawData:
     driver: local
-  data:
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
     driver: local

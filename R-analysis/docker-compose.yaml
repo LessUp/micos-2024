@@ -1,7 +1,10 @@
-version: '3.8'
-
 services:
   combined_analysis:
+    # args:
+    #   - http_proxy=http://172.19.11.241:443
+    #   - https_proxy=http://172.19.11.241:443
+    tty: true
+    stdin_open: true
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,11 +12,16 @@ services:
     container_name: r_analysis_container
     command: Rscript
     volumes:
-      - ./scripts:/scripts
-      - ./data:/data
-
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
 volumes:
-  scripts:
+  RawData:
     driver: local
-  data:
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
     driver: local
