@@ -7,7 +7,8 @@ services:
     container_name: r_analysis_container
     # tty: true
     # stdin_open: true
-    command: [ "combined_analysis.R", "--help" ]
+    # command: [ "combined_analysis.R", "--help" ]
+    command: [ "scripts/diversity_analysis.R", "/ResultData/kraken2_report.csv" ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
