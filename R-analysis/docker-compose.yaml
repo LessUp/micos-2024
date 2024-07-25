@@ -8,7 +8,9 @@ services:
     # tty: true
     # stdin_open: true
     # command: [ "combined_analysis.R", "--help" ]
-    command: [ "scripts/diversity_analysis.R", "/ResultData/kraken2_report.csv" ]
+    # command: [ "scripts/diversity_analysis.R", "/ResultData/kraken2_report.csv" ]
+    command: [ "scripts/differential_abundance_analysis.R", "/ResultData/kraken2_report.csv" ]
+
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
