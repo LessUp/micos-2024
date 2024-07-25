@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: shuai/krona:1.2.0
+    image: shuai/krona:2.8.1
     container_name: krona
     # tty: true
     # stdin_open: true
