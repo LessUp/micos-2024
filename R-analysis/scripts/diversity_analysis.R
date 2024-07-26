@@ -2,9 +2,11 @@
 library(vegan)
 library(ggplot2)
 
-# 读取输入数据
+# 读取输入数据和输出路径
 args <- commandArgs(trailingOnly = TRUE)
 kraken_report <- args[1]
+output_path <- args[2]
+
 data <- read.csv(kraken_report, sep = "\t", header = FALSE)
 
 # 打印数据结构以进行调试
@@ -28,7 +30,7 @@ if (any(is.na(data$V1)) || any(is.na(data$V2))) {
 alpha_div <- diversity(data[, c("V1", "V2")], index = "shannon")
 
 # 保存α多样性结果
-write.csv(alpha_div, "/ResultData/alpha_diversity.csv")
+write.csv(alpha_div, file.path(output_path, "alpha_diversity.csv"))
 
 # 计算β多样性（Bray-Curtis距离）
 beta_div <- vegdist(data[, c("V1", "V2")], method = "bray")
@@ -44,4 +46,4 @@ pca_plot <- ggplot(pca_df, aes(x = PC1, y = PC2)) +
     labs(title = "PCA of Beta Diversity", x = "PC1", y = "PC2")
 
 # 保存PCA图
-ggsave("/ResultData/beta_diversity_plot.png", pca_plot)
+ggsave(file.path(output_path, "beta_diversity_plot.png"), pca_plot)

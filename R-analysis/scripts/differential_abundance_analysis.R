@@ -7,6 +7,7 @@ library(edgeR)
 # 读取输入数据
 args <- commandArgs(trailingOnly = TRUE)
 kraken_report <- args[1]
+output_path <- args[2]
 data <- read.csv(kraken_report, sep = "\t")
 
 # 假设输入数据中每一行为一个样本，每一列为一个物种的丰度
@@ -19,4 +20,4 @@ dds <- DESeq(dds)
 res <- results(dds)
 
 # 保存差异丰度分析结果
-write.csv(as.data.frame(res), "diff_abundance.csv")
+write.csv(as.data.frame(res), file.path(output_path, "diff_abundance.csv"))
