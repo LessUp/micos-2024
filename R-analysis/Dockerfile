@@ -1,6 +1,6 @@
 # Dockerfile for Combined Diversity, Differential Abundance Analysis and Report Generation
-FROM rocker/r-ver:4.3.3 
-# lastest 4.4.1, but we use last version
+# lastest 4.4.1, last version 4.3.3
+FROM rocker/r-ver:4.4.1 
 
 # Install necessary system libraries
 RUN apt-get update && apt-get install -y \

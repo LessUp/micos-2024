@@ -1,18 +1,27 @@
 services:
   krona:
     build:
+      args:
+        http_proxy: http://172.19.75.255:7897
+        https_proxy: http://172.19.75.255:7897
       context: .
       dockerfile: Dockerfile
     image: shuai/krona:2.8.1
     container_name: krona
     # tty: true
     # stdin_open: true
-    command: ["ktImportTaxonomy", "--help"] 
+    command:
+      [
+        "-o",
+        "/ResultData/krona_report.html",
+        "/ResultData/kraken_taxonomy.tsv",
+      ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
       - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    user: "1000:1000" # 使用主机用户的 UID 和 GID
 volumes:
   RawData:
     driver: local

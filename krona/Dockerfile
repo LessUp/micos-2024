@@ -14,8 +14,8 @@ LABEL about.license_file="https://github.com/marbl/Krona/blob/master/KronaTools/
 LABEL about.license="BSD"
 LABEL about.tags="General"
 
-# ARG http_proxy
-# ARG https_proxy
+ARG http_proxy
+ARG https_proxy
 
 ################## INSTALLATION ######################
 USER root
@@ -30,9 +30,12 @@ RUN apt-get clean all && \
     apt-get purge && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-USER biodocker
+# 更新分类学数据库
+RUN ktUpdateTaxonomy.sh
 
-WORKDIR /data/
+# USER biodocker
+
+# WORKDIR /data/
 
 # Set the entrypoint
 ENTRYPOINT ["ktImportTaxonomy"]
