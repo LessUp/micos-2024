@@ -8,10 +8,8 @@ services:
     # tty: true
     # stdin_open: true
     # command: [ "bash" ]
-    # command: [ "kraken2", "--help" ]
     command:
       [
-        "kraken2",
         "--paired",
         "--db",
         "/ManualData/kraken2_db/08gb",
@@ -22,13 +20,13 @@ services:
         "--use-names",
         "--threads",
         "16",
-        # "--confidence",
-      # "0.1",
-      # "--minimum-base-quality",
-      # "20",
-      # "--minimum-hit-groups",
-      # "2",
-      # "--classified-out",
+        "--confidence",
+        "0.1",
+        "--minimum-base-quality",
+        "20",
+        "--minimum-hit-groups",
+        "2",
+        # "--classified-out",
       # "/ResultData/kraken2_classified.fastq",
       # "--unclassified-out",
       # "/ResultData/kraken2_unclassified.fastq",
@@ -36,8 +34,8 @@ services:
         # "--quick",
       # "--report-zero-counts",
       # "--gzip-compressed",
-        "/RawData/sub3_1.fastq",
-        "/RawData/sub3_2.fastq"
+        "/RawData/sub4998593_1.fastq",
+        "/RawData/sub4998593_2.fastq"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
