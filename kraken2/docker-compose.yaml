@@ -7,7 +7,25 @@ services:
     container_name: kraken2
     # tty: true
     # stdin_open: true
-    command: [ "kraken2", "--help" ]
+    # command: [ "kraken2", "--help" ]
+    command:
+      [
+        "kraken2",
+        "--db",
+        "/ManualData/kraken2_db/08gb",
+        "--output",
+        "/ResultData/kraken2_output.txt",
+        "--report",
+        "/ResultData/kraken2_report.tsv",
+        "--paired",
+        "--use-names",
+        "--threads",
+        "4",
+        "--confidence",
+        "0.1",
+        "/RawData/sub4998593_1.fastq.paired.fq",
+        "/RawData/sub4998593_2.fastq.paired.fq"
+      ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
