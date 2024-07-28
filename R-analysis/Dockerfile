@@ -23,14 +23,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 安装 BiocManager
 RUN R -e "install.packages('BiocManager', repos='https://cloud.r-project.org/')"
 
-# 安装 DESeq2 所需的所有依赖包
-RUN R -e "BiocManager::install(c('S4Vectors', 'IRanges', 'GenomeInfoDb', 'GenomicRanges', 'SummarizedExperiment', 'DelayedArray', 'BiocGenerics', 'matrixStats', 'Biobase', 'AnnotationDbi', 'GenomicAlignments', 'BiocParallel', 'edgeR', 'vegan', 'ggplot2', 'rmarkdown', 'knitr', 'hdf5r', 'Rhtslib', 'GenomicFiles', 'Rsamtools', 'apeglm', 'ashr', 'vsn', 'pheatmap', 'genefilter', 'ReportingTools', 'DESeq2'), ask=FALSE, update=FALSE, Ncpus=4, verbose=TRUE)"
-
-# 安装常用 R 包
-RUN R -e "install.packages(c('BH', 'futile.logger', 'cpp11', 'httr', 'glue', 'Rcpp', 'RcppArmadillo', 'locfit'), repos='https://cloud.r-project.org/', Ncpus=4)"
-
-# 验证 DESeq2 安装
-RUN R -e "if (!requireNamespace('DESeq2', quietly = TRUE)) { stop('DESeq2 not installed') } else { cat('DESeq2 installed successfully\n') }"
+# 安装 edgeR 及其依赖包
+RUN R -e "BiocManager::install(c('edgeR', 'limma'), ask=FALSE, update=FALSE, Ncpus=4, verbose=TRUE)"
 
 # 复制分析脚本
 COPY scripts/diversity_analysis.R /scripts/diversity_analysis.R
