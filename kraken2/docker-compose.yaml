@@ -14,9 +14,9 @@ services:
         "--db",
         "/ManualData/kraken2_db/08gb",
         "--output",
-        "/ResultData/kraken2_output.txt",
+        "/ResultData/kraken_output_m11213.kraken",
         "--report",
-        "/ResultData/kraken_taxonomy.tsv",
+        "/ResultData/kraken_taxonomy_m11213.report",
         "--use-names",
         "--threads",
         "16",
@@ -34,8 +34,8 @@ services:
         # "--quick",
       # "--report-zero-counts",
       # "--gzip-compressed",
-        "/RawData/sub4998593_1.fastq",
-        "/RawData/sub4998593_2.fastq"
+        "/RawData/sub_test/sub_m11213.NextSeq.R1.fastq.gz",
+        "/RawData/sub_test/sub_m11213.NextSeq.R2.fastq.gz"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
@@ -45,6 +45,8 @@ services:
     working_dir: /
     # user: "ubuntu"
     user: "1000:1000" # 使用主机用户的 UID 和 GID
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
 volumes:
   RawData:
     driver: local

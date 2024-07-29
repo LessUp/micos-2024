@@ -13,8 +13,8 @@ services:
     command:
       [
         "-o",
-        "/ResultData/krona_report.html",
-        "/ResultData/kraken_taxonomy.tsv",
+        "/ResultData/ktImportTaxonomy_m11216.html",
+        "/ResultData/kraken_taxonomy_m11216.report",
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
@@ -22,6 +22,8 @@ services:
       - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
     user: "1000:1000" # 使用主机用户的 UID 和 GID
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
 volumes:
   RawData:
     driver: local
