@@ -20,8 +20,10 @@ ARG K2VER="2.1.3"
 ENV PATH="/kraken2-${K2VER}:$PATH" \
     LC_ALL=C
 
-# Install dependencies and Kraken2
-RUN apt-get update && apt-get -y --no-install-recommends install \
+# Use Tsinghua mirror and install dependencies and Kraken2
+RUN echo "Types: deb\nURIs: https://mirrors.tuna.tsinghua.edu.cn/ubuntu\nSuites: noble noble-updates noble-backports\nComponents: main restricted universe multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n" > /etc/apt/sources.list.d/ubuntu.sources && \
+    echo "Types: deb\nURIs: http://security.ubuntu.com/ubuntu/\nSuites: noble-security\nComponents: main restricted universe multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n" >> /etc/apt/sources.list.d/ubuntu.sources && \
+    apt-get update --fix-missing && apt-get -y --no-install-recommends install \
         wget \
         ca-certificates \
         zlib1g-dev \
