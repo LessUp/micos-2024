@@ -13,16 +13,17 @@ LABEL base.image="ubuntu:24.04" \
       maintainer.email="kapsakcj@gmail.com"
 
 # Set the K2VER environment variable
-# ENV K2VER="2.1.3"
-ARG K2VER="2.1.3"
+ENV K2VER="2.1.3"
 
 # Now use K2VER in the PATH environment variable
 ENV PATH="/kraken2-${K2VER}:$PATH" \
     LC_ALL=C
 
-# Use Tsinghua mirror and install dependencies and Kraken2
-RUN echo "Types: deb\nURIs: https://mirrors.tuna.tsinghua.edu.cn/ubuntu\nSuites: noble noble-updates noble-backports\nComponents: main restricted universe multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n" > /etc/apt/sources.list.d/ubuntu.sources && \
-    echo "Types: deb\nURIs: http://security.ubuntu.com/ubuntu/\nSuites: noble-security\nComponents: main restricted universe multiverse\nSigned-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n" >> /etc/apt/sources.list.d/ubuntu.sources && \
+# Use Aliyun mirror and install dependencies and Kraken2
+RUN echo "deb http://mirrors.aliyun.com/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.aliyun.com/ubuntu/ noble-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
     apt-get update --fix-missing && apt-get -y --no-install-recommends install \
         wget \
         ca-certificates \
