@@ -1,0 +1,35 @@
+services:
+  krona:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shuai/kraken-biom:2.1.10
+    container_name: kraken-biom
+    # tty: true
+    # stdin_open: true
+    command:
+      [
+        "/ResultData/kraken_taxonomy_m11213.report",
+        "/ResultData/kraken_taxonomy_m11216.report",
+        "--fmt",
+        "json",
+        "-o",
+        "/ResultData/metagenome.biom"
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    user: "1000:1000" # 使用主机用户的 UID 和 GID
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
