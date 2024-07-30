@@ -1,0 +1,11 @@
+{
+    "Kraken2Workflow.input_file_r1": "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
+    "Kraken2Workflow.input_file_r2": "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+    "Kraken2Workflow.kraken2_db": "/media/shuai/TOSHBA/mm-dev/ManualData/kraken2_db/08gb",
+    "Kraken2Workflow.output_tsv": "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.kraken.tsv",
+    "Kraken2Workflow.report_txt": "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.report.txt",
+    "Kraken2Workflow.threads": 16,
+    "Kraken2Workflow.confidence": 0.1,
+    "Kraken2Workflow.min_base_quality": 20,
+    "Kraken2Workflow.min_hit_groups": 2
+}
