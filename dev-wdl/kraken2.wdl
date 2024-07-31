@@ -1,8 +1,10 @@
+version development
+
 workflow Kraken2Workflow {
     input {
         File input_file_r1
         File input_file_r2
-        Directory kraken2_db  # Changed from String to File
+        Directory kraken2_db
         Int threads
         Float confidence
         Int min_base_quality
@@ -34,7 +36,7 @@ task Kraken2Task {
     input {
         File input_file_r1
         File input_file_r2
-        Directory kraken2_db  # Changed from String to File
+        Directory kraken2_db
         Int threads
         Float confidence
         Int min_base_quality
@@ -48,8 +50,7 @@ task Kraken2Task {
         echo "Current directory: $(pwd)"
         echo "Contents of kraken2_db:"
         ls -l ${kraken2_db}
-        echo "Checking taxo.k2d:"
-        file ${kraken2_db}/taxo.k2d
+        
         kraken2 --db ${kraken2_db} --threads ${threads} \
                 --confidence ${confidence} --minimum-base-quality ${min_base_quality} \
                 --minimum-hit-groups ${min_hit_groups} \
