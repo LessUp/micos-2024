@@ -1,0 +1,39 @@
+services:
+  krona:
+    image: quay.io/qiime2/metagenome:2024.5
+    container_name: qiime2
+    # tty: true
+    # stdin_open: true
+    # 进行主坐标分析（PCoA），并可视化。
+    command:
+      [
+        "qiime",
+        "emperor",
+        "plot",
+        "--i-pcoa",
+        "/ResultData/pcoa.qza",
+        "--m-metadata-file",
+        "/ResultData/sample_metadata.tsv",
+        "--o-visualization",
+        "/ResultData/braycurtis-emperor.qzv"
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+      - /tmp:/tmp
+    user: "1000:1000" # 使用主机用户的 UID 和 GID
+    # environment:
+    #   - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
+  tmp:
+    driver: local

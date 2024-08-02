@@ -1,0 +1,39 @@
+services:
+  krona:
+    image: quay.io/qiime2/metagenome:2024.5
+    container_name: qiime2
+    # tty: true
+    # stdin_open: true
+    
+    # 1-导入特征数据
+    command:
+      [
+        "qiime",
+        "tools",
+        "import",
+        "--input-path",
+        "/ResultData/metagenome_v210.biom",
+        "--type",
+        "FeatureTable[Frequency]",
+        "--input-format",
+        "BIOMV210Format",
+        "--output-path",
+        "/ResultData/feature-table.qza",
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    user: "1000:1000" # 使用主机用户的 UID 和 GID
+    # environment:
+    #   - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local

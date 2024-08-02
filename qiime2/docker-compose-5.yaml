@@ -1,0 +1,39 @@
+services:
+  krona:
+    image: quay.io/qiime2/metagenome:2024.5
+    container_name: qiime2
+    # tty: true
+    # stdin_open: true
+    # 稀疏化（Rarefaction）：标准化测序深度，以便进行α多样性和β多样性分析。
+    command:
+      [
+        "qiime",
+        "feature-table",
+        "rarefy",
+        "--i-table",
+        "/ResultData/final-table.qza",
+        "--p-sampling-depth",
+        "10",
+        "--o-rarefied-table",
+        "/ResultData/rarefied-table.qza"
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+      - /tmp:/tmp
+    user: "1000:1000" # 使用主机用户的 UID 和 GID
+    # environment:
+    #   - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
+  tmp:
+    driver: local
