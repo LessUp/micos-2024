@@ -42,7 +42,7 @@ RUN echo "deb http://mirrors.aliyun.com/ubuntu/ noble main restricted universe m
     mkdir /data /kraken2-db
 
 # Set the default command to kraken2
-ENTRYPOINT ["kraken2"]
+# ENTRYPOINT ["kraken2"]
 
 # Set default parameters for ENTRYPOINT
-CMD ["--help"]
+CMD ["/bin/bash"]

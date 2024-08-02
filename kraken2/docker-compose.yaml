@@ -10,13 +10,14 @@ services:
     # command: [ "bash" ]
     command:
       [
+        "kraken2",
         "--paired",
         "--db",
         "/ManualData/kraken2_db/08gb",
         "--output",
-        "/ResultData/kraken_output_m11213.kraken",
+        "/ResultData/m11213.kraken.tsv",
         "--report",
-        "/ResultData/kraken_taxonomy_m11213.report",
+        "/ResultData/m11213.report.txt",
         "--use-names",
         "--threads",
         "16",
