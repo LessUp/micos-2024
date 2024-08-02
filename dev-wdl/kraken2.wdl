@@ -2,76 +2,67 @@ version development
 
 workflow Kraken2Workflow {
     input {
-        File inputFileR1
-        File inputFileR2
-        Directory kraken2Db
-        Int numThreads
-        Float confidenceThreshold
-        Int minBaseQuality
-        Int minHitGroups
-        Directory outputDir
-        String outputTsvPath
-        String reportTxtPath
+        File input_file_r1
+        File input_file_r2
+        Directory kraken2_db  # Changed from String to File
+        Int threads
+        Float confidence
+        Int min_base_quality
+        Int min_hit_groups
+        File output_tsv
+        File report_txt
     }
 
     call Kraken2Task {
         input:
-            inputFileR1 = inputFileR1,
-            inputFileR2 = inputFileR2,
-            kraken2Db = kraken2Db,
-            numThreads = numThreads,
-            confidenceThreshold = confidenceThreshold,
-            minBaseQuality = minBaseQuality,
-            minHitGroups = minHitGroups,
-            outputDir = outputDir,
-            outputTsvPath = outputTsvPath,
-            reportTxtPath = reportTxtPath
+            input_file_r1 = input_file_r1,
+            input_file_r2 = input_file_r2,
+            kraken2_db = kraken2_db,
+            threads = threads,
+            confidence = confidence,
+            min_base_quality = min_base_quality,
+            min_hit_groups = min_hit_groups,
+            output_tsv = output_tsv,
+            report_txt = report_txt
     }
 
     output {
-        File kraken2OutputTsv = Kraken2Task.outputTsvFile
-        File kraken2ReportTxt = Kraken2Task.reportTxtFile
-        File stdoutLog = Kraken2Task.stdoutFile
-        File stderrLog = Kraken2Task.stderrFile
+        File kraken2_output_tsv = Kraken2Task.output_tsv_file
+        File kraken2_report_txt = Kraken2Task.report_txt_file
     }
 }
 
 task Kraken2Task {
     input {
-        File inputFileR1
-        File inputFileR2
-        Directory kraken2Db
-        Int numThreads
-        Float confidenceThreshold
-        Int minBaseQuality
-        Int minHitGroups
-        Directory outputDir
-        String outputTsvPath
-        String reportTxtPath
+        File input_file_r1
+        File input_file_r2
+        Directory kraken2_db  # Changed from String to File
+        Int threads
+        Float confidence
+        Int min_base_quality
+        Int min_hit_groups
+        File output_tsv
+        File report_txt
     }
 
-    String outputTsvName = basename(outputTsvPath)
-    String reportTxtName = basename(reportTxtPath)
+    command {
+        kraken2 --db ${kraken2_db} --threads ${threads} \
+                --confidence ${confidence} --minimum-base-quality ${min_base_quality} \
+                --minimum-hit-groups ${min_hit_groups} \
+                --output ${output_tsv} --report ${report_txt} \
+                --paired ${input_file_r1} ${input_file_r2} \
+                --use-names --memory-mapping
 
-    command <<<
-        mkdir -p ~{outputDir}
-        kraken2 --db ~{kraken2Db} \
-        --threads ~{numThreads} \
-        --confidence ~{confidenceThreshold} \
-        --minimum-base-quality ~{minBaseQuality} \
-        --minimum-hit-groups ~{minHitGroups} \
-        --output ~{outputDir}/~{outputTsvName} \
-        --report ~{outputDir}/~{reportTxtName} \
-        --paired ~{inputFileR1} ~{inputFileR2} \
-        --use-names --memory-mapping \
-        > >(tee ~{outputDir}/stdout.log) 2> >(tee ~{outputDir}/stderr.log >&2)
-    >>>
+        echo "Output TSV:" >&2
+        cat ${output_tsv} >&2
+
+        echo "Report TXT:" >&2
+        cat ${report_txt} >&2
+    }
 
     output {
-        File outputTsvFile = "~{outputDir}/~{outputTsvName}"
-        File reportTxtFile = "~{outputDir}/~{reportTxtName}"
-        File stdoutFile = "~{outputDir}/stdout.log"
-        File stderrFile = "~{outputDir}/stderr.log"
+        File output_tsv_file = "${output_tsv}"
+        File report_txt_file = "${report_txt}"
     }
 
     runtime {
