@@ -10,8 +10,8 @@ workflow Kraken2Workflow {
         Int minBaseQuality
         Int minHitGroups
         Directory outputDir
-        String outputTsvName
-        String reportTxtName
+        String outputTsvPath
+        String reportTxtPath
     }
 
     call Kraken2Task {
@@ -23,13 +23,16 @@ workflow Kraken2Workflow {
             confidenceThreshold = confidenceThreshold,
             minBaseQuality = minBaseQuality,
             minHitGroups = minHitGroups,
-            outputTsv = "${outputDir}/${outputTsvName}",
-            reportTxt = "${outputDir}/${reportTxtName}"
+            outputDir = outputDir,
+            outputTsvPath = outputTsvPath,
+            reportTxtPath = reportTxtPath
     }
 
     output {
         File kraken2OutputTsv = Kraken2Task.outputTsvFile
         File kraken2ReportTxt = Kraken2Task.reportTxtFile
+        File stdoutLog = Kraken2Task.stdoutFile
+        File stderrLog = Kraken2Task.stderrFile
     }
 }
 
@@ -42,40 +45,33 @@ task Kraken2Task {
         Float confidenceThreshold
         Int minBaseQuality
         Int minHitGroups
-        String outputTsv
-        String reportTxt
+        Directory outputDir
+        String outputTsvPath
+        String reportTxtPath
     }
 
-    command {
-        set -e
-        echo "Current directory: $(pwd)"
-        echo "Contents of kraken2Db:"
-        ls -l ${kraken2Db}
-        
-        # 创建输出文件
-        mkdir -p $(dirname ${outputTsv})
-        touch ${outputTsv}
-        touch ${reportTxt}
-        
-        kraken2 --db ${kraken2Db} --threads ${numThreads} \
-                --confidence ${confidenceThreshold} --minimum-base-quality ${minBaseQuality} \
-                --minimum-hit-groups ${minHitGroups} \
-                --output ${outputTsv} --report ${reportTxt} \
-                --paired ${inputFileR1} ${inputFileR2} \
-                --use-names --memory-mapping \
-                > >(tee stdout.log) 2> >(tee stderr.log >&2)
-        
-        # 检查输出文件是否生成
-        echo "Checking output files:"
-        ls -l ${outputTsv}
-        ls -l ${reportTxt}
-    }
+    String outputTsvName = basename(outputTsvPath)
+    String reportTxtName = basename(reportTxtPath)
+
+    command <<<
+        mkdir -p ~{outputDir}
+        kraken2 --db ~{kraken2Db} \
+        --threads ~{numThreads} \
+        --confidence ~{confidenceThreshold} \
+        --minimum-base-quality ~{minBaseQuality} \
+        --minimum-hit-groups ~{minHitGroups} \
+        --output ~{outputDir}/~{outputTsvName} \
+        --report ~{outputDir}/~{reportTxtName} \
+        --paired ~{inputFileR1} ~{inputFileR2} \
+        --use-names --memory-mapping \
+        > >(tee ~{outputDir}/stdout.log) 2> >(tee ~{outputDir}/stderr.log >&2)
+    >>>
 
     output {
-        File outputTsvFile = "${outputTsv}"
-        File reportTxtFile = "${reportTxt}"
-        File stdoutFile = "stdout.log"
-        File stderrFile = "stderr.log"
+        File outputTsvFile = "~{outputDir}/~{outputTsvName}"
+        File reportTxtFile = "~{outputDir}/~{reportTxtName}"
+        File stdoutFile = "~{outputDir}/stdout.log"
+        File stderrFile = "~{outputDir}/stderr.log"
     }
 
     runtime {

@@ -6,7 +6,7 @@
   "Kraken2Workflow.minBaseQuality": 20,
   "Kraken2Workflow.minHitGroups": 2,
   "Kraken2Workflow.outputDir": "/media/shuai/TOSHBA/mm-dev/ResultData/",
-  "Kraken2Workflow.outputTsvName": "m11213.kraken.tsv",
-  "Kraken2Workflow.reportTxtName": "m11213.report.txt",
+  "Kraken2Workflow.outputTsvPath": "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.kraken.tsv",
+  "Kraken2Workflow.reportTxtPath": "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.report.txt",
   "Kraken2Workflow.numThreads": 16
 }
