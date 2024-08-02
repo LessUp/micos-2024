@@ -3,19 +3,20 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: shuai/r_combined_analysis:1.0
+    image: shuai/r_combined_analysis:4.3.3
     container_name: r_analysis_container
-    # tty: true
-    # stdin_open: true
-    # command: [ "combined_analysis.R", "--help" ]
-    command: [ "scripts/diversity_analysis.R", "/ResultData/kraken2_report.tsv", "/ResultData" ]
+    tty: true
+    stdin_open: true
+    command: [ "bash" ]
+    # command: [ "scripts/diversity_analysis.R", "/ResultData/kraken2_report.tsv", "/ResultData" ]
     # command: [ "scripts/differential_abundance_analysis.R", "/ResultData/kraken2_report.csv", "/ResultData" ]
-
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
       - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
 volumes:
   RawData:
     driver: local

@@ -1,8 +1,16 @@
 import pandas as pd
+import argparse
+
+# 设置命令行参数解析
+parser = argparse.ArgumentParser(description='Convert Kraken2 report to taxonomy file.')
+parser.add_argument('input_path', type=str, help='Path to the input Kraken2 report file.')
+parser.add_argument('output_path', type=str, help='Path to the output taxonomy file.')
+
+args = parser.parse_args()
 
 # 读取Kraken2的report文件
-report_file = "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.kraken.tsv"
-taxonomy_file = "m11213.taxonomy.tsv"
+report_file = args.input_path
+taxonomy_file = args.output_path
 
 # 初始化DataFrame
 data = pd.read_csv(report_file, sep='\t', header=None, comment='#')

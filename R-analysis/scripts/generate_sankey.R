@@ -1,46 +1,46 @@
-# 加载library
-library(networkD3)
-library(dplyr)
+# 安装必要的R包
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+remotes::install_github("fbreitwieser/pavian")
 
-# 读取Kraken2报告文件
-kraken_report <- read.table("/ResultData/kraken_taxonomy_m11213.report", header = TRUE, sep = "\t")
+# 安装 webshot 包
+if (!requireNamespace("webshot", quietly = TRUE)) {
+  install.packages("webshot")
+}
 
-# 检查kraken_report数据框的内容
+# 手动配置 PhantomJS 路径，如果 PhantomJS 已手动安装
+webshot::install_phantomjs()  # 如果已经手动安装，则不需要这行
+
+# 加载必要的库
+library(pavian)
+library(ggplot2)
+library(htmlwidgets)
+library(webshot)
+
+# 设置 PhantomJS 路径，如果 PhantomJS 已手动安装
+webshot::phantomjs()
+Sys.setenv(PATH = paste(Sys.getenv("PATH"), "/usr/local/bin", sep = ":"))
+
+# 设置 Kraken2 报告文件的路径
+kraken_report_file <- "kraken_taxonomy_m11213.report"
+
+# 读取 Kraken2 报告文件
+kraken_report <- read_report(kraken_report_file)
+
+# 打印 Kraken2 报告文件的前几行用于调试
 print(head(kraken_report))
-print(names(kraken_report))
 
-# 假设rank列实际上是U列，name列实际上是unclassified列
-kraken_report$rank <- as.character(kraken_report$U)
-kraken_report$name <- as.character(kraken_report$unclassified)
-
-# 过滤无效行（例如 rank 为 'U' 的行）
-kraken_report <- kraken_report %>% filter(rank != "U")
-
-# 创建节点列表
-nodes <- data.frame(name = unique(c(kraken_report$rank, kraken_report$name)))
-
-# 创建链接列表
-links <- data.frame(
-  source = match(kraken_report$rank, nodes$name) - 1,
-  target = match(kraken_report$name, nodes$name) - 1,
-  value = kraken_report$X0
+# 生成 Sankey 图
+sankey_plot <- pavian::plotly_sankey(
+  kraken_report,
+  top_n = 50  # 可视化前50个分类单元
 )
 
-# 生成Sankey图
-sankey <- sankeyNetwork(
-  Links = links,
-  Nodes = nodes,
-  Source = "source",
-  Target = "target",
-  Value = "value",
-  NodeID = "name",
-  units = "Reads",
-  fontSize = 12,
-  nodeWidth = 30
-)
+# 保存 Sankey 图为 HTML 文件
+html_file <- "sankey_diagram.html"
+saveWidget(sankey_plot, file = html_file)
 
-# 保存Sankey图为HTML文件
-saveNetwork(sankey, "sankey_diagram.html", selfcontained = FALSE)
-
-# 或者显示Sankey图
-sankey
+# 保存 Sankey 图为 PNG 文件
+png_file <- "sankey_diagram.png"
+webshot::webshot(html_file, file = png_file, vwidth = 1200, vheight = 800)

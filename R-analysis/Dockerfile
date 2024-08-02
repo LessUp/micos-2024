@@ -1,44 +1,38 @@
-# 使用 rocker/r-ver 基础镜像
-FROM rocker/r-ver:4.4.1
+# Dockerfile for Combined Diversity, Differential Abundance Analysis and Report Generation
+FROM rocker/r-ver:4.3.3 
+# lastest 4.4.1, but we use last version
 
-# 设置环境变量以加速构建
-ENV R_REMOTES_NO_ERRORS_FROM_WARNINGS=true
-
-# 安装必要的系统库
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install necessary system libraries
+RUN apt-get update && apt-get install -y \
     libxt6 \
+    libglpk40 \
     libxt-dev \
     libcurl4-openssl-dev \
     libssl-dev \
     libxml2-dev \
     zlib1g-dev \
-    libhdf5-dev \
-    libtiff5-dev \
-    libfftw3-dev \
-    libgmp-dev \
-    libv8-dev \
-    libgsl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 BiocManager
-RUN R -e "install.packages('BiocManager', repos='https://cloud.r-project.org/')"
+# Install Bioconductor and necessary R packages
+RUN R -e "install.packages('BiocManager', repos='http://cran.rstudio.com/')"
+RUN R -e "BiocManager::install(c('edgeR', 'vegan', 'ggplot2', 'rmarkdown', 'knitr'))"
 
-# 安装 DESeq2 所需的所有依赖包
-RUN R -e "BiocManager::install(c('S4Vectors', 'IRanges', 'GenomeInfoDb', 'GenomicRanges', 'SummarizedExperiment', 'DelayedArray', 'BiocGenerics', 'matrixStats', 'Biobase', 'AnnotationDbi', 'GenomicAlignments', 'BiocParallel', 'edgeR', 'vegan', 'ggplot2', 'rmarkdown', 'knitr', 'hdf5r', 'Rhtslib', 'GenomicFiles', 'Rsamtools', 'apeglm', 'ashr', 'vsn', 'pheatmap', 'genefilter', 'ReportingTools'), ask=FALSE, update=FALSE, Ncpus=4, verbose=TRUE)"
+# Install DESeq2 dependencies
+RUN R -e "BiocManager::install(c('XVector', 'SparseArray', 'GenomicRanges', 'DelayedArray', 'SummarizedExperiment'))"
 
-# 单独安装 DESeq2
-RUN R -e "BiocManager::install('DESeq2', ask=FALSE, update=FALSE, Ncpus=4, verbose=TRUE)"
+# Install DESeq2 with detailed output and log to a file
+RUN R -e "BiocManager::install('DESeq2', ask=FALSE, update=FALSE, verbose=TRUE)" > /tmp/deseq2_install.log 2>&1
 
-# 安装常用 R 包
-RUN R -e "install.packages(c('BH', 'futile.logger', 'cpp11', 'httr', 'glue', 'Rcpp', 'RcppArmadillo', 'locfit'), repos='https://cloud.r-project.org/', Ncpus=4)"
+# Check if DESeq2 is installed and print the log file
+RUN R -e "if (!requireNamespace('DESeq2', quietly = TRUE)) { cat('DESeq2 not installed\n'); system('cat /tmp/deseq2_install.log'); stop('DESeq2 not installed') } else { cat('DESeq2 installed successfully\n') }"
 
-# 验证 DESeq2 安装并提供详细输出
-RUN R -e "if (!requireNamespace('DESeq2', quietly = TRUE)) { stop('DESeq2 not installed') } else { cat('DESeq2 installed successfully\n') }"
+# Install networkD3
+RUN R -e "BiocManager::install(c('networkD3', 'dplyr'))"
 
-# 复制分析脚本
-COPY scripts/diversity_analysis.R /scripts/diversity_analysis.R
-COPY scripts/differential_abundance_analysis.R /scripts/differential_abundance_analysis.R
-COPY scripts/generate_report.R /scripts/generate_report.R
+# Copy analysis scripts
+COPY scripts/diversity_analysis.R scripts/diversity_analysis.R
+COPY scripts/differential_abundance_analysis.R scripts/differential_abundance_analysis.R
+COPY scripts/generate_report.R scripts/generate_report.R
 
-# 设置入口点（将在 WDL 中被覆盖）
+# Set the entrypoint (will be overridden in WDL)
 # ENTRYPOINT ["Rscript"]
