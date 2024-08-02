@@ -3,14 +3,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: shuai/kraken-biom:2.1.10
+    image: shuai/kraken-biom:1.0.0
     container_name: kraken-biom
     # tty: true
     # stdin_open: true
     command:
       [
-        "/ResultData/kraken_taxonomy_m11213.report",
-        "/ResultData/kraken_taxonomy_m11216.report",
+        "kraken-biom",
+        "/ResultData/m11213.report.tsv",
+        "/ResultData/m11216.report.tsv",
         "--fmt",
         "json",
         "-o",

@@ -11,4 +11,4 @@ RUN python -m pip install --upgrade pip && \
     cd .. && \
     rm -rf kraken-biom
 
-ENTRYPOINT ["kraken-biom"]
+# ENTRYPOINT ["kraken-biom"]
