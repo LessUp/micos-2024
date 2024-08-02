@@ -13,8 +13,8 @@ services:
     command:
       [
         "-o",
-        "/ResultData/ktImportTaxonomy_m11216.html",
-        "/ResultData/kraken_taxonomy_m11216.report",
+        "/ResultData/m11216.report.html",
+        "/ResultData/m11216.report.txt",
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
