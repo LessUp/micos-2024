@@ -10,8 +10,8 @@ services:
     command:
       [
         "kraken-biom",
-        "/ResultData/m11213.report.tsv",
-        "/ResultData/m11216.report.tsv",
+        "/ResultData/m11213.report.txt",
+        "/ResultData/m11216.report.txt",
         "--fmt",
         "json",
         "-o",

@@ -1,0 +1,4 @@
+{
+    "krona_workflow.input_report": "/path/to/m11216.report.txt",
+    "krona_workflow.output_html": "m11216.report.html"
+  }
