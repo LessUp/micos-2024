@@ -50,6 +50,7 @@ workflow combined_kraken_workflow {
     }
 
     output {
+        # Array[File] kraken2_output_tsv = Kraken2Task.output_tsv_file
         File merged_tsv = MergeTSVTask.merged_tsv
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
         File output_biom = kraken_biom.output_biom
@@ -97,9 +98,9 @@ task MergeTSVTask {
         Array[File] input_files
     }
 
-    command <<<
+    command {
         cat ${sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
-    >>>
+    }
 
     output {
         File merged_tsv = "merged_taxonomy.tsv"
