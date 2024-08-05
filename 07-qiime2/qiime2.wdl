@@ -1,74 +1,93 @@
+
 version 1.0
 
 workflow Qiime2Analysis {
     input {
+        # 输入文件：metagenome_biom 是 BIOM 格式的宏基因组特征表
         File metagenome_biom
+        # 输入文件：merged_taxonomy 是合并后的分类学表格
         File merged_taxonomy
+        # 输入文件：sample_metadata 是样本元数据
         File sample_metadata
+        # 参数：最小丰度频率
         Int min_frequency = 10
+        # 参数：最小样本数
         Int min_samples = 2
+        # 参数：采样深度
         Int sampling_depth = 10
     }
 
+    # 调用任务：导入特征表
     call ImportFeatureTable {
         input:
             input_biom = metagenome_biom
     }
 
+    # 调用任务：导入分类学表格
     call ImportTaxonomy {
         input:
             input_tsv = merged_taxonomy
     }
 
+    # 调用任务：过滤低丰度特征
     call FilterLowAbundanceFeatures {
         input:
             input_table = ImportFeatureTable.output_qza,
             min_frequency = min_frequency
     }
 
+    # 调用任务：过滤稀有特征
     call FilterRareFeatures {
         input:
             input_table = FilterLowAbundanceFeatures.filtered_table,
             min_samples = min_samples
     }
 
+    # 调用任务：稀释表格
     call RarefyTable {
         input:
             input_table = FilterRareFeatures.filtered_table,
             sampling_depth = sampling_depth
     }
 
+    # 调用任务：计算Alpha多样性
     call CalculateAlphaDiversity {
         input:
             input_table = RarefyTable.rarefied_table
     }
 
+    # 调用任务：导出Alpha多样性结果
     call ExportAlphaDiversity {
         input:
             input_qza = CalculateAlphaDiversity.alpha_diversity
     }
 
+    # 调用任务：计算Beta多样性
     call CalculateBetaDiversity {
         input:
             input_table = RarefyTable.rarefied_table
     }
 
+    # 调用任务：执行PCoA
     call PerformPCoA {
         input:
             distance_matrix = CalculateBetaDiversity.distance_matrix
     }
 
+    # 调用任务：生成Emperor图
     call VisualizeEmperor {
         input:
             pcoa_qza = PerformPCoA.pcoa,
             metadata = sample_metadata
     }
 
+    # 调用任务：添加伪计数
     call AddPseudocount {
         input:
             input_table = FilterRareFeatures.filtered_table
     }
 
+    # 调用任务：执行ANCOM分析
     call PerformANCOM {
         input:
             comp_table = AddPseudocount.comp_table,
@@ -76,8 +95,11 @@ workflow Qiime2Analysis {
     }
 
     output {
+        # 输出文件：Shannon多样性结果
         File shannon_diversity = ExportAlphaDiversity.exported_diversity
+        # 输出文件：Emperor可视化图
         File emperor_plot = VisualizeEmperor.emperor_visualization
+        # 输出文件：ANCOM分析结果
         File ancom_results = PerformANCOM.ancom_results
     }
 }
@@ -221,11 +243,11 @@ task ExportAlphaDiversity {
     command {
         qiime tools export \
             --input-path ${input_qza} \
-            --output-path shannon
+            --output-path exported_diversity
     }
 
     output {
-        File exported_diversity = "shannon/alpha-diversity.tsv"
+        File exported_diversity = "exported_diversity/shannon.tsv"
     }
 
     runtime {
