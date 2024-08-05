@@ -10,8 +10,10 @@ services:
     container_name: krona
     # tty: true
     # stdin_open: true
+    # entrypoint: ["ktImportTaxonomy"]
     command:
       [
+        "ktImportTaxonomy",
         "-o",
         "/ResultData/m11216.report.html",
         "/ResultData/m11216.report.txt",

@@ -38,4 +38,4 @@ RUN ktUpdateTaxonomy.sh
 # WORKDIR /data/
 
 # Set the entrypoint
-ENTRYPOINT ["ktImportTaxonomy"]
+# ENTRYPOINT ["ktImportTaxonomy"]
