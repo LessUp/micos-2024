@@ -1,4 +1,10 @@
 {
-    "krona_workflow.input_report": "/path/to/m11216.report.txt",
-    "krona_workflow.output_html": "m11216.report.html"
-  }
+  "krona_workflow.input_reports": [
+    "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.report.txt",
+    "/media/shuai/TOSHBA/mm-dev/ResultData/m11216.report.txt"
+  ],
+  "krona_workflow.output_html_names": [
+    "m11213.report.html",
+    "m11216.report.html"
+  ]
+}

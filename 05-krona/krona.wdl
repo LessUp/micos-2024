@@ -14,7 +14,7 @@ task krona {
 
     runtime {
         docker: "shuai/krona:2.8.1"
-        cpu: 4
+        cpu: 1
         memory: "4 GB"
     }
 
@@ -25,17 +25,19 @@ task krona {
 
 workflow krona_workflow {
     input {
-        File input_report
-        String output_html = "krona_report.html"
+        Array[File] input_reports
+        Array[String] output_html_names
     }
 
-    call krona {
-        input:
-            input_file = input_report,
-            output_filename = output_html
+    scatter (idx in range(length(input_reports))) {
+        call krona {
+            input:
+                input_file = input_reports[idx],
+                output_filename = output_html_names[idx]
+        }
     }
 
     output {
-        File krona_html = krona.output_html
+        Array[File] krona_html_reports = krona.output_html
     }
 }
