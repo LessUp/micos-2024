@@ -1,0 +1,24 @@
+{
+  "combined_kraken_workflow.input_files_r1": [
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R1.fastq.gz"
+  ],
+  "combined_kraken_workflow.input_files_r2": [
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R2.fastq.gz"
+  ],
+  "combined_kraken_workflow.kraken2_db": "/media/shuai/TOSHBA/mm-dev/ManualData/kraken2_db/08gb/",
+  "combined_kraken_workflow.threads": 16,
+  "combined_kraken_workflow.confidence": 0.1,
+  "combined_kraken_workflow.min_base_quality": 20,
+  "combined_kraken_workflow.min_hit_groups": 2,
+  "combined_kraken_workflow.output_tsv_names": [
+    "m11213.kraken.tsv",
+    "m11216.kraken.tsv"
+  ],
+  "combined_kraken_workflow.report_txt_names": [
+    "m11213.report.txt",
+    "m11216.report.txt"
+  ],
+  "combined_kraken_workflow.biom_output_filename": "combined_output.biom"
+}
