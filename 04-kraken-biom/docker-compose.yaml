@@ -13,9 +13,9 @@ services:
         "/ResultData/m11213.report.txt",
         "/ResultData/m11216.report.txt",
         "--fmt",
-        "json",
+        "hdf5",
         "-o",
-        "/ResultData/metagenome.biom"
+        "/ResultData/metagenomeV210.biom"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
