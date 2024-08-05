@@ -1,11 +1,23 @@
 {
-  "Kraken2Workflow.input_file_r1": "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
-  "Kraken2Workflow.input_file_r2": "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+  "Kraken2Workflow.input_files_r1": [
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R1.fastq.gz"
+  ],
+  "Kraken2Workflow.input_files_r2": [
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R2.fastq.gz"
+  ],
   "Kraken2Workflow.kraken2_db": "/media/shuai/TOSHBA/mm-dev/ManualData/kraken2_db/08gb/",
   "Kraken2Workflow.threads": 16,
   "Kraken2Workflow.confidence": 0.1,
   "Kraken2Workflow.min_base_quality": 20,
   "Kraken2Workflow.min_hit_groups": 2,
-  "Kraken2Workflow.output_tsv_name": "m11213.kraken.tsv",
-  "Kraken2Workflow.report_txt_name": "m11213.report.txt"
+  "Kraken2Workflow.output_tsv_names": [
+    "m11213.kraken.tsv",
+    "m11216.kraken.tsv"
+  ],
+  "Kraken2Workflow.report_txt_names": [
+    "m11213.report.txt",
+    "m11216.report.txt"
+  ]
 }
