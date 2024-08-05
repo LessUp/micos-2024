@@ -30,6 +30,11 @@ workflow combined_kraken_workflow {
         }
     }
 
+    call MergeTSVTask {
+        input:
+            input_files = Kraken2Task.output_tsv_file
+    }
+
     call kraken_biom {
         input:
             input_files = Kraken2Task.report_txt_file,
@@ -45,7 +50,7 @@ workflow combined_kraken_workflow {
     }
 
     output {
-        Array[File] kraken2_output_tsv = Kraken2Task.output_tsv_file
+        File merged_tsv = MergeTSVTask.merged_tsv
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
         File output_biom = kraken_biom.output_biom
         Array[File] krona_html_reports = krona.output_html
@@ -84,6 +89,26 @@ task Kraken2Task {
 
     runtime {
         docker: "shuai/kraken2:2.1.3"
+    }
+}
+
+task MergeTSVTask {
+    input {
+        Array[File] input_files
+    }
+
+    command <<<
+        cat ${sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
+    >>>
+
+    output {
+        File merged_tsv = "merged_taxonomy.tsv"
+    }
+
+    runtime {
+        docker: "ubuntu:latest"
+        cpu: 1
+        memory: "1 GB"
     }
 }
 
