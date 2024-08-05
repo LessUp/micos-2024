@@ -12,7 +12,7 @@ services:
         "tools",
         "import",
         "--input-path",
-        "/ResultData/metagenome_v210.biom",
+        "/ResultData/metagenomeV210.biom",
         "--type",
         "FeatureTable[Frequency]",
         "--input-format",
