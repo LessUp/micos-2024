@@ -20,5 +20,9 @@
     "m11213.report.txt",
     "m11216.report.txt"
   ],
-  "combined_kraken_workflow.biom_output_filename": "combined_output.biom"
+  "combined_kraken_workflow.biom_output_filename": "combined_output.biom",
+  "combined_kraken_workflow.krona_output_html_names": [
+    "m11213.report.html",
+    "m11216.report.html"
+  ]
 }

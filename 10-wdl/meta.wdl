@@ -12,6 +12,7 @@ workflow combined_kraken_workflow {
         Array[String] output_tsv_names
         Array[String] report_txt_names
         String biom_output_filename
+        Array[String] krona_output_html_names
     }
 
     scatter (i in range(length(input_files_r1))) {
@@ -35,10 +36,19 @@ workflow combined_kraken_workflow {
             output_filename = biom_output_filename
     }
 
+    scatter (idx in range(length(Kraken2Task.report_txt_file))) {
+        call krona {
+            input:
+                input_file = Kraken2Task.report_txt_file[idx],
+                output_filename = krona_output_html_names[idx]
+        }
+    }
+
     output {
         Array[File] kraken2_output_tsv = Kraken2Task.output_tsv_file
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
         File output_biom = kraken_biom.output_biom
+        Array[File] krona_html_reports = krona.output_html
     }
 }
 
@@ -95,5 +105,28 @@ task kraken_biom {
 
     output {
         File output_biom = "${output_filename}"
+    }
+}
+
+task krona {
+    input {
+        File input_file
+        String output_filename
+    }
+
+    command {
+        ktImportTaxonomy \
+        -o ${output_filename} \
+        ${input_file}
+    }
+
+    runtime {
+        docker: "shuai/krona:2.8.1"
+        cpu: 1
+        memory: "4 GB"
+    }
+
+    output {
+        File output_html = "${output_filename}"
     }
 }
