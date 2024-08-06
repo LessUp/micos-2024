@@ -6,7 +6,7 @@ workflow Qiime2Analysis {
         # 输入的BIOM格式的宏基因组特征表文件
         File metagenome_biom
         # 输入的合并分类信息文件，TSV格式
-        File merged_taxonomy
+        File merged_taxonomy_tsv
         # 样本元数据文件，包含样本信息
         File sample_metadata
         # 过滤低丰度特征时的最小频率阈值
@@ -15,6 +15,8 @@ workflow Qiime2Analysis {
         Int min_samples = 2
         # 稀释深度，用于均匀采样
         Int sampling_depth = 10
+        # 转换kraken输出tsv脚本
+        File taxonomy_convert_script
     }
 
     # 导入特征表的任务
@@ -23,10 +25,17 @@ workflow Qiime2Analysis {
             input_biom = metagenome_biom
     }
 
+    # 进行kraken2的tsv转换
+    call ConvertKraken2Tsv {
+        input:
+            merged_taxonomy_tsv = merged_taxonomy_tsv,
+            taxonomy_convert_script = taxonomy_convert_script
+    }
+
     # 导入分类表的任务
     call ImportTaxonomy {
         input:
-            input_tsv = merged_taxonomy
+            input_tsv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 
     # 过滤低丰度特征，去除可能是噪声的数据
@@ -75,11 +84,11 @@ workflow Qiime2Analysis {
     }
 
     # 使用Emperor进行PCoA结果的可视化
-    call VisualizeEmperor {
-        input:
-            pcoa_qza = PerformPCoA.pcoa,
-            metadata = sample_metadata
-    }
+    # call VisualizeEmperor {
+    #     input:
+    #         pcoa_qza = PerformPCoA.pcoa,
+    #         metadata = sample_metadata
+    # }
 
     # 添加伪计数，以避免零计数对后续统计分析的影响
     call AddPseudocount {
@@ -88,11 +97,11 @@ workflow Qiime2Analysis {
     }
 
     # 使用ANCOM进行统计分析，比较不同条件下的物种丰度
-    call PerformANCOM {
-        input:
-            comp_table = AddPseudocount.comp_table,
-            metadata = sample_metadata
-    }
+    # call PerformANCOM {
+    #     input:
+    #         comp_table = AddPseudocount.comp_table,
+    #         metadata = sample_metadata
+    # }
 
     output {
         # 过滤后的特征表
@@ -108,9 +117,30 @@ workflow Qiime2Analysis {
         # 导出的Alpha多样性结果
         File shannon_diversity = ExportAlphaDiversity.exported_diversity
         # Emperor可视化结果
-        File emperor_plot = VisualizeEmperor.emperor_visualization
+        # File emperor_plot = VisualizeEmperor.emperor_visualization
         # ANCOM统计分析结果
-        File ancom_results = PerformANCOM.ancom_results
+        # File ancom_results = PerformANCOM.ancom_results
+    }
+}
+
+
+# Kraken2转换成Qiime2支持的格式
+task ConvertKraken2Tsv {
+    input {
+        File merged_taxonomy_tsv
+        File taxonomy_convert_script
+    }
+
+    command {
+        python3 ${taxonomy_convert_script} ${merged_taxonomy_tsv} merge_converted_taxonomy.tsv
+    }
+
+    output {
+        File merge_converted_taxonomy = "merge_converted_taxonomy.tsv"
+    }
+
+    runtime {
+        docker: "amancevice/pandas:1.1.5"
     }
 }
 
@@ -260,7 +290,8 @@ task ExportAlphaDiversity {
     command {
         qiime tools export \
             --input-path ${input_qza} \
-            --output-path exported_diversity
+            --output-path exported_diversity >&2
+        mv exported_diversity/alpha-diversity.tsv exported_diversity/shannon.tsv
     }
 
     output {
