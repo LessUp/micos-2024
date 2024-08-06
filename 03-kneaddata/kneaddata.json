@@ -1,0 +1,12 @@
+{
+    "kneaddata_workflow.R1_fastq": [
+      "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
+      "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R1.fastq.gz"
+    ],
+    "kneaddata_workflow.R2_fastq": [
+      "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+      "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R2.fastq.gz"
+    ],
+    "kneaddata_workflow.kneaddata_db": "/media/shuai/TOSHBA/mm-dev/ManualData/kneaddata",
+    "kneaddata_workflow.threads": 16
+  }

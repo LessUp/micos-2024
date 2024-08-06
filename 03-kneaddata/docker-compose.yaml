@@ -1,0 +1,34 @@
+services:
+  kraken2:
+    image: biobakery/kneaddata:0.10.0
+    container_name: kneaddata
+    # tty: true
+    # stdin_open: true
+    # command: [ "bash" ]
+    command:
+      [
+        "kneaddata",
+        "-i", "/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
+        "-i", "/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+        "-db", "/ManualData/kneaddata",
+        "--output", "/ResultData/kneaddata",
+        "-t", "16"
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    working_dir: /
+    user: "1000:1000"
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
