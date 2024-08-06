@@ -93,6 +93,7 @@ workflow Qiime2Analysis {
     }
 }
 
+# 导入分类学表格任务
 task ImportFeatureTable {
     input {
         File input_biom
@@ -115,6 +116,7 @@ task ImportFeatureTable {
     }
 }
 
+# 导入特征表任务
 task ImportTaxonomy {
     input {
         File input_tsv
@@ -137,6 +139,7 @@ task ImportTaxonomy {
     }
 }
 
+# 过滤低丰度特征任务
 task FilterLowAbundanceFeatures {
     input {
         File input_table
@@ -159,6 +162,7 @@ task FilterLowAbundanceFeatures {
     }
 }
 
+# 过滤稀有特征任务
 task FilterRareFeatures {
     input {
         File input_table
@@ -181,6 +185,7 @@ task FilterRareFeatures {
     }
 }
 
+# 稀释表格任务
 task RarefyTable {
     input {
         File input_table
@@ -203,6 +208,7 @@ task RarefyTable {
     }
 }
 
+# 计算Alpha多样性任务
 task CalculateAlphaDiversity {
     input {
         File input_table
@@ -224,6 +230,7 @@ task CalculateAlphaDiversity {
     }
 }
 
+# 导出Alpha多样性任务
 task ExportAlphaDiversity {
     input {
         File input_qza
@@ -244,6 +251,7 @@ task ExportAlphaDiversity {
     }
 }
 
+# 计算Beta多样性任务
 task CalculateBetaDiversity {
     input {
         File input_table
@@ -265,6 +273,7 @@ task CalculateBetaDiversity {
     }
 }
 
+# 执行PCoA任务
 task PerformPCoA {
     input {
         File distance_matrix
@@ -285,6 +294,7 @@ task PerformPCoA {
     }
 }
 
+# 生成Emperor图任务
 task VisualizeEmperor {
     input {
         File pcoa_qza
@@ -307,6 +317,7 @@ task VisualizeEmperor {
     }
 }
 
+# 添加伪计数任务
 task AddPseudocount {
     input {
         File input_table
@@ -327,6 +338,7 @@ task AddPseudocount {
     }
 }
 
+# 执行ANCOM分析任务
 task PerformANCOM {
     input {
         File comp_table
