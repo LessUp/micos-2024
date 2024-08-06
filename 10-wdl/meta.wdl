@@ -264,7 +264,7 @@ task ImportFeatureTable {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -286,7 +286,7 @@ task ImportTaxonomy {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -308,7 +308,7 @@ task FilterLowAbundanceFeatures {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -330,7 +330,7 @@ task FilterRareFeatures {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -352,7 +352,7 @@ task RarefyTable {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -373,7 +373,7 @@ task CalculateAlphaDiversity {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -393,7 +393,7 @@ task ExportAlphaDiversity {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -414,7 +414,7 @@ task CalculateBetaDiversity {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -434,7 +434,7 @@ task PerformPCoA {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
@@ -454,6 +454,6 @@ task AddPseudocount {
     }
 
     runtime {
-        docker: "quay.io/qiime2/core:2022.2"
+        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
