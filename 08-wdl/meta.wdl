@@ -1,11 +1,16 @@
 version development
 
-workflow combined_kraken_workflow {
+workflow combined_metagenomic_workflow {
     input {
+        # KneadData inputs
         Array[File] input_files_r1
         Array[File] input_files_r2
+        Directory kneaddata_db
+        Int kneaddata_threads
+
+        # Kraken2 and downstream analysis inputs
         Directory kraken2_db
-        Int threads
+        Int kraken_threads
         Float confidence
         Int min_base_quality
         Int min_hit_groups
@@ -22,13 +27,25 @@ workflow combined_kraken_workflow {
         File taxonomy_convert_script
     }
 
+    # Step 1: Run KneadData on input files
     scatter (i in range(length(input_files_r1))) {
-        call Kraken2Task {
+        call KneadDataTask {
             input:
                 input_file_r1 = input_files_r1[i],
                 input_file_r2 = input_files_r2[i],
+                kneaddata_db = kneaddata_db,
+                threads = kneaddata_threads
+        }
+    }
+
+    # Step 2: Run Kraken2 on KneadData output
+    scatter (i in range(length(KneadDataTask.output_paired_1))) {
+        call Kraken2Task {
+            input:
+                input_file_r1 = KneadDataTask.output_paired_1[i],
+                input_file_r2 = KneadDataTask.output_paired_2[i],
                 kraken2_db = kraken2_db,
-                threads = threads,
+                threads = kraken_threads,
                 confidence = confidence,
                 min_base_quality = min_base_quality,
                 min_hit_groups = min_hit_groups,
@@ -37,17 +54,20 @@ workflow combined_kraken_workflow {
         }
     }
 
+    # Step 3: Merge Kraken2 TSV outputs
     call MergeTSVTask {
         input:
             input_files = Kraken2Task.output_tsv_file
     }
 
+    # Step 4: Generate BIOM file from Kraken2 reports
     call kraken_biom {
         input:
             input_files = Kraken2Task.report_txt_file,
             output_filename = biom_output_filename
     }
 
+    # Step 5: Generate Krona visualizations
     scatter (idx in range(length(Kraken2Task.report_txt_file))) {
         call krona {
             input:
@@ -56,6 +76,7 @@ workflow combined_kraken_workflow {
         }
     }
 
+    # Step 6: QIIME2 analysis
     call ImportFeatureTable {
         input:
             input_biom = qiime2_metagenome_biom
@@ -116,6 +137,8 @@ workflow combined_kraken_workflow {
     }
 
     output {
+        Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
+        Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
         File merged_tsv = MergeTSVTask.merged_tsv
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
         File output_biom = kraken_biom.output_biom
@@ -129,6 +152,36 @@ workflow combined_kraken_workflow {
     }
 }
 
+# KneadData task to preprocess raw sequencing data
+task KneadDataTask {
+    input {
+        File input_file_r1
+        File input_file_r2
+        Directory kneaddata_db
+        Int threads
+    }
+
+    command {
+        kneaddata \
+            --input ${input_file_r1} \
+            --input ${input_file_r2} \
+            --reference-db ${kneaddata_db} \
+            --output kneaddata_out \
+            --threads ${threads} \
+            --remove-intermediate-output
+    }
+
+    output {
+        File output_paired_1 = "kneaddata_out/${basename(input_file_r1)}_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/${basename(input_file_r2)}_paired_2.fastq"
+    }
+
+    runtime {
+        docker: "biobakery/kneaddata:0.10.0"
+    }
+}
+
+# Kraken2 task for taxonomic classification
 task Kraken2Task {
     input {
         File input_file_r1
@@ -164,6 +217,7 @@ task Kraken2Task {
     }
 }
 
+# Task to merge Kraken2 TSV outputs
 task MergeTSVTask {
     input {
         Array[File] input_files
@@ -184,6 +238,7 @@ task MergeTSVTask {
     }
 }
 
+# Task to generate BIOM file from Kraken2 reports
 task kraken_biom {
     input {
         Array[File] input_files
@@ -205,6 +260,7 @@ task kraken_biom {
     }
 }
 
+# Task to generate Krona visualizations
 task krona {
     input {
         File input_file
@@ -228,6 +284,7 @@ task krona {
     }
 }
 
+# Task to convert Kraken2 TSV to QIIME2 compatible format
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -247,6 +304,7 @@ task ConvertKraken2Tsv {
     }
 }
 
+# QIIME2 tasks for further analysis
 task ImportFeatureTable {
     input {
         File input_biom
@@ -446,7 +504,7 @@ task AddPseudocount {
     command {
         qiime composition add-pseudocount \
             --i-table ${input_table} \
-            --o-composition-table comp-table.qza
+            --o-co
     }
 
     output {
