@@ -90,6 +90,11 @@ workflow Qiime2Analysis {
         File shannon_diversity = ExportAlphaDiversity.exported_diversity  # Shannon多样性指数
         File emperor_plot = VisualizeEmperor.emperor_visualization        # Emperor可视化图
         File ancom_results = PerformANCOM.ancom_results                   # ANCOM分析结果
+        File filtered_table = FilterRareFeatures.filtered_table           # 过滤后的特征表
+        File rarefied_table = RarefyTable.rarefied_table                  # 稀释后的特征表
+        File distance_matrix = CalculateBetaDiversity.distance_matrix     # Beta多样性距离矩阵
+        File pcoa = PerformPCoA.pcoa                                      # PCoA结果
+        File comp_table = AddPseudocount.comp_table                       # 添加伪计数后的特征表
     }
 }
 
