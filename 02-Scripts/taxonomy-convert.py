@@ -22,10 +22,10 @@ data.columns = ['rank_code', 'sequence_id', 'name', 'score', 'taxonomy']
 data = data[data['rank_code'] != 'U']
 
 # 生成完整的taxonomy字符串
-data['taxonomy'] = data.apply(lambda row: row['name'].replace(' ', '; '), axis=1)
+data['taxonomy'] = data.apply(lambda row: row['name'].replace(' ', ';'), axis=1)
 
 # 提取特征ID和分类路径
 taxonomy_df = data[['sequence_id', 'taxonomy']]
 
-# 保存为无表头的TSV文件
-taxonomy_df.to_csv(taxonomy_file, sep='\t', index=False, header=False)
+# 保存为TSV文件，并添加表头
+taxonomy_df.to_csv(taxonomy_file, sep='\t', index=False, header=['Feature ID', 'Taxonomy'])

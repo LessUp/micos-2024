@@ -11,7 +11,7 @@ services:
         "tools",
         "import",
         "--input-path",
-        "/ResultData/merged_taxonomy.tsv",
+        "/ResultData/merged_taxonomy_convert.tsv",
         "--type",
         "FeatureData[Taxonomy]",
         "--input-format",
