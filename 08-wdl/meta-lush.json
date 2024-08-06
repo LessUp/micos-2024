@@ -1,0 +1,37 @@
+{
+  "combined_metagenomic_workflow.input_files_r1": [
+    "/data/lush-dev/shijiashuai/workspace/DataCastle/meta-2/data/RAW_ILLUMINA/copy/m11213.NextSeq.R1.fastq.gz",
+    "/data/lush-dev/shijiashuai/workspace/DataCastle/meta-2/data/RAW_ILLUMINA/copy/m11216.NextSeq.R1.fastq.gz"
+  ],
+  "combined_metagenomic_workflow.input_files_r2": [
+    "/data/lush-dev/shijiashuai/workspace/DataCastle/meta-2/data/RAW_ILLUMINA/copy/m11213.NextSeq.R2.fastq.gz",
+    "/data/lush-dev/shijiashuai/workspace/DataCastle/meta-2/data/RAW_ILLUMINA/copy/m11216.NextSeq.R2.fastq.gz"
+  ],
+  "combined_metagenomic_workflow.kneaddata_db": "/data1/lush-dev/shijiashuai/meta/kneaddata",
+  "combined_metagenomic_workflow.kneaddata_threads": 16,
+  "combined_metagenomic_workflow.kraken2_db": "/data1/lush-dev/shijiashuai/meta/kraken2_db",
+  "combined_metagenomic_workflow.kraken_threads": 16,
+  "combined_metagenomic_workflow.confidence": 0.1,
+  "combined_metagenomic_workflow.min_base_quality": 20,
+  "combined_metagenomic_workflow.min_hit_groups": 2,
+  "combined_metagenomic_workflow.output_tsv_names": [
+    "m11213.kraken.tsv",
+    "m11216.kraken.tsv"
+  ],
+  "combined_metagenomic_workflow.report_txt_names": [
+    "m11213.kraken_report",
+    "m11216.kraken_report"
+  ],
+  "combined_metagenomic_workflow.biom_output_filename": "combined_output.biom",
+  "combined_metagenomic_workflow.krona_output_html_names": [
+    "m11213.kraken_report.html",
+    "m11216.kraken_report.html"
+  ],
+  "combined_metagenomic_workflow.qiime2_metagenome_biom": "/media/shuai/TOSHBA/mm-dev/ResultData/metagenomeV210.biom",
+  "combined_metagenomic_workflow.qiime2_merged_taxonomy_tsv": "/media/shuai/TOSHBA/mm-dev/ResultData/merged_taxonomy.tsv",
+  "combined_metagenomic_workflow.qiime2_sample_metadata": "/data/lush-dev/shijiashuai/workspace/DataCastle/mm-dev/mm-dev/01-data/sample_metadata.tsv",
+  "combined_metagenomic_workflow.taxonomy_convert_script": "/data/lush-dev/shijiashuai/workspace/DataCastle/mm-dev/mm-dev/02-scripts/taxonomy-convert.py",
+  "combined_metagenomic_workflow.qiime2_min_frequency": 10,
+  "combined_metagenomic_workflow.qiime2_min_samples": 2,
+  "combined_metagenomic_workflow.qiime2_sampling_depth": 10
+}
