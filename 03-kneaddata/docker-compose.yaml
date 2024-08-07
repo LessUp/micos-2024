@@ -8,11 +8,14 @@ services:
     command:
       [
         "kneaddata",
-        "-i", "/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
-        "-i", "/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
+        "-i", "/RawData/data_meta/grubii/SRR836724_1.fastq",
+        "-i", "/RawData/data_meta/grubii/SRR836724_2.fastq",
         "-db", "/ManualData/kneaddata",
         "--output", "/ResultData/kneaddata",
-        "-t", "16"
+        "-t", "16",
+        # "--run-fastqc-start", 
+        "--bypass-trim", "--bypass-trf",
+        "--remove-intermediate-output"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
