@@ -1,0 +1,28 @@
+services:
+  fastqc:
+    image: biocontainers/fastqc:v0.11.9_cv8
+    container_name: fastqc
+    # tty: true
+    # stdin_open: true
+    command:
+      [
+        "fastqc",
+        "/RawData/data_meta/grubii/SRR836724_1.fastq",
+        "/RawData/data_meta/grubii/SRR836724_2.fastq"
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    working_dir: /
+    user: "1000:1000" # 使用主机用户的 UID 和 GID
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
