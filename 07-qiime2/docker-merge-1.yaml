@@ -89,6 +89,21 @@ services:
         "/ResultData/rarefied-table.qza"
       ]
 
+  qiime2_alpha_diversity:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "diversity",
+        "alpha",
+        "--i-table",
+        "/ResultData/rarefied-table.qza",
+        "--p-metric",
+        "shannon",
+        "--o-alpha-diversity",
+        "/ResultData/shannon.qza"
+      ]
+
 volumes:
   RawData:
     driver: local
