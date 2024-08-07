@@ -10,6 +10,7 @@ x-qiime2-service: &qiime2-service
     - /tmp:/tmp
   user: "1000:1000"
   container_name: qiime2
+
 services:
   qiime2_import_feature:
     <<: *qiime2-service
@@ -43,6 +44,21 @@ services:
         "HeaderlessTSVTaxonomyFormat",
         "--output-path",
         "/ResultData/taxonomy.qza"
+      ]
+
+  qiime2_filter_features:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "feature-table",
+        "filter-features",
+        "--i-table",
+        "/ResultData/feature-table.qza",
+        "--p-min-frequency",
+        "10",
+        "--o-filtered-table",
+        "/ResultData/filtered-table.qza"
       ]
 
 volumes:
