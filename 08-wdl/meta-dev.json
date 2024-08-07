@@ -1,11 +1,11 @@
 {
   "combined_metagenomic_workflow.input_files_r1": [
-    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R1.fastq.gz",
-    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R1.fastq.gz"
+    "/media/shuai/TOSHBA/mm-dev/RawData/data/m11213.NextSeq.R1.fastq.gz",
+    "/media/shuai/TOSHBA/mm-dev/RawData/data/m11216.NextSeq.R1.fastq.gz"
   ],
   "combined_metagenomic_workflow.input_files_r2": [
-    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11213.NextSeq.R2.fastq.gz",
-    "/media/shuai/TOSHBA/mm-dev/RawData/sub_test/m11216.NextSeq.R2.fastq.gz"
+    "/media/shuai/TOSHBA/mm-dev/RawData/data/m11213.NextSeq.R2.fastq.gz",
+    "/media/shuai/TOSHBA/mm-dev/RawData/data/m11216.NextSeq.R2.fastq.gz"
   ],
   "combined_metagenomic_workflow.kneaddata_db": "/media/shuai/TOSHBA/mm-dev/ManualData/kneaddata",
   "combined_metagenomic_workflow.kneaddata_threads": 16,

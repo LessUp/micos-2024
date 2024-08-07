@@ -229,7 +229,7 @@ task MergeTSVTask {
     }
 
     runtime {
-        docker: "ubuntu:latest"
+        docker: "alpine:3"
         cpu: 1
         memory: "1 GB"
     }
