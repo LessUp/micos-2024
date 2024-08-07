@@ -104,6 +104,19 @@ services:
         "/ResultData/shannon.qza"
       ]
 
+  qiime2_export_results:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "tools",
+        "export",
+        "--input-path",
+        "/ResultData/shannon.qza",
+        "--output-path",
+        "/ResultData/shannon"
+      ]
+
 volumes:
   RawData:
     driver: local
