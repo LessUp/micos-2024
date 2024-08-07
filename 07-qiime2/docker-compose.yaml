@@ -12,6 +12,7 @@ x-qiime2-service: &qiime2-service
   container_name: qiime2
 
 services:
+  # 导入特征表
   qiime2_import_feature:
     <<: *qiime2-service
     command:
@@ -29,6 +30,7 @@ services:
         "/ResultData/feature-table.qza",
       ]
 
+  # 导入分类表
   qiime2_import_taxonomy:
     <<: *qiime2-service
     command:
@@ -46,6 +48,7 @@ services:
         "/ResultData/taxonomy.qza"
       ]
 
+  # 过滤特征表
   qiime2_filter_features:
     <<: *qiime2-service
     command:
@@ -61,6 +64,7 @@ services:
         "/ResultData/filtered-table.qza"
       ]
 
+  # 最终过滤特征表
   qiime2_final_filter:
     <<: *qiime2-service
     command:
@@ -76,6 +80,7 @@ services:
         "/ResultData/final-table.qza"
       ]
 
+  # 稀释特征表
   qiime2_rarefy:
     <<: *qiime2-service
     command:
@@ -91,6 +96,7 @@ services:
         "/ResultData/rarefied-table.qza"
       ]
 
+  # 计算Alpha多样性
   qiime2_alpha_diversity:
     <<: *qiime2-service
     command:
@@ -106,6 +112,7 @@ services:
         "/ResultData/shannon.qza"
       ]
 
+  # 导出结果
   qiime2_export_results:
     <<: *qiime2-service
     command:
@@ -119,6 +126,7 @@ services:
         "/ResultData/shannon"
       ]
 
+  # 计算Beta多样性
   qiime2_beta_diversity:
     <<: *qiime2-service
     command:
@@ -134,6 +142,7 @@ services:
         "/ResultData/braycurtis.qza"
       ]
 
+  # 进行主坐标分析（PCoA）
   qiime2_pcoa:
     <<: *qiime2-service
     command:
@@ -147,6 +156,7 @@ services:
         "/ResultData/pcoa.qza",
       ]
 
+  # 生成Emperor可视化图
   qiime2_emperor_plot:
     <<: *qiime2-service
     command:
@@ -162,6 +172,7 @@ services:
         "/ResultData/braycurtis-emperor.qzv"
       ]
 
+  # 添加伪计数
   qiime2_add_pseudocount:
     <<: *qiime2-service
     command:
@@ -175,6 +186,7 @@ services:
         "/ResultData/comp-table.qza"
       ]
 
+  # 进行ANCOM分析
   qiime2_ancom:
     <<: *qiime2-service
     command:
