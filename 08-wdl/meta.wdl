@@ -175,6 +175,8 @@ task KneadDataTask {
 
     runtime {
         docker: "biobakery/kneaddata:0.10.0"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -211,6 +213,8 @@ task Kraken2Task {
 
     runtime {
         docker: "shuai/kraken2:2.1.3"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -248,8 +252,8 @@ task kraken_biom {
 
     runtime {
         docker: "shuai/kraken-biom:1.0.0"
-        memory: "4 GB"
-        cpu: 1
+        cpu: 16
+        memory: "32 GB"
     }
 
     output {
@@ -272,8 +276,8 @@ task krona {
 
     runtime {
         docker: "shuai/krona:2.8.1"
-        cpu: 1
-        memory: "4 GB"
+        cpu: 16
+        memory: "32 GB"
     }
 
     output {
@@ -298,6 +302,8 @@ task ConvertKraken2Tsv {
 
     runtime {
         docker: "amancevice/pandas:1.1.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -320,6 +326,8 @@ task ImportFeatureTable {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -342,6 +350,8 @@ task ImportTaxonomy {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -364,6 +374,8 @@ task FilterLowAbundanceFeatures {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -386,6 +398,8 @@ task FilterRareFeatures {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -408,6 +422,8 @@ task RarefyTable {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -429,6 +445,8 @@ task CalculateAlphaDiversity {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -470,6 +488,8 @@ task CalculateBetaDiversity {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -490,6 +510,8 @@ task PerformPCoA {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -510,5 +532,7 @@ task AddPseudocount {
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
