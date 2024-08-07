@@ -17,7 +17,6 @@ workflow combined_metagenomic_workflow {
         Array[String] output_tsv_names
         Array[String] report_txt_names
         Array[String] krona_output_html_names
-        File qiime2_merged_taxonomy_tsv
         File qiime2_sample_metadata
         Int qiime2_min_frequency = 10
         Int qiime2_min_samples = 2
@@ -82,7 +81,7 @@ workflow combined_metagenomic_workflow {
 
     call ConvertKraken2Tsv {
         input:
-            qiime2_merged_taxonomy_tsv = qiime2_merged_taxonomy_tsv,
+            qiime2_merged_taxonomy_tsv = MergeTSVTask.merged_tsv,
             taxonomy_convert_script = taxonomy_convert_script
     }
 
