@@ -1,5 +1,5 @@
-services:
-  krona:
+qiime2:
+  qiime2:
     image: quay.io/qiime2/metagenome:2024.5
     container_name: qiime2
     # tty: true
