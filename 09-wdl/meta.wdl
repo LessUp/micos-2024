@@ -150,6 +150,7 @@ workflow combined_metagenomic_workflow {
 }
 
 # KneadData task to preprocess raw sequencing data
+
 task KneadDataTask {
     input {
         File input_file_r1
@@ -160,12 +161,12 @@ task KneadDataTask {
 
     command {
         kneaddata \
-            --input ${input_file_r1} \
-            --input ${input_file_r2} \
-            --reference-db ${kneaddata_db} \
-            --output kneaddata_out \
-            --threads ${threads} \
-            --remove-intermediate-output
+        --input ${input_file_r1} \
+        --input ${input_file_r2} \
+        --reference-db ${kneaddata_db} \
+        --output kneaddata_out \
+        --threads ${threads} \
+        --remove-intermediate-output
     }
 
     output {
@@ -181,6 +182,7 @@ task KneadDataTask {
 }
 
 # Kraken2 task for taxonomic classification
+
 task Kraken2Task {
     input {
         File input_file_r1
@@ -196,14 +198,14 @@ task Kraken2Task {
 
     command {
         kraken2 --db ${kraken2_db} \
-                --threads ${threads} \
-                --confidence ${confidence} \
-                --minimum-base-quality ${min_base_quality} \
-                --minimum-hit-groups ${min_hit_groups} \
-                --output ${output_tsv_name} \
-                --report ${report_txt_name} \
-                --paired ${input_file_r1} ${input_file_r2} \
-                --use-names --memory-mapping
+        --threads ${threads} \
+        --confidence ${confidence} \
+        --minimum-base-quality ${min_base_quality} \
+        --minimum-hit-groups ${min_hit_groups} \
+        --output ${output_tsv_name} \
+        --report ${report_txt_name} \
+        --paired ${input_file_r1} ${input_file_r2} \
+        --use-names --memory-mapping
     }
 
     output {
@@ -219,6 +221,7 @@ task Kraken2Task {
 }
 
 # Task to merge Kraken2 TSV outputs
+
 task MergeTSVTask {
     input {
         Array[File] input_files
@@ -240,6 +243,7 @@ task MergeTSVTask {
 }
 
 # Task to generate BIOM file from Kraken2 reports
+
 task kraken_biom {
     input {
         Array[File] input_files
@@ -262,6 +266,7 @@ task kraken_biom {
 }
 
 # Task to generate Krona visualizations
+
 task krona {
     input {
         File input_file
@@ -286,6 +291,7 @@ task krona {
 }
 
 # Task to convert Kraken2 TSV to QIIME2 compatible format
+
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -308,6 +314,7 @@ task ConvertKraken2Tsv {
 }
 
 # QIIME2 tasks for further analysis
+
 task ImportFeatureTable {
     input {
         File input_biom
@@ -315,9 +322,9 @@ task ImportFeatureTable {
 
     command {
         qiime tools import \
-            --type 'FeatureTable[Frequency]' \
-            --input-path ${input_biom} \
-            --output-path feature-table.qza
+        --type 'FeatureTable[Frequency]' \
+        --input-path ${input_biom} \
+        --output-path feature-table.qza
     }
 
     output {
@@ -338,10 +345,10 @@ task ImportTaxonomy {
 
     command {
         qiime tools import \
-            --type 'FeatureData[Taxonomy]' \
-            --input-format HeaderlessTSVTaxonomyFormat \
-            --input-path ${input_tsv} \
-            --output-path taxonomy.qza
+        --type 'FeatureData[Taxonomy]' \
+        --input-format HeaderlessTSVTaxonomyFormat \
+        --input-path ${input_tsv} \
+        --output-path taxonomy.qza
     }
 
     output {
@@ -363,9 +370,9 @@ task FilterLowAbundanceFeatures {
 
     command {
         qiime feature-table filter-features \
-            --i-table ${input_table} \
-            --p-min-frequency ${qiime2_min_frequency} \
-            --o-filtered-table filtered-table.qza
+        --i-table ${input_table} \
+        --p-min-frequency ${qiime2_min_frequency} \
+        --o-filtered-table filtered-table.qza
     }
 
     output {
@@ -387,9 +394,9 @@ task FilterRareFeatures {
 
     command {
         qiime feature-table filter-features \
-            --i-table ${input_table} \
-            --p-min-samples ${qiime2_min_samples} \
-            --o-filtered-table filtered-table.qza
+        --i-table ${input_table} \
+        --p-min-samples ${qiime2_min_samples} \
+        --o-filtered-table filtered-table.qza
     }
 
     output {
@@ -411,9 +418,9 @@ task RarefyTable {
 
     command {
         qiime feature-table rarefy \
-            --i-table ${input_table} \
-            --p-sampling-depth ${qiime2_sampling_depth} \
-            --o-rarefied-table rarefied-table.qza
+        --i-table ${input_table} \
+        --p-sampling-depth ${qiime2_sampling_depth} \
+        --o-rarefied-table rarefied-table.qza
     }
 
     output {
@@ -434,9 +441,9 @@ task CalculateAlphaDiversity {
 
     command {
         qiime diversity alpha \
-            --i-table ${input_table} \
-            --p-metric shannon \
-            --o-alpha-diversity alpha-diversity.qza
+        --i-table ${input_table} \
+        --p-metric shannon \
+        --o-alpha-diversity alpha-diversity.qza
     }
 
     output {
@@ -457,8 +464,8 @@ task ExportAlphaDiversity {
 
     command {
         qiime tools export \
-            --input-path ${input_qza} \
-            --output-path exported-diversity
+        --input-path ${input_qza} \
+        --output-path exported-diversity
     }
 
     output {
@@ -477,9 +484,9 @@ task CalculateBetaDiversity {
 
     command {
         qiime diversity beta \
-            --i-table ${input_table} \
-            --p-metric braycurtis \
-            --o-distance-matrix distance-matrix.qza
+        --i-table ${input_table} \
+        --p-metric braycurtis \
+        --o-distance-matrix distance-matrix.qza
     }
 
     output {
@@ -500,8 +507,8 @@ task PerformPCoA {
 
     command {
         qiime diversity pcoa \
-            --i-distance-matrix ${distance_matrix} \
-            --o-pcoa pcoa.qza
+        --i-distance-matrix ${distance_matrix} \
+        --o-pcoa pcoa.qza
     }
 
     output {
@@ -522,8 +529,8 @@ task AddPseudocount {
 
     command {
         qiime composition add-pseudocount \
-            --i-table ${input_table} \
-            --o-composition-table comp-table.qza
+        --i-table ${input_table} \
+        --o-composition-table comp-table.qza
     }
 
     output {
