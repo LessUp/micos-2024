@@ -117,6 +117,49 @@ services:
         "/ResultData/shannon"
       ]
 
+  qiime2_beta_diversity:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "diversity",
+        "beta",
+        "--i-table",
+        "/ResultData/rarefied-table.qza",
+        "--p-metric",
+        "braycurtis",
+        "--o-distance-matrix",
+        "/ResultData/braycurtis.qza"
+      ]
+
+  qiime2_pcoa:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "diversity",
+        "pcoa",
+        "--i-distance-matrix",
+        "/ResultData/braycurtis.qza",
+        "--o-pcoa",
+        "/ResultData/pcoa.qza",
+      ]
+
+  qiime2_emperor_plot:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "emperor",
+        "plot",
+        "--i-pcoa",
+        "/ResultData/pcoa.qza",
+        "--m-metadata-file",
+        "/ResultData/sample_metadata.tsv",
+        "--o-visualization",
+        "/ResultData/braycurtis-emperor.qzv"
+      ]
+
 volumes:
   RawData:
     driver: local
