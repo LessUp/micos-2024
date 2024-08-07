@@ -1,3 +1,5 @@
+version: '3.8'
+
 x-qiime2-service: &qiime2-service
   image: quay.io/qiime2/metagenome:2024.5
   volumes:
