@@ -160,6 +160,36 @@ services:
         "/ResultData/braycurtis-emperor.qzv"
       ]
 
+  qiime2_add_pseudocount:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "composition",
+        "add-pseudocount",
+        "--i-table",
+        "/ResultData/final-table.qza",
+        "--o-composition-table",
+        "/ResultData/comp-table.qza"
+      ]
+
+  qiime2_ancom:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "composition",
+        "ancom",
+        "--i-table",
+        "/ResultData/comp-table.qza",
+        "--m-metadata-file",
+        "/ResultData/sample_metadata.tsv",
+        "--m-metadata-column",
+        "treatment",
+        "--o-visualization",
+        "/ResultData/ancom-treatments.qzv"
+      ]
+
 volumes:
   RawData:
     driver: local
