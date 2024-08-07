@@ -1,6 +1,9 @@
 services:
   kraken2:
-    image: biobakery/kneaddata:0.10.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shuai/kneaddata:0.12.0
     container_name: kneaddata-1
     # tty: true
     # stdin_open: true
@@ -8,14 +11,14 @@ services:
     command:
       [
         "kneaddata",
-        "-i", "/RawData/test/SRR12345678_1.fastq",
-        "-i", "/RawData/test/SRR12345678_2.fastq",
-        # "-db", "/ManualData/kneaddata",
+        "-i1", "/RawData/test/SRR12345678_1.fastq",
+        "-i2", "/RawData/test/SRR12345678_2.fastq",
+        "-db", "/ManualData/kneaddata",
         "--output", "/ResultData/kneaddata",
         "-t", "16",
         # "--run-fastqc-start", 
-        "--bypass-trim", "--bypass-trf",
-        "--remove-intermediate-output"
+        # "--bypass-trim", "--bypass-trf",
+        # "--remove-intermediate-output"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
@@ -24,6 +27,9 @@ services:
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
     working_dir: /
     user: "1000:1000"
+    environment:
+      # - KNEADDATA_DB_HUMAN_GENOME=/ManualData/kneaddata/bowtie2
+      # - KNEADDATA_DB_RIBOSOMAL_RNA=/data/reference_db/ribosomal_RNA
 volumes:
   RawData:
     driver: local
