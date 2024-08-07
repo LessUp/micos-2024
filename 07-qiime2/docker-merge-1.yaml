@@ -1,4 +1,5 @@
-image: quay.io/qiime2/metagenome:2024.5
+x-qiime2-service: &qiime2-service
+  image: quay.io/qiime2/metagenome:2024.5
   volumes:
     - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
     - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
