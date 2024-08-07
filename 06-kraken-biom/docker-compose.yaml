@@ -22,7 +22,7 @@ services:
       - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
       - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
-    user: "1000:1000" # 使用主机用户的 UID 和 GID
+    user: "1000:1000"
     environment:
       - COMPOSE_PARALLEL_LIMIT=16
 volumes:
