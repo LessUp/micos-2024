@@ -7,8 +7,8 @@ services:
     command:
       [
         "fastqc",
-        "/RawData/data_meta/grubii/SRR836724_1.fastq",
-        "/RawData/data_meta/grubii/SRR836724_2.fastq"
+        "/RawData/test/SRR12345678_1.fastq",
+        "/RawData/test/SRR12345678_2.fastq"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData

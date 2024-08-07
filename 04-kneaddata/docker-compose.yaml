@@ -1,16 +1,16 @@
 services:
   kraken2:
     image: biobakery/kneaddata:0.10.0
-    container_name: kneaddata
+    container_name: kneaddata-1
     # tty: true
     # stdin_open: true
     # command: [ "bash" ]
     command:
       [
         "kneaddata",
-        "-i", "/RawData/data_meta/grubii/SRR836724_1.fastq",
-        "-i", "/RawData/data_meta/grubii/SRR836724_2.fastq",
-        "-db", "/ManualData/kneaddata",
+        "-i", "/RawData/test/SRR12345678_1.fastq",
+        "-i", "/RawData/test/SRR12345678_2.fastq",
+        # "-db", "/ManualData/kneaddata",
         "--output", "/ResultData/kneaddata",
         "-t", "16",
         # "--run-fastqc-start", 
@@ -24,8 +24,6 @@ services:
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
     working_dir: /
     user: "1000:1000"
-    environment:
-      - COMPOSE_PARALLEL_LIMIT=16
 volumes:
   RawData:
     driver: local

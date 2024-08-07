@@ -1,0 +1,6 @@
+{
+    "fastqc_workflow.fastq_files": [
+        "/media/shuai/TOSHBA/mm-dev/RawData/test/SRR12345678_1.fastq",
+        "/media/shuai/TOSHBA/mm-dev/RawData/test/SRR12345678_2.fastq"
+    ]
+}
