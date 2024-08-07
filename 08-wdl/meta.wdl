@@ -16,9 +16,7 @@ workflow combined_metagenomic_workflow {
         Int min_hit_groups
         Array[String] output_tsv_names
         Array[String] report_txt_names
-        String biom_output_filename
         Array[String] krona_output_html_names
-        File qiime2_metagenome_biom
         File qiime2_merged_taxonomy_tsv
         File qiime2_sample_metadata
         Int qiime2_min_frequency = 10
@@ -64,7 +62,7 @@ workflow combined_metagenomic_workflow {
     call kraken_biom {
         input:
             input_files = Kraken2Task.report_txt_file,
-            output_filename = biom_output_filename
+            output_filename = "kraken_biom_output.biom"
     }
 
     # Step 5: Generate Krona visualizations
@@ -79,7 +77,7 @@ workflow combined_metagenomic_workflow {
     # Step 6: QIIME2 analysis
     call ImportFeatureTable {
         input:
-            input_biom = qiime2_metagenome_biom
+            input_biom = kraken_biom.output_biom
     }
 
     call ConvertKraken2Tsv {
@@ -504,7 +502,7 @@ task AddPseudocount {
     command {
         qiime composition add-pseudocount \
             --i-table ${input_table} \
-            --o-co
+            --o-composition-table comp-table.qza
     }
 
     output {

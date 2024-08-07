@@ -22,12 +22,10 @@
     "m11213.kraken_report",
     "m11216.kraken_report"
   ],
-  "combined_metagenomic_workflow.biom_output_filename": "combined_output.biom",
   "combined_metagenomic_workflow.krona_output_html_names": [
     "m11213.kraken_report.html",
     "m11216.kraken_report.html"
   ],
-  "combined_metagenomic_workflow.qiime2_metagenome_biom": "/media/shuai/TOSHBA/mm-dev/ResultData/metagenomeV210.biom",
   "combined_metagenomic_workflow.qiime2_merged_taxonomy_tsv": "/media/shuai/TOSHBA/mm-dev/ResultData/merged_taxonomy.tsv",
   "combined_metagenomic_workflow.qiime2_sample_metadata": "/data/lush-dev/shijiashuai/workspace/DataCastle/mm-dev/mm-dev/01-data/sample_metadata.tsv",
   "combined_metagenomic_workflow.taxonomy_convert_script": "/data/lush-dev/shijiashuai/workspace/DataCastle/mm-dev/mm-dev/02-scripts/taxonomy-convert.py",
