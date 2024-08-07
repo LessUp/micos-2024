@@ -1,0 +1,58 @@
+version: '3.8'
+
+x-qiime2-service: &qiime2-service
+  image: quay.io/qiime2/metagenome:2024.5
+  volumes:
+    - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+    - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+    - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+    - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    - /tmp:/tmp
+  user: "1000:1000"
+  container_name: qiime2
+services:
+  qiime2_import_feature:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "tools",
+        "import",
+        "--input-path",
+        "/ResultData/metagenome_v210.biom",
+        "--type",
+        "FeatureTable[Frequency]",
+        "--input-format",
+        "BIOMV210Format",
+        "--output-path",
+        "/ResultData/feature-table.qza",
+      ]
+
+  qiime2_import_taxonomy:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "tools",
+        "import",
+        "--input-path",
+        "/ResultData/merged_taxonomy.tsv",
+        "--type",
+        "FeatureData[Taxonomy]",
+        "--input-format",
+        "HeaderlessTSVTaxonomyFormat",
+        "--output-path",
+        "/ResultData/taxonomy.qza"
+      ]
+
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
+  tmp:
+    driver: local
