@@ -1,5 +1,4 @@
-x-qiime2-service: &qiime2-service
-  image: quay.io/qiime2/metagenome:2024.5
+image: quay.io/qiime2/metagenome:2024.5
   volumes:
     - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
     - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
@@ -72,6 +71,21 @@ services:
         "2",
         "--o-filtered-table",
         "/ResultData/final-table.qza"
+      ]
+
+  qiime2_rarefy:
+    <<: *qiime2-service
+    command:
+      [
+        "qiime",
+        "feature-table",
+        "rarefy",
+        "--i-table",
+        "/ResultData/final-table.qza",
+        "--p-sampling-depth",
+        "10",
+        "--o-rarefied-table",
+        "/ResultData/rarefied-table.qza"
       ]
 
 volumes:
