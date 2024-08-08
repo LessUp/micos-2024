@@ -1,3 +1,2 @@
-sampleid	Run	RunID	Assembly	treatment
-m11213	NextSeq	ERR4998591	upland	control
-m11216	NextSeq	ERR4998592	upland	experiment
+sample_name	collection_date	location	bioproject
+SRR12345678	2015-03-14	Soil Microbiome	PRJNA292362
