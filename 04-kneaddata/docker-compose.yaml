@@ -18,7 +18,7 @@ services:
         "-t", "16",
         # "--run-fastqc-start", 
         # "--bypass-trim", "--bypass-trf",
-        # "--remove-intermediate-output"
+        "--remove-intermediate-output"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
@@ -27,6 +27,7 @@ services:
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
     working_dir: /
     user: "1000:1000"
+    restart: no  
     # environment:
       # - COMPOSE_PARALLEL_LIMIT=16
       # - KNEADDATA_DB_HUMAN_GENOME=/ManualData/kneaddata/bowtie2

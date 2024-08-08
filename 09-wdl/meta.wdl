@@ -18,7 +18,7 @@ workflow combined_metagenomic_workflow {
         Array[String] report_txt_names
         Array[String] krona_output_html_names
         File qiime2_sample_metadata
-        Int qiime2_min_frequency = 10
+        Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 2
         Int qiime2_sampling_depth = 10
         File taxonomy_convert_script
@@ -237,7 +237,7 @@ task MergeTSVTask {
     }
 
     runtime {
-        docker: "alpine:3"
+        docker: "ubuntu:20.04"
         cpu: 1
         memory: "1 GB"
     }

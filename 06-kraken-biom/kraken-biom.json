@@ -1,7 +1,6 @@
 {
   "kraken_biom_workflow.input_files": [
-    "/media/shuai/TOSHBA/mm-dev/ResultData/m11213.report.txt",
-    "/media/shuai/TOSHBA/mm-dev/ResultData/m11216.report.txt"
+    "/media/shuai/TOSHBA/mm-dev/ResultData/SRR12345678.report.txt"
   ],
-  "kraken_biom_workflow.output_filename": "metagenomeV210.biom"
+  "kraken_biom_workflow.output_filename": "SRR12345678.biom"
 }

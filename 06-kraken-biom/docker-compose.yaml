@@ -10,12 +10,11 @@ services:
     command:
       [
         "kraken-biom",
-        "/ResultData/m11213.report.txt",
-        "/ResultData/m11216.report.txt",
+        "/ResultData/SRR12345678.report.txt",
         "--fmt",
         "hdf5",
         "-o",
-        "/ResultData/metagenomeV210.biom"
+        "/ResultData/SRR12345678.biom"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
@@ -25,6 +24,7 @@ services:
     user: "1000:1000"
     environment:
       - COMPOSE_PARALLEL_LIMIT=16
+    restart: no  
 volumes:
   RawData:
     driver: local

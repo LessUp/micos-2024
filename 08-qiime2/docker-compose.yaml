@@ -1,5 +1,3 @@
-version: '3.8'
-
 x-qiime2-service: &qiime2-service
   image: quay.io/qiime2/metagenome:2024.5
   volumes:
@@ -9,19 +7,20 @@ x-qiime2-service: &qiime2-service
     - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
     - /tmp:/tmp
   user: "1000:1000"
-  container_name: qiime2
+  restart: no  
 
 services:
   # 导入特征表
   qiime2_import_feature:
     <<: *qiime2-service
+    container_name: qiime2_import_feature
     command:
       [
         "qiime",
         "tools",
         "import",
         "--input-path",
-        "/ResultData/metagenome_v210.biom",
+        "/ResultData/SRR12345678.biom",
         "--type",
         "FeatureTable[Frequency]",
         "--input-format",
@@ -33,13 +32,14 @@ services:
   # 导入分类表
   qiime2_import_taxonomy:
     <<: *qiime2-service
+    container_name: qiime2_import_taxonomy
     command:
       [
         "qiime",
         "tools",
         "import",
         "--input-path",
-        "/ResultData/merged_taxonomy.tsv",
+        "/ResultData/merged_taxonomy_convert.tsv",
         "--type",
         "FeatureData[Taxonomy]",
         "--input-format",
@@ -51,6 +51,9 @@ services:
   # 过滤特征表
   qiime2_filter_features:
     <<: *qiime2-service
+    container_name: qiime2_filter_features
+    depends_on:
+      - qiime2_import_feature
     command:
       [
         "qiime",
@@ -59,7 +62,7 @@ services:
         "--i-table",
         "/ResultData/feature-table.qza",
         "--p-min-frequency",
-        "10",
+        "1",
         "--o-filtered-table",
         "/ResultData/filtered-table.qza"
       ]
@@ -67,6 +70,9 @@ services:
   # 最终过滤特征表
   qiime2_final_filter:
     <<: *qiime2-service
+    container_name: qiime2_final_filter
+    depends_on:
+      - qiime2_filter_features
     command:
       [
         "qiime",
@@ -75,37 +81,41 @@ services:
         "--i-table",
         "/ResultData/filtered-table.qza",
         "--p-min-samples",
-        "2",
+        "1",
         "--o-filtered-table",
         "/ResultData/final-table.qza"
       ]
 
   # 稀释特征表
-  qiime2_rarefy:
-    <<: *qiime2-service
-    command:
-      [
-        "qiime",
-        "feature-table",
-        "rarefy",
-        "--i-table",
-        "/ResultData/final-table.qza",
-        "--p-sampling-depth",
-        "10",
-        "--o-rarefied-table",
-        "/ResultData/rarefied-table.qza"
-      ]
+  # qiime2_rarefy:
+  #   <<: *qiime2-service
+  #   container_name: qiime2_rarefy
+  #   command:
+  #     [
+  #       "qiime",
+  #       "feature-table",
+  #       "rarefy",
+  #       "--i-table",
+  #       "/ResultData/final-table.qza",
+  #       "--p-sampling-depth",
+  #       "None",
+  #       "--o-rarefied-table",
+  #       "/ResultData/rarefied-table.qza"
+  #     ]
 
   # 计算Alpha多样性
   qiime2_alpha_diversity:
     <<: *qiime2-service
+    container_name: qiime2_alpha_diversity
+    depends_on:
+      - qiime2_final_filter
     command:
       [
         "qiime",
         "diversity",
         "alpha",
         "--i-table",
-        "/ResultData/rarefied-table.qza",
+        "/ResultData/final-table.qza",
         "--p-metric",
         "shannon",
         "--o-alpha-diversity",
@@ -115,6 +125,9 @@ services:
   # 导出结果
   qiime2_export_results:
     <<: *qiime2-service
+    container_name: qiime2_export_results
+    depends_on:
+      - qiime2_alpha_diversity
     command:
       [
         "qiime",
@@ -129,22 +142,45 @@ services:
   # 计算Beta多样性
   qiime2_beta_diversity:
     <<: *qiime2-service
+    container_name: qiime2_beta_diversity
+    depends_on:
+      - qiime2_final_filter
     command:
       [
         "qiime",
         "diversity",
         "beta",
         "--i-table",
-        "/ResultData/rarefied-table.qza",
+        "/ResultData/final-table.qza",
         "--p-metric",
         "braycurtis",
         "--o-distance-matrix",
         "/ResultData/braycurtis.qza"
       ]
 
+# 导出Beta多样性结果
+  qiime2_export_beta_diversity:
+    <<: *qiime2-service
+    container_name: qiime2_export_beta_diversity
+    depends_on:
+      - qiime2_beta_diversity
+    command:
+      [
+        "qiime",
+        "tools",
+        "export",
+        "--input-path",
+        "/ResultData/braycurtis.qza",
+        "--output-path",
+        "/ResultData/braycurtis"
+      ]
+
   # 进行主坐标分析（PCoA）
   qiime2_pcoa:
     <<: *qiime2-service
+    container_name: qiime2_pcoa
+    depends_on:
+      - qiime2_beta_diversity
     command:
       [
         "qiime",
@@ -157,24 +193,28 @@ services:
       ]
 
   # 生成Emperor可视化图
-  qiime2_emperor_plot:
-    <<: *qiime2-service
-    command:
-      [
-        "qiime",
-        "emperor",
-        "plot",
-        "--i-pcoa",
-        "/ResultData/pcoa.qza",
-        "--m-metadata-file",
-        "/ResultData/sample_metadata.tsv",
-        "--o-visualization",
-        "/ResultData/braycurtis-emperor.qzv"
-      ]
+  # qiime2_emperor_plot:
+  #   <<: *qiime2-service
+  #   container_name: qiime2_emperor_plot
+  #   command:
+  #     [
+  #       "qiime",
+  #       "emperor",
+  #       "plot",
+  #       "--i-pcoa",
+  #       "/ResultData/pcoa.qza",
+  #       "--m-metadata-file",
+  #       "/ResultData/sample_metadata.tsv",
+  #       "--o-visualization",
+  #       "/ResultData/braycurtis-emperor.qzv"
+  #     ]
 
   # 添加伪计数
   qiime2_add_pseudocount:
     <<: *qiime2-service
+    container_name: qiime2_add_pseudocount
+    depends_on:
+      - qiime2_final_filter
     command:
       [
         "qiime",
@@ -187,22 +227,23 @@ services:
       ]
 
   # 进行ANCOM分析
-  qiime2_ancom:
-    <<: *qiime2-service
-    command:
-      [
-        "qiime",
-        "composition",
-        "ancom",
-        "--i-table",
-        "/ResultData/comp-table.qza",
-        "--m-metadata-file",
-        "/ResultData/sample_metadata.tsv",
-        "--m-metadata-column",
-        "treatment",
-        "--o-visualization",
-        "/ResultData/ancom-treatments.qzv"
-      ]
+  # qiime2_ancom:
+  #   <<: *qiime2-service
+  #   container_name: qiime2_ancom
+  #   command:
+  #     [
+  #       "qiime",
+  #       "composition",
+  #       "ancom",
+  #       "--i-table",
+  #       "/ResultData/comp-table.qza",
+  #       "--m-metadata-file",
+  #       "/ResultData/sample_metadata.tsv",
+  #       "--m-metadata-column",
+  #       "bioproject",
+  #       "--o-visualization",
+  #       "/ResultData/ancom-treatments.qzv"
+  #     ]
 
 volumes:
   RawData:

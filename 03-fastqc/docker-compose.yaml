@@ -17,6 +17,7 @@ services:
       - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
     working_dir: /
     user: "1000:1000"
+    restart: no  
 volumes:
   RawData:
     driver: local

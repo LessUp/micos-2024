@@ -15,9 +15,9 @@ services:
         "--db",
         "/ManualData/kraken2_db/08gb",
         "--output",
-        "/ResultData/m11213.kraken.tsv",
+        "/ResultData/SRR12345678.kraken.tsv",
         "--report",
-        "/ResultData/m11213.report.txt",
+        "/ResultData/SRR12345678.report.txt",
         "--use-names",
         "--threads",
         "16",
@@ -35,8 +35,8 @@ services:
         # "--quick",
         # "--report-zero-counts",
         # "--gzip-compressed",
-        "/RawData/sub_test/sub_m11213.NextSeq.R1.fastq.gz",
-        "/RawData/sub_test/sub_m11213.NextSeq.R2.fastq.gz"
+        "/ResultData/kneaddata/SRR12345678_1_kneaddata_paired_1.fastq",
+        "/ResultData/kneaddata/SRR12345678_1_kneaddata_paired_2.fastq"
       ]
     volumes:
       - /media/shuai/TOSHBA/mm-dev/RawData:/RawData

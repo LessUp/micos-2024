@@ -23,7 +23,7 @@
   ],
   "combined_metagenomic_workflow.qiime2_sample_metadata": "/media/shuai/TOSHBA/mm-dev/ResultData/sample_metadata.tsv",
   "combined_metagenomic_workflow.taxonomy_convert_script": "/media/shuai/TOSHBA/mm-dev/ResultData/taxonomy_convert.py",
-  "combined_metagenomic_workflow.qiime2_min_frequency": 10,
-  "combined_metagenomic_workflow.qiime2_min_samples": 2,
-  "combined_metagenomic_workflow.qiime2_sampling_depth": 10
+  "combined_metagenomic_workflow.qiime2_min_frequency": 1,
+  "combined_metagenomic_workflow.qiime2_min_samples": 1,
+  "combined_metagenomic_workflow.qiime2_sampling_depth": 1000
 }
