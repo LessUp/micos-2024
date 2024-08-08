@@ -36,8 +36,8 @@ task kneaddata_task {
   command {
     mkdir -p output
     kneaddata \
-      -i ~{R1_fastq} \
-      -i ~{R2_fastq} \
+      -i1 ~{R1_fastq} \
+      -i2 ~{R2_fastq} \
       -db ~{kneaddata_db} \
       --output output \
       -t ~{threads}
@@ -48,7 +48,7 @@ task kneaddata_task {
   }
 
   runtime {
-    docker: "biobakery/kneaddata:0.10.0"
+    docker: "quay.io/kneaddata:0.12.0"
     cpu: threads
     memory: "16G"
   }
