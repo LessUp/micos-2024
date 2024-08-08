@@ -1,9 +1,9 @@
 {
-    "Qiime2Analysis.metagenome_biom": "/media/shuai/TOSHBA/mm-dev/ResultData/metagenomeV210.biom",
+    "Qiime2Analysis.metagenome_biom": "/media/shuai/TOSHBA/mm-dev/ResultData/SRR12345678.biom",
     "Qiime2Analysis.merged_taxonomy_tsv": "/media/shuai/TOSHBA/mm-dev/ResultData/merged_taxonomy.tsv",
     "Qiime2Analysis.sample_metadata": "/media/shuai/TOSHBA/mm-dev/ResultData/sample_metadata.tsv",
-    "Qiime2Analysis.taxonomy_convert_script": "/media/shuai/TOSHBA/mm-dev/ResultData/taxonomy_convert.py",
-    "Qiime2Analysis.min_frequency": 10,
-    "Qiime2Analysis.min_samples": 2,
-    "Qiime2Analysis.sampling_depth": 10
+    "Qiime2Analysis.taxonomy_convert_script": "/home/shuai/Workspace/ILC/mm-dev/02-scripts/convert-format-qiime2.py",
+    "Qiime2Analysis.min_frequency": 1,
+    "Qiime2Analysis.min_samples": 1,
+    "Qiime2Analysis.sampling_depth": 1000
   }

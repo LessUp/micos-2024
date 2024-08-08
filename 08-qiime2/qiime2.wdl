@@ -244,14 +244,14 @@ task RarefyTable {
     }
 
     command {
-        qiime feature-table rarefy \
-            --i-table ${input_table} \
-            --p-sampling-depth ${sampling_depth} \
-            --o-rarefied-table rarefied-table.qza
+        # qiime feature-table rarefy \
+        #     --i-table ${input_table} \
+        #     --p-sampling-depth ${sampling_depth} \
+        #     --o-rarefied-table rarefied-table.qza
     }
 
     output {
-        File rarefied_table = "rarefied-table.qza"
+        File rarefied_table = input_table
     }
 
     runtime {
