@@ -1,10 +1,13 @@
 services:
-  kraken2:
+  kneaddata:
     build:
+      args:
+        http_proxy: http://172.19.75.255:7897
+        https_proxy: http://172.19.75.255:7897
       context: .
       dockerfile: Dockerfile
     image: shuai/kneaddata:0.12.0
-    container_name: kneaddata-1
+    container_name: kneaddata-2
     # tty: true
     # stdin_open: true
     # command: [ "bash" ]
@@ -13,7 +16,7 @@ services:
         "kneaddata",
         "-i1", "/RawData/test/SRR12345678_1.fastq",
         "-i2", "/RawData/test/SRR12345678_2.fastq",
-        "-db", "/ManualData/kneaddata",
+        "-db", "/ManualData/kneaddata/bowtie2",
         "--output", "/ResultData/kneaddata",
         "-t", "16",
         # "--run-fastqc-start", 
@@ -28,6 +31,7 @@ services:
     working_dir: /
     user: "1000:1000"
     environment:
+      - COMPOSE_PARALLEL_LIMIT=16
       # - KNEADDATA_DB_HUMAN_GENOME=/ManualData/kneaddata/bowtie2
       # - KNEADDATA_DB_RIBOSOMAL_RNA=/data/reference_db/ribosomal_RNA
 volumes:
