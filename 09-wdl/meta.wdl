@@ -161,8 +161,8 @@ task KneadDataTask {
 
     command {
         kneaddata \
-        --input ${input_file_r1} \
-        --input ${input_file_r2} \
+        --input1 ${input_file_r1} \
+        --input2 ${input_file_r2} \
         --reference-db ${kneaddata_db} \
         --output kneaddata_out \
         --threads ${threads} \
@@ -170,16 +170,17 @@ task KneadDataTask {
     }
 
     output {
-        File output_paired_1 = "kneaddata_out/${basename(input_file_r1)}_paired_1.fastq"
-        File output_paired_2 = "kneaddata_out/${basename(input_file_r2)}_paired_2.fastq"
+        File output_paired_1 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_2.fastq"
     }
 
     runtime {
-        docker: "biobakery/kneaddata:0.10.0"
+        docker: "quay.io/kneaddata:0.12.0"
         cpu: 16
         memory: "32 GB"
     }
 }
+
 
 # Kraken2 task for taxonomic classification
 
