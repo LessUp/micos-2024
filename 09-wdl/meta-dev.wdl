@@ -175,7 +175,7 @@ task KneadDataTask {
     }
 
     runtime {
-        docker: "quay.io/kneaddata:0.12.0"
+        docker: "shuai/kneaddata:0.12.0.2"
         cpu: 16
         memory: "32 GB"
     }
