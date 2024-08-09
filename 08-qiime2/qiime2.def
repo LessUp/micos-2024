@@ -1,52 +1,8 @@
 Bootstrap: docker
-From: ubuntu:20.04
-
-%environment
-    export DEBIAN_FRONTEND=noninteractive
-    export LANG=en_US.UTF-8
-    export LANGUAGE=en_US:en
-    export LC_ALL=en_US.UTF-8
-    export PATH=/opt/conda/bin:$PATH
+From: quay.io/qiime2/metagenome:2024.5
 
 %post
-    # 设置环境变量
-    export DEBIAN_FRONTEND=noninteractive
-
-    # 安装必要的依赖
-    apt-get update && apt-get install -y \
-        wget \
-        bzip2 \
-        ca-certificates \
-        curl \
-        git \
-        libglib2.0-0 \
-        libxext6 \
-        libsm6 \
-        libxrender1 \
-        sudo \
-        locales \
-        && apt-get clean \
-        && rm -rf /var/lib/apt/lists/*
-
-    # 设置 locale
-    locale-gen en_US.UTF-8
-
-    # 安装 Miniconda
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-        bash /tmp/miniconda.sh -b -p /opt/conda && \
-        rm /tmp/miniconda.sh
-
-    # 创建并激活 QIIME2 环境
-    wget https://data.qiime2.org/distro/core/qiime2-2023.8-py38-linux-conda.yml -O /tmp/qiime2.yml && \
-        /opt/conda/bin/conda env create -n qiime2-2023.8 --file /tmp/qiime2.yml && \
-        rm /tmp/qiime2.yml
+    # 这里可以添加任何需要在构建时执行的命令
 
 %runscript
-    exec /opt/conda/bin/qiime "$@"
-
-%startscript
-    exec /opt/conda/bin/qiime "$@"
-
-%labels
-    Author ShiJiashuai
-    Version 2024.5
+    exec /bin/bash
