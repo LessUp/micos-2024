@@ -18,18 +18,25 @@ From: biocontainers/biocontainers:v1.2.0_cv2
     export https_proxy=${https_proxy}
 
 %post
-    apt-get clean all && \
+    # Update and install necessary packages
     apt-get update && \
     apt-get install -y apt-utils curl && \
+    
+    # Install Krona
     conda config --set ssl_verify no && \
     conda install -c bioconda krona=2.8.1 && \
+    
+    # Update Krona taxonomy database
     ktUpdateTaxonomy.sh && \
-    apt-get clean all && \
-    apt-get purge && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    
+    # Clean up to reduce image size
+    conda clean --all --yes && \
+    apt-get clean && \
+    apt-get autoremove --yes && \
+    rm -rf /var/lib/apt/lists/*
 
-    # 更新分类学数据库
-    ktUpdateTaxonomy.sh
+    # Create necessary directories that might have been removed
+    mkdir -p /tmp /var/tmp
 
 %runscript
     exec ktImportTaxonomy "$@"
