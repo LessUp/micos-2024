@@ -1,8 +1,0 @@
-Bootstrap: docker
-From:amancevice/pandas:1.1.5
-
-%post
-    # 这里可以添加任何你想在构建时运行的命令
-
-%runscript
-    exec /bin/bash

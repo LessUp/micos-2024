@@ -1,0 +1,10 @@
+Bootstrap: docker
+From: python:3.8
+
+%post
+    # 使用 pip 安装 pandas 版本 1.1.5
+    pip install pandas==1.1.5
+
+%runscript
+    # 运行您的应用程序
+    exec /bin/bash

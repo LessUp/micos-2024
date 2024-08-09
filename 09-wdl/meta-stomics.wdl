@@ -175,7 +175,7 @@ task KneadDataTask {
     }
 
     runtime {
-        docker: "shuai/kneaddata:0.12.0.2"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_61de51c7c6c94844b47e7ea1d7b8830e_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -215,7 +215,7 @@ task Kraken2Task {
     }
 
     runtime {
-        docker: "shuai/kraken2:2.1.3"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_6c85305847034eadb18c77824949bcc6_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -237,7 +237,7 @@ task MergeTSVTask {
     }
 
     runtime {
-        docker: "ubuntu:20.04"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_a185cfae5f194b339ad0cc511cc46eeb_private:latest"
         cpu: 1
         memory: "1 GB"
     }
@@ -256,7 +256,7 @@ task kraken_biom {
     }
 
     runtime {
-        docker: "shuai/kraken-biom:1.0.0"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_5adecffec5fc45f0980a2a9b7ba0b607_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -281,7 +281,7 @@ task krona {
     }
 
     runtime {
-        docker: "shuai/krona:2.8.1"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_209cb871c67c4cb3996ac80e426f45c6_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -308,7 +308,7 @@ task ConvertKraken2Tsv {
     }
 
     runtime {
-        docker: "amancevice/pandas:1.1.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_41343869128b4502a4801b3f5078e89e_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -333,7 +333,7 @@ task ImportFeatureTable {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -357,7 +357,7 @@ task ImportTaxonomy {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -381,7 +381,7 @@ task FilterLowAbundanceFeatures {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -405,7 +405,7 @@ task FilterRareFeatures {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -429,7 +429,7 @@ task RarefyTable {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -452,7 +452,7 @@ task CalculateAlphaDiversity {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -474,7 +474,7 @@ task ExportAlphaDiversity {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
     }
 }
 
@@ -495,7 +495,7 @@ task CalculateBetaDiversity {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -517,7 +517,7 @@ task PerformPCoA {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
@@ -539,7 +539,7 @@ task AddPseudocount {
     }
 
     runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
         cpu: 16
         memory: "32 GB"
     }
