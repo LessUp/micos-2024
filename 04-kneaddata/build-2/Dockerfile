@@ -46,6 +46,9 @@ RUN pip3 install --no-cache-dir kneaddata==0.12.0
 RUN mkdir -p /root/.kneaddata && \
     echo "[trimmomatic]\npath=${TRIMMOMATIC_JAR}" > /root/.kneaddata/kneaddata.cfg
 
+# 创建一个符号链接到 trimmomatic.jar
+RUN ln -s /usr/share/java/trimmomatic.jar /usr/local/bin/trimmomatic
+
 # 设置工作目录
 WORKDIR /data
 
