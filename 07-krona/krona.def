@@ -1,0 +1,35 @@
+Bootstrap: docker
+From: biocontainers/biocontainers:v1.2.0_cv2
+
+%labels
+    base_image "biocontainers:v1.2.0_cv2"
+    version "1"
+    software "krona"
+    software.version "2.8.1"
+    about.summary "Krona Tools is a set of scripts to create Krona charts from several Bioinformatics tools as well as from text and XML files."
+    about.home "https://github.com/marbl/Krona"
+    about.documentation "https://github.com/marbl/Krona/wiki"
+    about.license_file "https://github.com/marbl/Krona/blob/master/KronaTools/LICENSE.txt"
+    about.license "BSD"
+    about.tags "General"
+
+%environment
+    export http_proxy=${http_proxy}
+    export https_proxy=${https_proxy}
+
+%post
+    apt-get clean all && \
+    apt-get update && \
+    apt-get install -y apt-utils curl && \
+    conda config --set ssl_verify no && \
+    conda install -c bioconda krona=2.8.1 && \
+    ktUpdateTaxonomy.sh && \
+    apt-get clean all && \
+    apt-get purge && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+    # 更新分类学数据库
+    ktUpdateTaxonomy.sh
+
+%runscript
+    exec ktImportTaxonomy "$@"
