@@ -6,7 +6,7 @@ services:
         https_proxy: http://172.19.75.255:7897
       context: .
       dockerfile: Dockerfile
-    image: shuai/kneaddata:0.12.0.1
+    image: shuai/kneaddata:0.12.0.2
     container_name: kneaddata-2
     # tty: true
     # stdin_open: true
