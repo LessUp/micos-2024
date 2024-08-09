@@ -1,0 +1,22 @@
+Bootstrap: docker
+From: python:3.6.15-buster
+
+%post
+    # 设置工作目录
+    mkdir -p /
+
+    # 升级 pip 并安装 biom-format，克隆 kraken-biom 仓库，然后安装 kraken-biom
+    python -m pip install --upgrade pip && \
+    pip install --default-timeout=100 -i https://pypi.tuna.tsinghua.edu.cn/simple biom-format==2.1.10 && \
+    git clone https://github.com/smdabdoub/kraken-biom.git && \
+    cd kraken-biom && \
+    python setup.py install && \
+    cd .. && \
+    rm -rf kraken-biom
+
+%environment
+    # 设置环境变量
+    export PATH=/usr/local/bin:$PATH
+
+%runscript
+    exec kraken-biom "$@"
