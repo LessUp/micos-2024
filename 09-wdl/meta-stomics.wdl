@@ -1,4 +1,4 @@
-version development
+version 1.0
 
 workflow metagenomic_analysis_workflow {
     input {
@@ -161,25 +161,24 @@ task KneadDataTask {
         Int threads
     }
 
-    # 这一步是公共步骤，也可以单独提出来作为1个任务，只运行1次
-    command {
+    command <<<
         mkdir -p kneaddata_db
-        for db_file in ${sep=' ' kneaddata_db_files}; do
-            ln -s ${db_file} kneaddata_db/
+        for db_file in ~{sep=' ' kneaddata_db_files}; do
+            ln -sf ${db_file} kneaddata_db/
         done
 
         kneaddata \
-        --input1 ${input_file_r1} \
-        --input2 ${input_file_r2} \
-        --reference-db kneaddata_db  \
+        --input1 ~{input_file_r1} \
+        --input2 ~{input_file_r2} \
+        --reference-db kneaddata_db \
         --output kneaddata_out \
-        --threads ${threads} \
+        --threads ~{threads} \
         --remove-intermediate-output
-    }
+    >>>
 
     output {
-        File output_paired_1 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_1.fastq"
-        File output_paired_2 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_2.fastq"
+        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_2.fastq"
     }
 
     runtime {
@@ -191,7 +190,6 @@ task KneadDataTask {
 
 
 # Kraken2 task for taxonomic classification
-
 task Kraken2Task {
     input {
         File input_file_r1
@@ -205,23 +203,23 @@ task Kraken2Task {
         String report_txt_name
     }
 
-    command {
+
+    command <<<
         mkdir -p kraken2_db
-        for db_file in ${sep=' ' kraken2_db_files}; do
-            ln -s ${db_file} kraken2_db/
+        for db_file in ~{sep=' ' kraken2_db_files}; do
+            ln -sf ${db_file} kraken2_db/
         done
 
-
-        kraken2 --db ${kraken2_db} \
-        --threads ${threads} \
-        --confidence ${confidence} \
-        --minimum-base-quality ${min_base_quality} \
-        --minimum-hit-groups ${min_hit_groups} \
-        --output ${output_tsv_name} \
-        --report ${report_txt_name} \
-        --paired ${input_file_r1} ${input_file_r2} \
+        kraken2 --db kraken2_db \
+        --threads ~{threads} \
+        --confidence ~{confidence} \
+        --minimum-base-quality ~{min_base_quality} \
+        --minimum-hit-groups ~{min_hit_groups} \
+        --output ~{output_tsv_name} \
+        --report ~{report_txt_name} \
+        --paired ~{input_file_r1} ~{input_file_r2} \
         --use-names --memory-mapping
-    }
+    >>>
 
     output {
         File output_tsv_file = output_tsv_name
@@ -236,7 +234,6 @@ task Kraken2Task {
 }
 
 # Task to merge Kraken2 TSV outputs
-
 task MergeTSVTask {
     input {
         Array[File] input_files
@@ -258,7 +255,6 @@ task MergeTSVTask {
 }
 
 # Task to generate BIOM file from Kraken2 reports
-
 task kraken_biom {
     input {
         Array[File] input_files
@@ -281,7 +277,6 @@ task kraken_biom {
 }
 
 # Task to generate Krona visualizations
-
 task krona {
     input {
         File input_file
@@ -306,7 +301,6 @@ task krona {
 }
 
 # Task to convert Kraken2 TSV to QIIME2 compatible format
-
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -329,7 +323,6 @@ task ConvertKraken2Tsv {
 }
 
 # QIIME2 tasks for further analysis
-
 task ImportFeatureTable {
     input {
         File input_biom
