@@ -176,8 +176,8 @@ task KneadDataTask {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_61de51c7c6c94844b47e7ea1d7b8830e_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -216,8 +216,8 @@ task Kraken2Task {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_6c85305847034eadb18c77824949bcc6_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -257,8 +257,8 @@ task kraken_biom {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_5adecffec5fc45f0980a2a9b7ba0b607_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 
     output {
@@ -282,8 +282,8 @@ task krona {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_209cb871c67c4cb3996ac80e426f45c6_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 
     output {
@@ -309,8 +309,8 @@ task ConvertKraken2Tsv {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_41343869128b4502a4801b3f5078e89e_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -334,8 +334,8 @@ task ImportFeatureTable {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -358,8 +358,8 @@ task ImportTaxonomy {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -382,8 +382,8 @@ task FilterLowAbundanceFeatures {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -406,8 +406,8 @@ task FilterRareFeatures {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -430,8 +430,8 @@ task RarefyTable {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -453,8 +453,8 @@ task CalculateAlphaDiversity {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -496,8 +496,8 @@ task CalculateBetaDiversity {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -518,8 +518,8 @@ task PerformPCoA {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
 
@@ -540,7 +540,7 @@ task AddPseudocount {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
-        cpu: 16
-        memory: "32 GB"
+        cpu: 2
+        memory: "2 GB"
     }
 }
