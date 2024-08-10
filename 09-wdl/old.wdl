@@ -1,17 +1,15 @@
-version development 
+version development
 
 workflow metagenomic_analysis_workflow {
     input {
         # KneadData inputs
         Array[File] input_files_r1
         Array[File] input_files_r2
-        # Directory kneaddata_db
-        Array[File] kneaddata_db_files
+        Directory kneaddata_db
         Int kneaddata_threads
 
         # Kraken2 and downstream analysis inputs
-        # Directory kraken2_db
-        Array[File] kraken2_db_files
+        Directory kraken2_db
         Int kraken_threads
         Float confidence
         Int min_base_quality
@@ -32,7 +30,7 @@ workflow metagenomic_analysis_workflow {
             input:
                 input_file_r1 = input_files_r1[i],
                 input_file_r2 = input_files_r2[i],
-                kneaddata_db_files = kneaddata_db_files,
+                kneaddata_db = kneaddata_db,
                 threads = kneaddata_threads
         }
     }
@@ -43,7 +41,7 @@ workflow metagenomic_analysis_workflow {
             input:
                 input_file_r1 = KneadDataTask.output_paired_1[i],
                 input_file_r2 = KneadDataTask.output_paired_2[i],
-                kraken2_db_files = kraken2_db_files,
+                kraken2_db = kraken2_db,
                 threads = kraken_threads,
                 confidence = confidence,
                 min_base_quality = min_base_quality,
@@ -157,7 +155,7 @@ task KneadDataTask {
     input {
         File input_file_r1
         File input_file_r2
-        Array[File] kneaddata_db_files
+        Directory kneaddata_db
         Int threads
     }
 
@@ -166,21 +164,13 @@ task KneadDataTask {
 
         echo "Debug Info: input_file_r1 = ~{input_file_r1}" 1>&2
         echo "Debug Info: input_file_r2 = ~{input_file_r2}" 1>&2
-        echo "Debug Info: kneaddata_db_files = ~{sep=', ' kneaddata_db_files}" 1>&2
         echo "Debug Info: threads = ~{threads}" 1>&2
-
-        mkdir -p kneaddata_db
-        for db_file in ~{sep=' ' kneaddata_db_files}; do
-            echo "Debug Info: Linking db_file = ${db_file}" 1>&2
-            ln -sf ${db_file} kneaddata_db/
-        done
-
         echo "Debug Info: Finished linking db_files" 1>&2
 
         kneaddata \
         --input1 ~{input_file_r1} \
         --input2 ~{input_file_r2} \
-        --reference-db kneaddata_db \
+        --reference-db ~{kneaddata_db} \
         --output kneaddata_out \
         --threads ~{threads} \
         --remove-intermediate-output
@@ -189,15 +179,12 @@ task KneadDataTask {
 
         echo "Debug Info: Checking output directory contents" 1>&2
         ls -l kneaddata_out 1>&2
-
-
-        echo "Debug Info: Checking kneaddata_db directory contents" 1>&2
-        ls -l kneaddata_db 1>&2
     >>>
 
+
     output {
-        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_1.fastq"
-        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_2.fastq"
+        File output_paired_1 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_2.fastq"
     }
 
     runtime {
@@ -214,7 +201,7 @@ task Kraken2Task {
     input {
         File input_file_r1
         File input_file_r2
-        Array[File] kraken2_db_files
+        Directory kraken2_db
         Int threads
         Float confidence
         Int min_base_quality
@@ -223,14 +210,8 @@ task Kraken2Task {
         String report_txt_name
     }
 
-
     command <<<
-        mkdir -p kraken2_db
-        for db_file in ~{sep=' ' kraken2_db_files}; do
-            ln -sf ${db_file} kraken2_db/
-        done
-
-        kraken2 --db kraken2_db \
+        kraken2 --db ~{kraken2_db} \
         --threads ~{threads} \
         --confidence ~{confidence} \
         --minimum-base-quality ~{min_base_quality} \
@@ -425,12 +406,12 @@ task FilterRareFeatures {
         Int qiime2_min_samples
     }
 
-    command {
+    command <<<
         qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --p-min-samples ${qiime2_min_samples} \
+        --i-table ~{input_table} \
+        --p-min-samples ~{qiime2_min_samples} \
         --o-filtered-table filtered-table.qza
-    }
+    >>>
 
     output {
         File filtered_table = "filtered-table.qza"
