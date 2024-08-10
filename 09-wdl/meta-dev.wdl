@@ -1,6 +1,6 @@
 version development
 
-workflow combined_metagenomic_workflow {
+workflow metagenomic_analysis_workflow {
     input {
         # KneadData inputs
         Array[File] input_files_r1
