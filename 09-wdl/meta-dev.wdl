@@ -152,7 +152,6 @@ workflow metagenomic_analysis_workflow {
 }
 
 # KneadData task to preprocess raw sequencing data
-
 task KneadDataTask {
     input {
         File input_file_r1
@@ -162,20 +161,10 @@ task KneadDataTask {
     }
 
     command <<<
-        echo "Debug Info: Start of KneadDataTask" 1>&2
-
-        echo "Debug Info: input_file_r1 = ~{input_file_r1}" 1>&2
-        echo "Debug Info: input_file_r2 = ~{input_file_r2}" 1>&2
-        echo "Debug Info: kneaddata_db_files = ~{sep=', ' kneaddata_db_files}" 1>&2
-        echo "Debug Info: threads = ~{threads}" 1>&2
-
         mkdir -p kneaddata_db
         for db_file in ~{sep=' ' kneaddata_db_files}; do
-            echo "Debug Info: Linking db_file = ${db_file}" 1>&2
             ln -sf ${db_file} kneaddata_db/
         done
-
-        echo "Debug Info: Finished linking db_files" 1>&2
 
         kneaddata \
         --input1 ~{input_file_r1} \
@@ -184,15 +173,6 @@ task KneadDataTask {
         --output kneaddata_out \
         --threads ~{threads} \
         --remove-intermediate-output
-
-        echo "Debug Info: KneadData command completed" 1>&2
-
-        echo "Debug Info: Checking output directory contents" 1>&2
-        ls -l kneaddata_out 1>&2
-
-
-        echo "Debug Info: Checking kneaddata_db directory contents" 1>&2
-        ls -l kneaddata_db 1>&2
     >>>
 
     output {
@@ -209,7 +189,6 @@ task KneadDataTask {
 
 
 # Kraken2 task for taxonomic classification
-
 task Kraken2Task {
     input {
         File input_file_r1
@@ -254,7 +233,6 @@ task Kraken2Task {
 }
 
 # Task to merge Kraken2 TSV outputs
-
 task MergeTSVTask {
     input {
         Array[File] input_files
@@ -276,7 +254,6 @@ task MergeTSVTask {
 }
 
 # Task to generate BIOM file from Kraken2 reports
-
 task kraken_biom {
     input {
         Array[File] input_files
@@ -299,7 +276,6 @@ task kraken_biom {
 }
 
 # Task to generate Krona visualizations
-
 task krona {
     input {
         File input_file
@@ -324,7 +300,6 @@ task krona {
 }
 
 # Task to convert Kraken2 TSV to QIIME2 compatible format
-
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -347,7 +322,6 @@ task ConvertKraken2Tsv {
 }
 
 # QIIME2 tasks for further analysis
-
 task ImportFeatureTable {
     input {
         File input_biom
