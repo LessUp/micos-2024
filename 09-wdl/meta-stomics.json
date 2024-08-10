@@ -21,7 +21,7 @@
   "metagenomic_analysis_workflow.krona_output_html_names": [
     "SRR12345678.kraken_report.html"
   ],
-  "metagenomic_analysis_workflow.qiime2_sample_metadata": "/Files/ResultData/sample_metadata.tsv",
+  "metagenomic_analysis_workflow.qiime2_sample_metadata": "/Files/RawData/sample_metadata.tsv",
   "metagenomic_analysis_workflow.taxonomy_convert_script": "/Files/ManualData/Scripts/convert-format-qiime2.py",
   "metagenomic_analysis_workflow.qiime2_min_frequency": 1,
   "metagenomic_analysis_workflow.qiime2_min_samples": 1,
