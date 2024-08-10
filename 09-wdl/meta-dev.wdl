@@ -161,25 +161,24 @@ task KneadDataTask {
         Int threads
     }
 
-    # 这一步是公共步骤，也可以单独提出来作为1个任务，只运行1次
     command {
         mkdir -p kneaddata_db
-        for db_file in ${sep=' ' kneaddata_db_files}; do
-        ln -s ${db_file} kneaddata_db/
+        for db_file in ~{sep=' ' kneaddata_db_files}; do
+            ln -sf ${db_file} kneaddata_db/
         done
 
         kneaddata \
-        --input1 ${input_file_r1} \
-        --input2 ${input_file_r2} \
-        --reference-db ${kneaddata_db} \
+        --input1 ~{input_file_r1} \
+        --input2 ~{input_file_r2} \
+        --reference-db kneaddata_db \
         --output kneaddata_out \
-        --threads ${threads} \
+        --threads ~{threads} \
         --remove-intermediate-output
     }
 
     output {
-        File output_paired_1 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_1.fastq"
-        File output_paired_2 = "kneaddata_out/${basename(input_file_r1, ".fastq")}_kneaddata_paired_2.fastq"
+        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_2.fastq"
     }
 
     runtime {
@@ -189,14 +188,13 @@ task KneadDataTask {
     }
 }
 
-
 # Kraken2 task for taxonomic classification
 
 task Kraken2Task {
     input {
         File input_file_r1
         File input_file_r2
-        Directory kraken2_db
+        Array[File] kraken2_db_files
         Int threads
         Float confidence
         Int min_base_quality
@@ -205,8 +203,14 @@ task Kraken2Task {
         String report_txt_name
     }
 
+
     command {
-        kraken2 --db ${kraken2_db} \
+        mkdir -p kraken2_db
+        for db_file in ~{sep=' ' kraken2_db_files}; do
+            ln -sf ${db_file} kraken2_db/
+        done
+
+        kraken2 --db kraken2_db \
         --threads ${threads} \
         --confidence ${confidence} \
         --minimum-base-quality ${min_base_quality} \
