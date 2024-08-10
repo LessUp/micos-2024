@@ -5,9 +5,32 @@
   "metagenomic_analysis_workflow.input_files_r2": [
     "/Files/RawData/SRR12345678_2.fastq"
   ],
-  "metagenomic_analysis_workflow.kneaddata_db": "/Files/ManualData/kneaddata/bowtie2",
+  "metagenomic_analysis_workflow.kneaddata_db_files": [
+    "/Files/ManualData/kneaddata/bowtie2/hg37dec_v0.1.1.bt2",
+    "/Files/ManualData/kneaddata/bowtie2/hg37dec_v0.1.2.bt2",
+    "/Files/ManualData/kneaddata/bowtie2/hg37dec_v0.1.3.bt2",
+    "/Files/ManualData/kneaddata/bowtie2/hg37dec_v0.1.rev.1.bt2",
+    "/Files/ManualData/kneaddata/bowtie2/hg37dec_v0.1.rev.2.bt2"
+  ],
   "metagenomic_analysis_workflow.kneaddata_threads": 16,
-  "metagenomic_analysis_workflow.kraken2_db": "/Files/ManualData/kraken2_db/08gb/",
+  "metagenomic_analysis_workflow.kraken2_db_files": [
+    "/Files/ManualData/kraken2_db/08gb/database50mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/database75mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/database100mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/database150mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/database200mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/database250mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/database300mers.kmer_distrib",
+    "/Files/ManualData/kraken2_db/08gb/hash.k2d",
+    "/Files/ManualData/kraken2_db/08gb/inspect.txt",
+    "/Files/ManualData/kraken2_db/08gb/ktaxonomy.tsv",
+    "/Files/ManualData/kraken2_db/08gb/library_report.tsv",
+    "/Files/ManualData/kraken2_db/08gb/opts.k2d",
+    "/Files/ManualData/kraken2_db/08gb/seqid2taxid.map",
+    "/Files/ManualData/kraken2_db/08gb/standard08gb.md5",
+    "/Files/ManualData/kraken2_db/08gb/taxo.k2d",
+    "/Files/ManualData/kraken2_db/08gb/unmapped_accessions.txt"
+  ],
   "metagenomic_analysis_workflow.kraken_threads": 16,
   "metagenomic_analysis_workflow.confidence": 0.1,
   "metagenomic_analysis_workflow.min_base_quality": 20,

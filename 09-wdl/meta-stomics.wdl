@@ -5,11 +5,13 @@ workflow metagenomic_analysis_workflow {
         # KneadData inputs
         Array[File] input_files_r1
         Array[File] input_files_r2
-        Directory kneaddata_db
+        # Directory kneaddata_db
+        Array[File] kneaddata_db_files
         Int kneaddata_threads
 
         # Kraken2 and downstream analysis inputs
-        Directory kraken2_db
+        # Directory kraken2_db
+        Array[File] kraken2_db_files
         Int kraken_threads
         Float confidence
         Int min_base_quality
@@ -30,7 +32,7 @@ workflow metagenomic_analysis_workflow {
             input:
                 input_file_r1 = input_files_r1[i],
                 input_file_r2 = input_files_r2[i],
-                kneaddata_db = kneaddata_db,
+                kneaddata_db_files = kneaddata_db_files,
                 threads = kneaddata_threads
         }
     }
@@ -41,7 +43,7 @@ workflow metagenomic_analysis_workflow {
             input:
                 input_file_r1 = KneadDataTask.output_paired_1[i],
                 input_file_r2 = KneadDataTask.output_paired_2[i],
-                kraken2_db = kraken2_db,
+                kraken2_db_files = kraken2_db_files,
                 threads = kraken_threads,
                 confidence = confidence,
                 min_base_quality = min_base_quality,
@@ -155,15 +157,21 @@ task KneadDataTask {
     input {
         File input_file_r1
         File input_file_r2
-        Directory kneaddata_db
+        Array[File] kneaddata_db_files
         Int threads
     }
 
+    # 这一步是公共步骤，也可以单独提出来作为1个任务，只运行1次
     command {
+        mkdir -p kneaddata_db
+        for db_file in ${sep=' ' kneaddata_db_files}; do
+            ln -s ${db_file} kneaddata_db/
+        done
+
         kneaddata \
         --input1 ${input_file_r1} \
         --input2 ${input_file_r2} \
-        --reference-db ${kneaddata_db} \
+        --reference-db kneaddata_db  \
         --output kneaddata_out \
         --threads ${threads} \
         --remove-intermediate-output
@@ -188,7 +196,7 @@ task Kraken2Task {
     input {
         File input_file_r1
         File input_file_r2
-        Directory kraken2_db
+        Array[File] kraken2_db_files
         Int threads
         Float confidence
         Int min_base_quality
@@ -198,6 +206,12 @@ task Kraken2Task {
     }
 
     command {
+        mkdir -p kraken2_db
+        for db_file in ${sep=' ' kraken2_db_files}; do
+            ln -s ${db_file} kraken2_db/
+        done
+
+
         kraken2 --db ${kraken2_db} \
         --threads ${threads} \
         --confidence ${confidence} \
