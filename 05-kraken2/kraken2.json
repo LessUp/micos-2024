@@ -11,9 +11,9 @@
   "Kraken2Workflow.min_base_quality": 20,
   "Kraken2Workflow.min_hit_groups": 2,
     "Kraken2Workflow.output_tsv_names": [
-    "SRR12345678.kraken.tsv"
+    "SRR12345678.kraken_tsv"
   ],
   "Kraken2Workflow.report_txt_names": [
-    "SRR12345678.report.txt"
+    "SRR12345678.report_txt"
   ]
 }
