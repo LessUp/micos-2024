@@ -1,1 +1,0 @@
-biom convert -i input.biom -o output.biom --to-hdf5
