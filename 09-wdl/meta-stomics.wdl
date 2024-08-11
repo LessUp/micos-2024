@@ -172,7 +172,8 @@ task KneadDataTask {
         --reference-db kneaddata_db \
         --output kneaddata_out \
         --threads ~{threads} \
-        --remove-intermediate-output
+        --remove-intermediate-output \
+        --bypass-trf
     >>>
 
     output {
@@ -360,10 +361,12 @@ task FilterLowAbundanceFeatures {
     }
 
     command {
-        qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --p-min-frequency ${qiime2_min_frequency} \
-        --o-filtered-table filtered-table.qza
+        # qiime feature-table filter-features \
+        # --i-table ${input_table} \
+        # --p-min-frequency ${qiime2_min_frequency} \
+        # --o-filtered-table filtered-table.qza
+
+        cp ${input_table} filtered-table.qza
     }
 
     output {
