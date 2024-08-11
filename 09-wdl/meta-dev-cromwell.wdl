@@ -22,7 +22,7 @@ workflow metagenomic_analysis_workflow {
         File qiime2_sample_metadata
         Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 2
-        Int qiime2_sampling_depth = 10
+        Int qiime2_sampling_depth = 1000
         File taxonomy_convert_script
     }
 
