@@ -21,8 +21,8 @@ workflow metagenomic_analysis_workflow {
         Array[String] krona_output_html_names
         File qiime2_sample_metadata
         Int qiime2_min_frequency = 1
-        Int qiime2_min_samples = 2
-        Int qiime2_sampling_depth = 1000
+        Int qiime2_min_samples = 1
+        Int qiime2_sampling_depth = 100
         File taxonomy_convert_script
     }
 
@@ -360,17 +360,18 @@ task FilterLowAbundanceFeatures {
         Int qiime2_min_frequency
     }
 
-    command {
+    command <<<
         # qiime feature-table filter-features \
         # --i-table ${input_table} \
         # --p-min-frequency ${qiime2_min_frequency} \
         # --o-filtered-table filtered-table.qza
 
-        cp ${input_table} filtered-table.qza
-    }
+        # cp ~{input_table} filtered-table.qza
+    >>>
+
 
     output {
-        File filtered_table = "filtered-table.qza"
+        File filtered_table = input_table
     }
 
     runtime {
