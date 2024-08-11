@@ -172,9 +172,7 @@ task KneadDataTask {
         --reference-db kneaddata_db \
         --output kneaddata_out \
         --threads ~{threads} \
-        --remove-intermediate-output \
-        --bypass-trf \
-        --bypass-trim
+        --remove-intermediate-output
     >>>
 
     output {
