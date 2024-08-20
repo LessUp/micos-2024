@@ -1,8 +1,0 @@
-Bootstrap: docker
-From: quay.io/qiime2/metagenome:2024.5
-
-%post
-    # 这里可以添加任何需要在构建时执行的命令
-
-%runscript
-    exec /bin/bash
