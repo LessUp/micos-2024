@@ -1,0 +1,33 @@
+services:
+  phyloseq:
+    build:
+      # args:
+        # http_proxy: http://172.19.75.255:7897
+        # https_proxy: http://172.19.75.255:7897
+      context: .
+      dockerfile: Dockerfile
+    image: shuai/phyloseq:1.0.0
+    container_name: phyloseq 
+    tty: true
+    stdin_open: true
+    command:
+      [
+        "bash",
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    working_dir: /
+    user: "1000:1000"
+    restart: no  
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
