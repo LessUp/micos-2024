@@ -5,20 +5,22 @@ workflow metagenomic_analysis_workflow {
         # KneadData inputs
         Array[File] input_files_r1
         Array[File] input_files_r2
-        # Directory kneaddata_db
         Array[File] kneaddata_db_files
         Int kneaddata_threads
 
-        # Kraken2 and downstream analysis inputs
-        # Directory kraken2_db
+        # Kraken2
         Array[File] kraken2_db_files
         Int kraken_threads
         Float confidence
         Int min_base_quality
         Int min_hit_groups
+
+        # Krona
+        Array[String] krona_output_html_names
         Array[String] output_tsv_names
         Array[String] report_txt_names
-        Array[String] krona_output_html_names
+
+        # Qiime2
         File qiime2_sample_metadata
         Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 1
@@ -92,15 +94,9 @@ workflow metagenomic_analysis_workflow {
             input_tsv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 
-    call FilterLowAbundanceFeatures {
-        input:
-            input_table = ImportFeatureTable.output_qza,
-            qiime2_min_frequency = qiime2_min_frequency
-    }
-
     call FilterRareFeatures {
         input:
-            input_table = FilterLowAbundanceFeatures.filtered_table,
+            input_table = ImportFeatureTable.output_qza,
             qiime2_min_samples = qiime2_min_samples
     }
 
@@ -328,7 +324,7 @@ task ImportFeatureTable {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -350,31 +346,7 @@ task ImportTaxonomy {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
-    }
-}
-
-task FilterLowAbundanceFeatures {
-    input {
-        File input_table
-        Int qiime2_min_frequency
-    }
-
-    command <<<
-        # qiime feature-table filter-features \
-        # --i-table ${input_table} \
-        # --p-min-frequency ${qiime2_min_frequency} \
-        # --o-filtered-table filtered-table.qza
-
-        # cp ~{input_table} filtered-table.qza
-    >>>
-
-    output {
-        File filtered_table = input_table
-    }
-
-    runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -396,7 +368,7 @@ task FilterRareFeatures {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -418,7 +390,7 @@ task RarefyTable {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -439,7 +411,7 @@ task CalculateAlphaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -459,7 +431,7 @@ task ExportAlphaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -480,7 +452,7 @@ task CalculateBetaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -500,7 +472,7 @@ task PerformPCoA {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
 
@@ -520,6 +492,6 @@ task AddPseudocount {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
     }
 }
