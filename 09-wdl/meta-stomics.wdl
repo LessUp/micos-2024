@@ -179,6 +179,8 @@ task KneadDataTask {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_61de51c7c6c94844b47e7ea1d7b8830e_private:latest"
+        req_cpu: 4
+        req_mem: "4GB"
     }
 }
 
@@ -222,6 +224,8 @@ task Kraken2Task {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_6c85305847034eadb18c77824949bcc6_private:latest"
+        req_cpu: 4
+        req_mem: "4GB"
     }
 }
 
@@ -241,6 +245,8 @@ task MergeTSVTask {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_a185cfae5f194b339ad0cc511cc46eeb_private:latest"
+        req_cpu: 1
+        req_mem: "1G"
     }
 }
 
@@ -257,6 +263,8 @@ task kraken_biom {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_5adecffec5fc45f0980a2a9b7ba0b607_private:latest"
+        req_cpu: 1
+        req_mem: "1G"
     }
 
     output {
@@ -278,7 +286,9 @@ task krona {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_209cb871c67c4cb3996ac80e426f45c6_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_209cb871c67c4cb3996ac80e426f45c6_private:latest"        
+        req_cpu: 2
+        req_mem: "2G"
     }
 
     output {
@@ -303,6 +313,8 @@ task ConvertKraken2Tsv {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_41343869128b4502a4801b3f5078e89e_private:latest"
+        req_cpu: 1
+        req_mem: "1G"
     }
 }
 
@@ -325,6 +337,8 @@ task ImportFeatureTable {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -347,6 +361,8 @@ task ImportTaxonomy {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -369,6 +385,8 @@ task FilterRareFeatures {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -379,10 +397,10 @@ task RarefyTable {
     }
 
     command {
-        # qiime feature-table rarefy \
-        # --i-table ${input_table} \
-        # --p-sampling-depth ${qiime2_sampling_depth} \
-        # --o-rarefied-table rarefied-table.qza
+        qiime feature-table rarefy \
+        --i-table ${input_table} \
+        --p-sampling-depth ${qiime2_sampling_depth} \
+        --o-rarefied-table rarefied-table.qza
     }
 
     output {
@@ -391,6 +409,8 @@ task RarefyTable {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -412,6 +432,8 @@ task CalculateAlphaDiversity {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -432,6 +454,8 @@ task ExportAlphaDiversity {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -453,6 +477,8 @@ task CalculateBetaDiversity {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -473,6 +499,8 @@ task PerformPCoA {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
 
@@ -493,5 +521,7 @@ task AddPseudocount {
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
     }
 }
