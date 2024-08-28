@@ -1,0 +1,55 @@
+services:
+  qiime2:
+    image: quay.io/qiime2/metagenome:2024.5 
+    container_name: qiime2
+    # tty: true
+    # stdin_open: true
+    # command: [ "bash" ]
+    command:
+      [
+        "kraken2",
+        "--paired",
+        "--db",
+        "/ManualData/kraken2_db/08gb",
+        "--output",
+        "/ResultData/SRR12345678.kraken_tsv",
+        "--report",
+        "/ResultData/SRR12345678.kraken_report",
+        "--use-names",
+        "--threads",
+        "16",
+        "--confidence",
+        "0.1",
+        "--minimum-base-quality",
+        "20",
+        "--minimum-hit-groups",
+        "2",
+        # "--classified-out",
+        # "/ResultData/kraken2_classified.fastq",
+        # "--unclassified-out",
+        # "/ResultData/kraken2_unclassified.fastq",
+        "--memory-mapping",
+        # "--quick",
+        # "--report-zero-counts",
+        # "--gzip-compressed",
+        "/ResultData/kneaddata/SRR12345678_1_kneaddata_paired_1.fastq",
+        "/ResultData/kneaddata/SRR12345678_1_kneaddata_paired_2.fastq"
+      ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    working_dir: /
+    user: "1000:1000"
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
