@@ -328,7 +328,7 @@ task ImportFeatureTable {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -350,7 +350,7 @@ task ImportTaxonomy {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -374,7 +374,7 @@ task FilterLowAbundanceFeatures {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -396,7 +396,7 @@ task FilterRareFeatures {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -418,7 +418,7 @@ task RarefyTable {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -439,7 +439,7 @@ task CalculateAlphaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -459,7 +459,7 @@ task ExportAlphaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -480,7 +480,7 @@ task CalculateBetaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -500,7 +500,7 @@ task PerformPCoA {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
 
@@ -520,6 +520,6 @@ task AddPseudocount {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_b7ebfb99c10844d99bdc7d0a36398879_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_df6b062111c3485b826b57ec541e3fb2_private:latest"
     }
 }
