@@ -26,6 +26,7 @@ workflow metagenomic_analysis_workflow {
         Int qiime2_min_samples = 1
         Int qiime2_sampling_depth = 100
         File taxonomy_convert_script
+        File extract_taxonomy_feature_ids_script
     }
 
     # Step 1: Run KneadData on input files
@@ -86,7 +87,8 @@ workflow metagenomic_analysis_workflow {
     call ConvertKraken2Tsv {
         input:
             qiime2_merged_taxonomy_tsv = MergeTSVTask.merged_tsv,
-            taxonomy_convert_script = taxonomy_convert_script
+            taxonomy_convert_script = taxonomy_convert_script,
+            extract_taxonomy_feature_ids_script = extract_taxonomy_feature_ids_script
     }
 
     call ImportTaxonomy {
@@ -117,6 +119,13 @@ workflow metagenomic_analysis_workflow {
             input_table = RarefyTable.rarefied_table
     }
 
+    # 计算Alpha指数的箱线图
+    call AlphaDiversityBoxPlot {
+        input:
+            shannon_diversity = CalculateAndExportAlphaDiversity.shannon_diversity,
+            metadata = metadata
+    }
+
     call CalculateAndExportChao1Diversity {
         input:
             input_table = RarefyTable.rarefied_table
@@ -141,17 +150,37 @@ workflow metagenomic_analysis_workflow {
     # 计算丰度柱状图
     call GenerateBarPlot {
         input:
-            input_table = RarefyTable.rarefied_table,
+            input_table = ImportFeatureTable.output_qza,
             taxonomy = ImportTaxonomy.output_qza,
-            metadata = metadata
+            metadata = metadata,
+            taxonomy_feature_ids = ConvertKraken2Tsv.taxonomy_feature_ids
     }
 
-    # 计算热图
-    call GenerateHeatmap {
-        input:
-            input_table = RarefyTable.rarefied_table,
-            metadata = metadata
-    }
+    # # 计算热图
+    # call GenerateHeatmap {
+    #     input:
+    #         input_table = RarefyTable.rarefied_table,
+    #         metadata = metadata
+    # }
+
+    # # 计算系统发育树
+    # call PhylogeneticTree {
+    #     input:
+    #     input_table = RarefyTable.rarefied_table
+    # }
+
+    # # 生成火山图
+    # call VolcanoPlot {
+    #     input:
+    #         input_table = RarefyTable.rarefied_table,
+    #         metadata = metadata
+    # }
+
+    # # 生成维恩图
+    # call VennDiagram {
+    #     input:
+    #         input_table = RarefyTable.rarefied_table,
+    # }
 
     output {
         Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
@@ -169,9 +198,9 @@ workflow metagenomic_analysis_workflow {
         File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
         File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
         File barplot_visualization = GenerateBarPlot.barplot_visualization
-        Array[File] barplot_exported_files = GenerateBarPlot.exported_files
-        File heatmap_visualization = GenerateHeatmap.heatmap_visualization
-        Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
+        # Array[File] barplot_exported_files = GenerateBarPlot.exported_files
+        # File heatmap_visualization = GenerateHeatmap.heatmap_visualization
+        # Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
     }
 }
 
@@ -329,14 +358,17 @@ task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
         File taxonomy_convert_script
+        File extract_taxonomy_feature_ids_script
     }
 
     command {
         python3 ${taxonomy_convert_script} ${qiime2_merged_taxonomy_tsv} merge_converted_taxonomy.tsv
+        python3 ${extract_taxonomy_feature_ids_script} merge_converted_taxonomy.tsv 
     }
 
     output {
         File merge_converted_taxonomy = "merge_converted_taxonomy.tsv"
+        File taxonomy_feature_ids = "taxonomy_feature_ids.txt"
     }
 
     runtime {
@@ -480,14 +512,15 @@ task CalculateAndExportAlphaDiversity {
         qiime diversity alpha \
         --i-table ${input_table} \
         --p-metric shannon \
-        --o-alpha-diversity alpha-diversity.qza
+        --o-alpha-diversity shannon_diversity.qza
 
         qiime tools export \
-        --input-path alpha-diversity.qza \
+        --input-path shannon_diversity.qza \
         --output-path exported_shannon_diversity
     }
 
     output {
+        File shannon_diversity = "shannon_diversity.qza"
         File exported_shannon_diversity = "exported_shannon_diversity/alpha-diversity.tsv"
     }
 
@@ -618,26 +651,33 @@ task GenerateBarPlot {
         File input_table
         File taxonomy
         File metadata
+        File taxonomy_feature_ids
     }
 
-    command {
+    command <<<
+        # 过滤掉特征表中，不在分类文件中的特征
+        qiime feature-table filter-features \
+        --i-table ${input_table} \
+        --m-metadata-file ${taxonomy_feature_ids} \
+        --o-filtered-table filtered-feature-table.qza
+        
         # 生成丰度柱状图
         qiime taxa barplot \
-        --i-table ${input_table} \
+        --i-table filtered-feature-table.qza \
         --i-taxonomy ${taxonomy} \
         --m-metadata-file ${metadata} \
         --o-visualization taxa-bar-plots.qzv
+    >>>
 
-        # 导出可视化文件为通用图像格式
-        mkdir -p exported_taxa_bar_plots
-        qiime tools export \
-        --input-path taxa-bar-plots.qzv \
-        --output-path exported_taxa_bar_plots
-    }
+    # 导出可视化文件为通用图像格式
+    # mkdir -p exported_taxa_bar_plots
+    # qiime tools export \
+    # --input-path taxa-bar-plots.qzv \
+    # --output-path exported_taxa_bar_plots
 
     output {
         File barplot_visualization = "taxa-bar-plots.qzv"
-        Array[File] exported_files = glob("exported_taxa_bar_plots/**/*")
+        # Array[File] exported_files = glob("exported_taxa_bar_plots/**/*")
     }
 
     runtime {
@@ -671,6 +711,129 @@ task GenerateHeatmap {
     output {
         File heatmap_visualization = "feature-table-heatmap.qzv"
         Array[File] exported_files = glob("exported_heatmap/**/*")
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 生成 Alpha 多样性指数的箱线图
+task AlphaDiversityBoxPlot {
+    input {
+        File shannon_diversity
+        File metadata
+    }
+
+    command {
+        qiime diversity alpha-group-significance \
+        --i-alpha-diversity ${shannon_diversity} \
+        --m-metadata-file ${metadata} \
+        --o-visualization alpha-group-significance.qzv
+
+        mkdir -p exported_alpha_group_significance
+        qiime tools export \
+        --input-path alpha-group-significance.qzv \
+        --output-path exported_alpha_group_significance
+    }
+
+    output {
+        File alpha_group_significance_visualization = "alpha-group-significance.qzv"
+        Array[File] exported_files = glob("exported_alpha_group_significance/**/*")
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 生成系统发育树
+task PhylogeneticTree {
+    input {
+        File input_table
+    }
+
+    command {
+        qiime phylogeny align-to-tree-mafft-fasttree \
+        --i-sequences ${input_table} \
+        --o-alignment aligned-rep-seqs.qza \
+        --o-masked-alignment masked-aligned-rep-seqs.qza \
+        --o-tree unrooted-tree.qza \
+        --o-rooted-tree rooted-tree.qza
+
+        mkdir -p exported_phylogenetic_tree
+        qiime tools export \
+        --input-path rooted-tree.qza \
+        --output-path exported_phylogenetic_tree
+    }
+
+    output {
+        File phylogenetic_tree_visualization = "rooted-tree.qza"
+        Array[File] exported_files = glob("exported_phylogenetic_tree/**/*")
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 生成火山图
+task VolcanoPlot {
+    input {
+        File input_table
+        File metadata
+    }
+
+    command {
+        qiime composition ancom \
+        --i-table ${input_table} \
+        --m-metadata-file ${metadata} \
+        --o-visualization volcano-plot.qzv
+
+        mkdir -p exported_volcano_plot
+        qiime tools export \
+        --input-path volcano-plot.qzv \
+        --output-path exported_volcano_plot
+    }
+
+    output {
+        File volcano_plot_visualization = "volcano-plot.qzv"
+        Array[File] exported_files = glob("exported_volcano_plot/**/*")
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 生成维恩图
+task VennDiagram {
+    input {
+        File input_table
+    }
+
+    command {
+        qiime feature-table venn-diagram \
+        --i-table ${input_table} \
+        --o-visualization venn-diagram.qzv
+
+        mkdir -p exported_venn_diagram
+        qiime tools export \
+        --input-path venn-diagram.qzv \
+        --output-path exported_venn_diagram
+    }
+
+    output {
+        File venn_diagram_visualization = "venn-diagram.qzv"
+        Array[File] exported_files = glob("exported_venn_diagram/**/*")
     }
 
     runtime {
