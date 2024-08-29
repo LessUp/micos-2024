@@ -7,6 +7,9 @@ parser = argparse.ArgumentParser(description="Extract feature IDs from a taxonom
 # 添加输入文件参数
 parser.add_argument('input_file', type=str, help='Path to the input taxonomy file')
 
+# 添加输出文件参数
+parser.add_argument('output_file', type=str, help='Path to the output file where feature IDs will be saved')
+
 # 解析命令行参数
 args = parser.parse_args()
 
@@ -29,6 +32,6 @@ if column_found:
     feature_ids = taxonomy_df[column_found]
 
     # 保存到文本文件
-    feature_ids.to_csv("taxonomy_feature_ids.txt", index=False, header=False)
+    feature_ids.to_csv(args.output_file, index=False, header=False)
 else:
     print("No valid feature ID column found.")
