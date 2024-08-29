@@ -1,0 +1,40 @@
+services:
+  kraken2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shuai/kraken2:2.1.3
+    container_name: kraken2
+    tty: true
+    stdin_open: true
+    command: [ "bash" ]
+    # command:
+    #   [
+    #     "kraken2",
+    #     "--output",
+    #     "kraken2_output.txt",
+    #     "--report",
+    #     "kraken2_report.txt",
+    #     "--use-names",
+    #     "--db",
+    #     "/path/to/kraken2/db",
+    #     "sample.fastq"
+    #   ]
+    volumes:
+      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
+      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
+      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
+      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+    working_dir: /
+    user: "1000:1000"
+    environment:
+      - COMPOSE_PARALLEL_LIMIT=16
+volumes:
+  RawData:
+    driver: local
+  ResultData:
+    driver: local
+  ManualData:
+    driver: local
+  ReferenceData:
+    driver: local
