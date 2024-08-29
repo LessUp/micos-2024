@@ -138,6 +138,21 @@ workflow metagenomic_analysis_workflow {
             input_table = RarefyTable.rarefied_table
     }
 
+    # 计算丰度柱状图
+    call GenerateBarPlot {
+        input:
+            input_table = RarefyTable.rarefied_table,
+            taxonomy = ImportTaxonomy.output_qza,
+            metadata = metadata
+    }
+
+    # 计算热图
+    call GenerateHeatmap {
+        input:
+            input_table = RarefyTable.rarefied_table,
+            metadata = metadata
+    }
+
     output {
         Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
         Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
@@ -153,6 +168,10 @@ workflow metagenomic_analysis_workflow {
         File comp_table = AddPseudocount.comp_table
         File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
         File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
+        File barplot_visualization = GenerateBarPlot.barplot_visualization
+        Array[File] barplot_exported_files = GenerateBarPlot.exported_files
+        File heatmap_visualization = GenerateHeatmap.heatmap_visualization
+        Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
     }
 }
 
@@ -584,6 +603,74 @@ task AddPseudocount {
 
     output {
         File comp_table = "comp-table.qza"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 增加丰度柱状图的计算
+task GenerateBarPlot {
+    input {
+        File input_table
+        File taxonomy
+        File metadata
+    }
+
+    command {
+        # 生成丰度柱状图
+        qiime taxa barplot \
+        --i-table ${input_table} \
+        --i-taxonomy ${taxonomy} \
+        --m-metadata-file ${metadata} \
+        --o-visualization taxa-bar-plots.qzv
+
+        # 导出可视化文件为通用图像格式
+        mkdir -p exported_taxa_bar_plots
+        qiime tools export \
+        --input-path taxa-bar-plots.qzv \
+        --output-path exported_taxa_bar_plots
+    }
+
+    output {
+        File barplot_visualization = "taxa-bar-plots.qzv"
+        Array[File] exported_files = glob("exported_taxa_bar_plots/**/*")
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 增加热图的计算
+task GenerateHeatmap {
+    input {
+        File input_table
+        File metadata
+    }
+
+    command {
+        # 生成热图
+        qiime feature-table heatmap \
+        --i-table ${input_table} \
+        --m-metadata-file ${metadata} \
+        --o-visualization feature-table-heatmap.qzv
+
+        # 导出可视化文件为通用图像格式
+        mkdir -p exported_heatmap
+        qiime tools export \
+        --input-path feature-table-heatmap.qzv \
+        --output-path exported_heatmap
+    }
+
+    output {
+        File heatmap_visualization = "feature-table-heatmap.qzv"
+        Array[File] exported_files = glob("exported_heatmap/**/*")
     }
 
     runtime {
