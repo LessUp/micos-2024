@@ -112,14 +112,14 @@ workflow metagenomic_analysis_workflow {
             qiime2_sampling_depth = qiime2_sampling_depth
     }
 
-    call CalculateAlphaDiversity {
+    call CalculateAndExportAlphaDiversity {
         input:
             input_table = RarefyTable.rarefied_table
     }
 
-    call ExportAlphaDiversity {
+    call CalculateAndExportChao1Diversity {
         input:
-            input_qza = CalculateAlphaDiversity.alpha_diversity
+            input_table = RarefyTable.rarefied_table
     }
 
     call CalculateBetaDiversity {
@@ -151,7 +151,8 @@ workflow metagenomic_analysis_workflow {
         File pcoa_qzv = PerformAndVisualizePCoA.visualization
         Array[File] pcoa_exports = PerformAndVisualizePCoA.exported_files
         File comp_table = AddPseudocount.comp_table
-        File shannon_diversity = ExportAlphaDiversity.exported_diversity
+        File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
+        File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
     }
 }
 
@@ -450,8 +451,8 @@ task RarefyTable {
     }
 }
 
-# 计算输入表的 Alpha 多样性（Shannon 指数）
-task CalculateAlphaDiversity {
+# 计算和导出 Alpha 多样性（Shannon 指数）
+task CalculateAndExportAlphaDiversity {
     input {
         File input_table
     }
@@ -461,10 +462,14 @@ task CalculateAlphaDiversity {
         --i-table ${input_table} \
         --p-metric shannon \
         --o-alpha-diversity alpha-diversity.qza
+
+        qiime tools export \
+        --input-path alpha-diversity.qza \
+        --output-path exported_shannon_diversity
     }
 
     output {
-        File alpha_diversity = "alpha-diversity.qza"
+        File exported_shannon_diversity = "exported-diversity/alpha-diversity.tsv"
     }
 
     runtime {
@@ -474,29 +479,8 @@ task CalculateAlphaDiversity {
     }
 }
 
-# 导出 Alpha 多样性结果
-task ExportAlphaDiversity {
-    input {
-        File input_qza
-    }
-
-    command {
-        qiime tools export \
-        --input-path ${input_qza} \
-        --output-path exported-diversity
-    }
-
-    output {
-        File exported_diversity = "exported-diversity/alpha-diversity.tsv"
-    }
-
-    runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
-    }
-}
-
-# 计算输入表的 Alpha 多样性（Chao1 指数）
-task CalculateChao1Diversity {
+# 计算和导出 Alpha 多样性（Chao1 指数）
+task CalculateAndExportChao1Diversity {
     input {
         File input_table
     }
@@ -506,37 +490,20 @@ task CalculateChao1Diversity {
         --i-table ${input_table} \
         --p-metric chao1 \
         --o-alpha-diversity chao1-diversity.qza
+
+        qiime tools export \
+        --input-path chao1-diversity.qza \
+        --output-path exported-chao1-diversity
     }
 
     output {
-        File chao1_diversity = "chao1-diversity.qza"
+        File exported_chao1_diversity = "exported-chao1-diversity/alpha-diversity.tsv"
     }
 
     runtime {
         docker: "quay.io/qiime2/metagenome:2024.5"
         cpu: 16
         memory: "32 GB"
-    }
-}
-
-# 导出 Chao1 多样性结果
-task ExportChao1Diversity {
-    input {
-        File input_qza
-    }
-
-    command {
-        qiime tools export \
-        --input-path ${input_qza} \
-        --output-path exported-chao1-diversity
-    }
-
-    output {
-        File exported_chao1_diversity = "exported-chao1-diversity/chao1-diversity.tsv"
-    }
-
-    runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
     }
 }
 
