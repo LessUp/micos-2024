@@ -657,15 +657,15 @@ task GenerateBarPlot {
     command <<<
         # 过滤掉特征表中，不在分类文件中的特征
         qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --m-metadata-file ${taxonomy_feature_ids} \
+        --i-table ~{input_table} \
+        --m-metadata-file ~{taxonomy_feature_ids} \
         --o-filtered-table filtered-feature-table.qza
         
         # 生成丰度柱状图
         qiime taxa barplot \
         --i-table filtered-feature-table.qza \
-        --i-taxonomy ${taxonomy} \
-        --m-metadata-file ${metadata} \
+        --i-taxonomy ~{taxonomy} \
+        --m-metadata-file ~{metadata} \
         --o-visualization taxa-bar-plots.qzv
     >>>
 
