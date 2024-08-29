@@ -469,7 +469,7 @@ task CalculateAndExportAlphaDiversity {
     }
 
     output {
-        File exported_shannon_diversity = "exported-diversity/alpha-diversity.tsv"
+        File exported_shannon_diversity = "exported_shannon_diversity/alpha-diversity.tsv"
     }
 
     runtime {
