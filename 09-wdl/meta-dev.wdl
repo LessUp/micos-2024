@@ -683,11 +683,11 @@ task GenerateHeatmap {
         File metadata
     }
 
-    command {
+    command <<<
         # 生成热图
         qiime feature-table heatmap \
-        --i-table ${input_table} \
-        --m-sample-metadata-file ${metadata} \
+        --i-table ~{input_table} \
+        --m-sample-metadata-file ~{metadata} \
         --m-sample-metadata-column treatment \
         --o-visualization feature-table-heatmap.qzv
 
@@ -696,6 +696,7 @@ task GenerateHeatmap {
         qiime tools export \
         --input-path feature-table-heatmap.qzv \
         --output-path exported_heatmap
+    >>>
 
     output {
         File heatmap_visualization = "feature-table-heatmap.qzv"
@@ -746,9 +747,9 @@ task PhylogeneticTree {
         File input_table
     }
 
-    command {
+    command <<<
         qiime phylogeny align-to-tree-mafft-fasttree \
-        --i-sequences ${input_table} \
+        --i-sequences ~{input_table} \
         --o-alignment aligned-rep-seqs.qza \
         --o-masked-alignment masked-aligned-rep-seqs.qza \
         --o-tree unrooted-tree.qza \
@@ -758,7 +759,7 @@ task PhylogeneticTree {
         qiime tools export \
         --input-path rooted-tree.qza \
         --output-path exported_phylogenetic_tree
-    }
+    >>>
 
     output {
         File phylogenetic_tree_visualization = "rooted-tree.qza"
