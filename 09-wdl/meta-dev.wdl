@@ -163,16 +163,11 @@ workflow metagenomic_analysis_workflow {
             metadata = metadata
     }
 
-    # # 计算系统发育树
-    # call PhylogeneticTree {
-    #     input:
-    #     input_table = RarefyTable.rarefied_table
-    # }
-
     output {
         Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
         Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
         File merged_tsv = MergeTSVTask.merged_tsv
+        File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
         File output_biom = kraken_biom.output_biom
         Array[File] krona_html_reports = krona.output_html
@@ -186,11 +181,8 @@ workflow metagenomic_analysis_workflow {
         File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
         # File barplot_visualization = GenerateBarPlot.barplot_visualization
         # Array[File] barplot_exported_files = GenerateBarPlot.exported_files
-        # File heatmap_visualization = GenerateHeatmap.heatmap_visualization
-        # Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
-        # File venn_diagram_qzv = VennDiagram.venn_diagram_visualization
-        # Array[File] venn_diagram_exports = VennDiagram.exported_files
-    }
+        File heatmap_visualization = GenerateHeatmap.heatmap_visualization
+        Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
 }
 
 # KneadData task to preprocess raw sequencing data
@@ -732,38 +724,6 @@ task AlphaDiversityBoxPlot {
     output {
         File alpha_group_significance_visualization = "alpha-group-significance.qzv"
         Array[File] exported_files = glob("exported_alpha_group_significance/**/*")
-    }
-
-    runtime {
-        docker: "quay.io/qiime2/metagenome:2024.5"
-        cpu: 16
-        memory: "32 GB"
-    }
-}
-
-# 生成系统发育树
-task PhylogeneticTree {
-    input {
-        File input_table
-    }
-
-    command <<<
-        qiime phylogeny align-to-tree-mafft-fasttree \
-        --i-sequences ~{input_table} \
-        --o-alignment aligned-rep-seqs.qza \
-        --o-masked-alignment masked-aligned-rep-seqs.qza \
-        --o-tree unrooted-tree.qza \
-        --o-rooted-tree rooted-tree.qza
-
-        mkdir -p exported_phylogenetic_tree
-        qiime tools export \
-        --input-path rooted-tree.qza \
-        --output-path exported_phylogenetic_tree
-    >>>
-
-    output {
-        File phylogenetic_tree_visualization = "rooted-tree.qza"
-        Array[File] exported_files = glob("exported_phylogenetic_tree/**/*")
     }
 
     runtime {
