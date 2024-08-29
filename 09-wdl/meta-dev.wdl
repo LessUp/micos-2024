@@ -5,20 +5,22 @@ workflow metagenomic_analysis_workflow {
         # KneadData inputs
         Array[File] input_files_r1
         Array[File] input_files_r2
-        # Directory kneaddata_db
         Array[File] kneaddata_db_files
         Int kneaddata_threads
 
-        # Kraken2 and downstream analysis inputs
-        # Directory kraken2_db
+        # Kraken2
         Array[File] kraken2_db_files
         Int kraken_threads
         Float confidence
         Int min_base_quality
         Int min_hit_groups
+
+        # Krona
+        Array[String] krona_output_html_names
         Array[String] output_tsv_names
         Array[String] report_txt_names
-        Array[String] krona_output_html_names
+
+        # Qiime2
         File qiime2_sample_metadata
         Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 1
@@ -173,8 +175,7 @@ task KneadDataTask {
         --output kneaddata_out \
         --threads ~{threads} \
         --remove-intermediate-output \
-        --bypass-trf \
-        --bypass-trim
+        --bypass-trf
     >>>
 
     output {
@@ -190,7 +191,7 @@ task KneadDataTask {
 }
 
 
-# Kraken2 task for taxonomic classification
+# 分类学分类 taxonomic classification
 task Kraken2Task {
     input {
         File input_file_r1
@@ -234,7 +235,7 @@ task Kraken2Task {
     }
 }
 
-# Task to merge Kraken2 TSV outputs
+# 合并 Kraken2 的 TSV 输出文件，并去除重复行
 task MergeTSVTask {
     input {
         Array[File] input_files
@@ -255,7 +256,7 @@ task MergeTSVTask {
     }
 }
 
-# Task to generate BIOM file from Kraken2 reports
+# 生成 BIOM 文件
 task kraken_biom {
     input {
         Array[File] input_files
@@ -277,7 +278,7 @@ task kraken_biom {
     }
 }
 
-# Task to generate Krona visualizations
+# 生成分类学数据的可视化图表
 task krona {
     input {
         File input_file
@@ -301,7 +302,7 @@ task krona {
     }
 }
 
-# Task to convert Kraken2 TSV to QIIME2 compatible format
+# 将 Kraken2 的 TSV 文件转换为 QIIME2 兼容的格式
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -323,7 +324,7 @@ task ConvertKraken2Tsv {
     }
 }
 
-# QIIME2 tasks for further analysis
+# 导入特征表数据
 task ImportFeatureTable {
     input {
         File input_biom
@@ -347,6 +348,7 @@ task ImportFeatureTable {
     }
 }
 
+# 导入分类学数据
 task ImportTaxonomy {
     input {
         File input_tsv
@@ -371,6 +373,7 @@ task ImportTaxonomy {
     }
 }
 
+# 过滤掉丰度较低的特征
 task FilterLowAbundanceFeatures {
     input {
         File input_table
@@ -395,6 +398,7 @@ task FilterLowAbundanceFeatures {
     }
 }
 
+# 过滤掉在样本中出现频率较低的特征
 task FilterRareFeatures {
     input {
         File input_table
@@ -419,6 +423,7 @@ task FilterRareFeatures {
     }
 }
 
+# 这个任务使用 QIIME2 工具对输入表进行稀释
 task RarefyTable {
     input {
         File input_table
@@ -426,10 +431,10 @@ task RarefyTable {
     }
 
     command {
-        # qiime feature-table rarefy \
-        # --i-table ${input_table} \
-        # --p-sampling-depth ${qiime2_sampling_depth} \
-        # --o-rarefied-table rarefied-table.qza
+        qiime feature-table rarefy \
+        --i-table ${input_table} \
+        --p-sampling-depth ${qiime2_sampling_depth} \
+        --o-rarefied-table rarefied-table.qza
     }
 
     output {
@@ -443,6 +448,7 @@ task RarefyTable {
     }
 }
 
+# 计算输入表的 Alpha 多样性（Shannon 指数）
 task CalculateAlphaDiversity {
     input {
         File input_table
@@ -466,6 +472,7 @@ task CalculateAlphaDiversity {
     }
 }
 
+# 导出 Alpha 多样性结果
 task ExportAlphaDiversity {
     input {
         File input_qza
@@ -486,6 +493,7 @@ task ExportAlphaDiversity {
     }
 }
 
+# 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
 task CalculateBetaDiversity {
     input {
         File input_table
@@ -509,6 +517,7 @@ task CalculateBetaDiversity {
     }
 }
 
+# 对输入的距离矩阵文件执行主坐标分析（PCoA）
 task PerformPCoA {
     input {
         File distance_matrix
@@ -531,6 +540,7 @@ task PerformPCoA {
     }
 }
 
+# 输入表添加伪计数
 task AddPseudocount {
     input {
         File input_table

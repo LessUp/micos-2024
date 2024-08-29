@@ -173,8 +173,8 @@ task KneadDataTask {
     >>>
 
     output {
-        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_1.fastq"
-        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_2.fastq"
+        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fq.gz')}_kneaddata_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fq.gz')}_kneaddata_paired_2.fastq"
     }
 
     runtime {
@@ -185,7 +185,7 @@ task KneadDataTask {
 }
 
 
-# Kraken2 task for taxonomic classification
+# 分类学分类 taxonomic classification
 task Kraken2Task {
     input {
         File input_file_r1
@@ -229,7 +229,7 @@ task Kraken2Task {
     }
 }
 
-# Task to merge Kraken2 TSV outputs
+# 合并 Kraken2 的 TSV 输出文件，并去除重复行
 task MergeTSVTask {
     input {
         Array[File] input_files
@@ -250,7 +250,7 @@ task MergeTSVTask {
     }
 }
 
-# Task to generate BIOM file from Kraken2 reports
+# 生成 BIOM 文件
 task kraken_biom {
     input {
         Array[File] input_files
@@ -272,7 +272,7 @@ task kraken_biom {
     }
 }
 
-# Task to generate Krona visualizations
+# 生成分类学数据的可视化图表
 task krona {
     input {
         File input_file
@@ -296,7 +296,7 @@ task krona {
     }
 }
 
-# Task to convert Kraken2 TSV to QIIME2 compatible format
+# 将 Kraken2 的 TSV 文件转换为 QIIME2 兼容的格式
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -318,7 +318,7 @@ task ConvertKraken2Tsv {
     }
 }
 
-# QIIME2 tasks for further analysis
+# 导入特征表数据
 task ImportFeatureTable {
     input {
         File input_biom
@@ -342,6 +342,7 @@ task ImportFeatureTable {
     }
 }
 
+# 导入分类学数据
 task ImportTaxonomy {
     input {
         File input_tsv
@@ -366,6 +367,7 @@ task ImportTaxonomy {
     }
 }
 
+# 过滤掉在样本中出现频率较低的特征
 task FilterRareFeatures {
     input {
         File input_table
@@ -390,6 +392,7 @@ task FilterRareFeatures {
     }
 }
 
+# 这个任务使用 QIIME2 工具对输入表进行稀释
 task RarefyTable {
     input {
         File input_table
@@ -414,6 +417,7 @@ task RarefyTable {
     }
 }
 
+# 计算输入表的 Alpha 多样性（Shannon 指数）
 task CalculateAlphaDiversity {
     input {
         File input_table
@@ -437,6 +441,7 @@ task CalculateAlphaDiversity {
     }
 }
 
+# 导出 Alpha 多样性结果
 task ExportAlphaDiversity {
     input {
         File input_qza
@@ -459,6 +464,7 @@ task ExportAlphaDiversity {
     }
 }
 
+# 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
 task CalculateBetaDiversity {
     input {
         File input_table
@@ -505,7 +511,7 @@ task PerformPCoA {
     }
 }
 
-# 输入的表格数据添加伪计数。
+# 输入表添加伪计数
 task AddPseudocount {
     input {
         File input_table
