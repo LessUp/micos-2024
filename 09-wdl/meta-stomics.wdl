@@ -482,6 +482,7 @@ task CalculateBetaDiversity {
     }
 }
 
+# 对输入的距离矩阵文件执行主坐标分析（PCoA）
 task PerformPCoA {
     input {
         File distance_matrix
@@ -504,6 +505,7 @@ task PerformPCoA {
     }
 }
 
+# 输入的表格数据添加伪计数。
 task AddPseudocount {
     input {
         File input_table

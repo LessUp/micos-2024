@@ -178,8 +178,8 @@ task KneadDataTask {
     >>>
 
     output {
-        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_1.fastq"
-        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fastq')}_kneaddata_paired_2.fastq"
+        File output_paired_1 = "kneaddata_out/~{basename(input_file_r1, '.fq.gz')}_kneaddata_paired_1.fastq"
+        File output_paired_2 = "kneaddata_out/~{basename(input_file_r1, '.fq.gz')}_kneaddata_paired_2.fastq"
     }
 
     runtime {
