@@ -13,7 +13,7 @@ services:
         "kneaddata",
         "-i1", "/RawData/data3/SRR8291367_Ciprofloxacin_T24-2_metagenome_1.fq.gz",
         "-i2", "/RawData/data3/SRR8291367_Ciprofloxacin_T24-2_metagenome_2.fq.gz",
-        "-db", "/ManualData/kneaddata/bowtie2",
+        "-db", "/ReferenceData/db_kneaddata/bowtie2",
         "--output", "/ResultData/kneaddata",
         "-t", "16",
         # "--run-fastqc-start", 
