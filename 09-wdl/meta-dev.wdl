@@ -21,7 +21,7 @@ workflow metagenomic_analysis_workflow {
         Array[String] report_txt_names
 
         # Qiime2
-        File qiime2_sample_metadata
+        File metadata
         Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 1
         Int qiime2_sampling_depth = 100
@@ -127,9 +127,10 @@ workflow metagenomic_analysis_workflow {
             input_table = RarefyTable.rarefied_table
     }
 
-    call PerformPCoA {
+    call PerformAndVisualizePCoA {
         input:
-            distance_matrix = CalculateBetaDiversity.distance_matrix
+            distance_matrix = CalculateBetaDiversity.distance_matrix,
+            metadata = metadata
     }
 
     call AddPseudocount {
@@ -147,7 +148,8 @@ workflow metagenomic_analysis_workflow {
         File filtered_table = FilterRareFeatures.filtered_table
         File rarefied_table = RarefyTable.rarefied_table
         File distance_matrix = CalculateBetaDiversity.distance_matrix
-        File pcoa = PerformPCoA.pcoa
+        File pcoa_qzv = PerformAndVisualizePCoA.visualization
+        Array[File] pcoa_exports = PerformAndVisualizePCoA.exported_files
         File comp_table = AddPseudocount.comp_table
         File shannon_diversity = ExportAlphaDiversity.exported_diversity
     }
@@ -493,6 +495,51 @@ task ExportAlphaDiversity {
     }
 }
 
+# 计算输入表的 Alpha 多样性（Chao1 指数）
+task CalculateChao1Diversity {
+    input {
+        File input_table
+    }
+
+    command {
+        qiime diversity alpha \
+        --i-table ${input_table} \
+        --p-metric chao1 \
+        --o-alpha-diversity chao1-diversity.qza
+    }
+
+    output {
+        File chao1_diversity = "chao1-diversity.qza"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 导出 Chao1 多样性结果
+task ExportChao1Diversity {
+    input {
+        File input_qza
+    }
+
+    command {
+        qiime tools export \
+        --input-path ${input_qza} \
+        --output-path exported-chao1-diversity
+    }
+
+    output {
+        File exported_chao1_diversity = "exported-chao1-diversity/chao1-diversity.tsv"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+    }
+}
+
 # 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
 task CalculateBetaDiversity {
     input {
@@ -517,20 +564,36 @@ task CalculateBetaDiversity {
     }
 }
 
-# 对输入的距离矩阵文件执行主坐标分析（PCoA）
-task PerformPCoA {
+# 对输入的距离矩阵文件执行主坐标分析(PCoA)，并进行可视化
+task PerformAndVisualizePCoA {
     input {
         File distance_matrix
+        File metadata
     }
 
     command {
+        # 执行主坐标分析（PCoA）
         qiime diversity pcoa \
         --i-distance-matrix ${distance_matrix} \
         --o-pcoa pcoa.qza
+
+        # 使用QIIME 2的Emperor工具对PCoA结果进行可视化
+        qiime emperor plot \
+        --i-pcoa pcoa.qza \
+        --m-metadata-file ${metadata} \
+        --o-visualization pcoa-visualization.qzv
+
+        # 导出可视化文件为通用图像格式
+        mkdir -p exported_visualization
+        qiime tools export \
+        --input-path pcoa-visualization.qzv \
+        --output-path exported_visualization
     }
 
     output {
-        File pcoa = "pcoa.qza"
+        # File pcoa = "pcoa.qza"
+        File visualization = "pcoa-visualization.qzv"
+        Array[File] exported_files = glob("exported_visualization/**/*")
     }
 
     runtime {
