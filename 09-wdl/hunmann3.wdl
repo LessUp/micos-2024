@@ -70,7 +70,6 @@ workflow MetaGenomeAny {
     }
 }
 
-
 task MergeFqPairs {
     input {
         String uid
@@ -135,7 +134,6 @@ task run_humann_task {
     }
 }
 
-
 task HumannRegroupTable {
   input {
     String outdir
@@ -198,159 +196,4 @@ task HumannRegroupTable {
     docker_url: "stereonote_ali_hpc_external/zc_liu_a6b1596da9c84eb29ce2563c8770f70a_private:latest"
     cpu: 4
   }
-}
-
-task RunRScript {
-    input {
-        File output_metaCyc_genefamily
-        File output_metaCyc_pathabun
-        File output_metaCyc_pathcover
-        File output_eggnog
-        File output_go
-        File output_ko
-        File output_ec
-        File output_pfam
-        String R_circle
-        String R_columnar
-        String R_heatmap
-        String Rscpirt
-        Array[File] result_tsv_list
-    }
-
-    command {
-        # source ~/.bashrc
-        # conda env list
-        # conda activate myenv
-        for TFILE in ~{sep=' ' result_tsv_list}
-        do
-            LINECOUNT=$(wc -l < "$TFILE")
-            echo "$TFILE"
-            echo "hangshu:$LINECOUNT"
-            if [ "$LINECOUNT" -gt 2 ]; then
-                echo "draw pci"
-                echo ${Rscpirt}
-                ${Rscpirt} ${R_circle} $TFILE
-                ${Rscpirt} ${R_columnar} $TFILE
-                ${Rscpirt} ${R_heatmap} $TFILE
-            else
-                echo "data not enough"
-                RESULTA="$(echo "$TFILE" | sed 's/\.tsv$//')_top10.svg"
-                echo "not enough data to plot" > $RESULTA
-                RESULTB="$(echo "$TFILE" | sed 's/\.tsv$//')_top20_histogram.pdf"
-                echo "not enough data to plot" > $RESULTB
-                RESULTC="$(echo "$TFILE" | sed 's/\.tsv$//')_top50_heatmap.pdf"
-                echo "not enough data to plot" > $RESULTC
-            fi
-        done
-        
-    }
-
-    runtime {
-        cpu: 4
-        docker_url:"stereonote_ali_hpc/zc_liu_6892d55611ef4d6983df0277d750fca9_private:latest"
-    }
-
-    output {
-        File metaCyc_genefamily_tsv = "${output_metaCyc_genefamily}"
-        File metaCyc_pathabun = "${output_metaCyc_pathabun}"
-        File metaCyc_pathcover = "${output_metaCyc_pathcover}"
-        File metaCyc_genefamily_cir = sub(output_metaCyc_genefamily, "\\.tsv$", "") + "_top10.svg"
-        File metaCyc_genefamily_col = sub(output_metaCyc_genefamily, "\\.tsv$", "") + "_top20_histogram.pdf"
-        File metaCyc_genefamily_het = sub(output_metaCyc_genefamily, "\\.tsv$", "") + "_top50_heatmap.pdf"
-
-        File eggnog_tsv = "${output_eggnog}"
-        File eggnog_cir = sub(output_eggnog, "\\.tsv$", "") + "_top10.svg"
-        File eggnog_col = sub(output_eggnog, "\\.tsv$", "") + "_top20_histogram.pdf"
-        File eggnog_het = sub(output_eggnog, "\\.tsv$", "") + "_top50_heatmap.pdf"
-
-        File go_tsv = "${output_go}"
-        File go_cir = sub(output_go, "\\.tsv$", "") + "_top10.svg"
-        File go_col = sub(output_go, "\\.tsv$", "") + "_top20_histogram.pdf"
-        File go_het = sub(output_go, "\\.tsv$", "") + "_top50_heatmap.pdf"
-
-        File ko_tsv = "${output_ko}"
-        File ko_cir = sub(output_ko, "\\.tsv$", "") + "_top10.svg"
-        File ko_col = sub(output_ko, "\\.tsv$", "") + "_top20_histogram.pdf"
-        File ko_het = sub(output_ko, "\\.tsv$", "") + "_top50_heatmap.pdf"
-
-        File ec_tsv = "${output_ec}"
-        File ec_cir = sub(output_ec, "\\.tsv$", "") + "_top10.svg"
-        File ec_col = sub(output_ec, "\\.tsv$", "") + "_top20_histogram.pdf"
-        File ec_het = sub(output_ec, "\\.tsv$", "") + "_top50_heatmap.pdf"
-
-        File p_tsv = "${output_pfam}"
-        File p_cir = sub(output_pfam, "\\.tsv$", "") + "_top10.svg"
-        File p_col = sub(output_pfam, "\\.tsv$", "") + "_top20_histogram.pdf"
-        File p_het = sub(output_pfam, "\\.tsv$", "") + "_top50_heatmap.pdf"
-    }
-}
-
-
-task RunLefse {
-    input {
-        String outdir
-        String run_lefse
-        File output_metaCyc_genefamily
-        File output_metaCyc_pathabun
-        File output_metaCyc_pathcover
-        File output_eggnog
-        File output_go
-        File output_ko
-        File output_ec
-        File output_pfam
-        File py_script
-    }
-    command {
-        cp /root/anaconda3/etc/profile.d/conda.sh ${outdir}/conda-new.sh
-        chmod 777 ${outdir}/conda-new.sh
-        source ${outdir}/conda-new.sh
-        conda activate lefse
-
-        NEWTSV=$(echo ~{output_metaCyc_genefamily} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_metaCyc_pathabun} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_metaCyc_pathcover} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_eggnog} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_go} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_ko} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_ec} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-
-        NEWTSV=$(echo ~{output_pfam} | sed 's/\.tsv$/\.grouped/')
-        python3 ~{py_script} SEQ $NEWTSV
-        ~{run_lefse} $NEWTSV $(echo $NEWTSV | sed 's/\.grouped$/_lda.pdf/')
-    }
-    runtime {
-        cpu: 4
-        docker_url: "stereonote_ali_hpc_external/zc_liu_41a7392f78574de296107f747a7f776a_private:latest"
-    }
-    output {
-        # todo
-        File lda1 = sub(output_metaCyc_genefamily, "\\.tsv$", "") + "_lda.pdf"
-        File lda2 = sub(output_metaCyc_pathabun, "\\.tsv$", "") + "_lda.pdf"
-        File lda3 = sub(output_metaCyc_pathcover, "\\.tsv$", "") + "_lda.pdf"
-        File lda4 = sub(output_eggnog, "\\.tsv$", "") + "_lda.pdf"
-        File lda5 = sub(output_go, "\\.tsv$", "") + "_lda.pdf"
-        File lda6 = sub(output_ko, "\\.tsv$", "") + "_lda.pdf"
-        File lda7 = sub(output_ec, "\\.tsv$", "") + "_lda.pdf"
-        File lda8 = sub(output_pfam, "\\.tsv$", "") + "_lda.pdf"
-    }
 }
