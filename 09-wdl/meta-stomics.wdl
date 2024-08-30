@@ -150,23 +150,42 @@ workflow metagenomic_analysis_workflow {
     }
 
     output {
-        Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
-        Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
-        File merged_tsv = MergeTSVTask.merged_tsv
-        File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
+        # 分类结果
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
-        File output_biom = kraken_biom.output_biom
+        Array[File] kraken2_tsv_file = Kraken2Task.output_tsv_file
+
+        # 物种分类图
         Array[File] krona_html_reports = krona.output_html
+
         File filtered_table = FilterRareFeatures.filtered_table
         File rarefied_table = RarefyTable.rarefied_table
         File distance_matrix = CalculateBetaDiversity.distance_matrix
-        File pcoa_qzv = PerformAndVisualizePCoA.visualization
-        Array[File] pcoa_exports = PerformAndVisualizePCoA.exported_files
         File comp_table = AddPseudocount.comp_table
+
+        # beta 多样性 PCoA
+        File pcoa_qzv = PerformAndVisualizePCoA.visualization
+        File pcoa_exports = PerformAndVisualizePCoA.exported_files
+
+        # alpha 多样性
         File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
         File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
-        File heatmap_visualization = GenerateHeatmap.heatmap_visualization
-        Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
+
+        # 热图
+        File heatmap_qzv = GenerateHeatmap.heatmap_visualization
+        File heatmap_exports = GenerateHeatmap.exported_files
+
+        # 箱线图
+        File alpha_diversity_boxplot = AlphaDiversityBoxPlot.alpha_group_significance_visualization
+        File alpha_diversity_boxplot_exports = AlphaDiversityBoxPlot.exported_files
+
+        # 过滤后的fastq
+        Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
+        Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
+
+        # 其他文件
+        File output_biom = kraken_biom.output_biom
+        File merged_tsv = MergeTSVTask.merged_tsv
+        File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 }
 
@@ -568,19 +587,22 @@ task PerformAndVisualizePCoA {
         qiime emperor plot \
         --i-pcoa pcoa.qza \
         --m-metadata-file ${metadata} \
-        --o-visualization pcoa-visualization.qzv
+        --o-visualization pcoa.qzv
 
         # 导出可视化文件为通用图像格式
-        mkdir -p exported_visualization
+        mkdir -p pcoa
         qiime tools export \
         --input-path pcoa-visualization.qzv \
-        --output-path exported_visualization
+        --output-path pcoa
+
+        # 打包所有导出的文件
+        tar -czvf pcoa.tar.gz pcoa
     }
 
     output {
         # File pcoa = "pcoa.qza"
-        File visualization = "pcoa-visualization.qzv"
-        Array[File] exported_files = glob("exported_visualization/**/*")
+        File visualization = "pcoa.qzv"
+        File exported_files = "pcoa.tar.gz"
     }
 
     runtime {
@@ -629,15 +651,18 @@ task GenerateHeatmap {
         --o-visualization feature-table-heatmap.qzv
 
         # 导出可视化文件为通用图像格式
-        mkdir -p exported_heatmap
+        mkdir -p feature-table-heatmap
         qiime tools export \
         --input-path feature-table-heatmap.qzv \
-        --output-path exported_heatmap
+        --output-path feature-table-heatmap
+
+        # 打包所有导出的文件
+        tar -czvf feature-table-heatmap.tar.gz feature-table-heatmap
     >>>
 
     output {
         File heatmap_visualization = "feature-table-heatmap.qzv"
-        Array[File] exported_files = glob("exported_heatmap/**/*")
+        File exported_files = "feature-table-heatmap.tar.gz"
     }
 
     runtime {
@@ -654,21 +679,24 @@ task AlphaDiversityBoxPlot {
         File metadata
     }
 
-    command {
+    command <<<
         qiime diversity alpha-group-significance \
-        --i-alpha-diversity ${shannon_diversity} \
-        --m-metadata-file ${metadata} \
+        --i-alpha-diversity ~{shannon_diversity} \
+        --m-metadata-file ~{metadata} \
         --o-visualization alpha-group-significance.qzv
 
-        mkdir -p exported_alpha_group_significance
+        mkdir -p alpha_group_significance
         qiime tools export \
         --input-path alpha-group-significance.qzv \
-        --output-path exported_alpha_group_significance
-    }
+        --output-path alpha_group_significance
+
+        # 打包所有导出的文件
+        tar -czvf alpha_group_significance.tar.gz alpha_group_significance
+    >>>
 
     output {
         File alpha_group_significance_visualization = "alpha-group-significance.qzv"
-        Array[File] exported_files = glob("exported_alpha_group_significance/**/*")
+        File exported_files = "alpha_group_significance.tar.gz"
     }
 
     runtime {
