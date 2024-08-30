@@ -91,15 +91,9 @@ workflow metagenomic_analysis_workflow {
             input_tsv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 
-    call FilterLowAbundanceFeatures {
-        input:
-            input_table = ImportFeatureTable.output_qza,
-            qiime2_min_frequency = qiime2_min_frequency
-    }
-
     call FilterRareFeatures {
         input:
-            input_table = FilterLowAbundanceFeatures.filtered_table,
+            input_table = ImportFeatureTable.output_qza,
             qiime2_min_samples = qiime2_min_samples
     }
 
@@ -405,31 +399,6 @@ task ImportTaxonomy {
 
     output {
         File output_qza = "taxonomy.qza"
-    }
-
-    runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
-    }
-}
-
-# 过滤掉丰度较低的特征
-task FilterLowAbundanceFeatures {
-    input {
-        File input_table
-        Int qiime2_min_frequency
-    }
-
-    command {
-        qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --p-min-frequency ${qiime2_min_frequency} \
-        --o-filtered-table filtered-table.qza
-    }
-
-    output {
-        File filtered_table = "filtered-table.qza"
     }
 
     runtime {
