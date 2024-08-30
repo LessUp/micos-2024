@@ -53,38 +53,16 @@
   "metagenomic_analysis_workflow.confidence": 0.01,
   "metagenomic_analysis_workflow.min_base_quality": 20,
   "metagenomic_analysis_workflow.min_hit_groups": 1,
-  "metagenomic_analysis_workflow.output_tsv_names": [
-    "SRR8291345_Control_T12-1.kraken_tsv",
-    "SRR8291346_Control_T12-2.kraken_tsv",
-    "SRR8291358_Amoxicillin_T12-3.kraken_tsv",
-    "SRR8291360_Ciprofloxacin_T24-3.kraken_tsv",
-    "SRR8291362_Amoxicillin_T12-1.kraken_tsv",
-    "SRR8291363_Amoxicillin_T12-2.kraken_tsv",
-    "SRR8291366_Ciprofloxacin_T24-1.kraken_tsv",
-    "SRR8291367_Ciprofloxacin_T24-2.kraken_tsv",
-    "SRR8291368_Control_T24-1.kraken_tsv"
-  ],
-  "metagenomic_analysis_workflow.report_txt_names": [
-    "SRR8291345_Control_T12-1.kraken_report",
-    "SRR8291346_Control_T12-2.kraken_report",
-    "SRR8291358_Amoxicillin_T12-3.kraken_report",
-    "SRR8291360_Ciprofloxacin_T24-3.kraken_report",
-    "SRR8291362_Amoxicillin_T12-1.kraken_report",
-    "SRR8291363_Amoxicillin_T12-2.kraken_report",
-    "SRR8291366_Ciprofloxacin_T24-1.kraken_report",
-    "SRR8291367_Ciprofloxacin_T24-2.kraken_report",
-    "SRR8291368_Control_T24-1.kraken_report"
-  ],
-  "metagenomic_analysis_workflow.krona_output_html_names": [
-    "SRR8291345_Control_T12-1.kraken_report.html",
-    "SRR8291346_Control_T12-2.kraken_report.html",
-    "SRR8291358_Amoxicillin_T12-3.kraken_report.html",
-    "SRR8291360_Ciprofloxacin_T24-3.kraken_report.html",
-    "SRR8291362_Amoxicillin_T12-1.kraken_report.html",
-    "SRR8291363_Amoxicillin_T12-2.kraken_report.html",
-    "SRR8291366_Ciprofloxacin_T24-1.kraken_report.html",
-    "SRR8291367_Ciprofloxacin_T24-2.kraken_report.html",
-    "SRR8291368_Control_T24-1.kraken_report.html"
+  "metagenomic_analysis_workflow.basename_list": [
+    "SRR8291345_Control_T12-1",
+    "SRR8291346_Control_T12-2",
+    "SRR8291358_Amoxicillin_T12-3",
+    "SRR8291360_Ciprofloxacin_T24-3",
+    "SRR8291362_Amoxicillin_T12-1",
+    "SRR8291363_Amoxicillin_T12-2",
+    "SRR8291366_Ciprofloxacin_T24-1",
+    "SRR8291367_Ciprofloxacin_T24-2",
+    "SRR8291368_Control_T24-1"
   ],
   "metagenomic_analysis_workflow.metadata": "/home/shuai/Workspace/ILC/mm-dev/01-data/metadata.tsv",
   "metagenomic_analysis_workflow.taxonomy_convert_script": "/media/shuai/TOSHBA/mm-dev/ManualData/Scripts/convert-format-qiime2.py",

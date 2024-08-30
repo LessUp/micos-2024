@@ -16,9 +16,7 @@ workflow metagenomic_analysis_workflow {
         Int min_hit_groups
 
         # Krona
-        Array[String] krona_output_html_names
-        Array[String] output_tsv_names
-        Array[String] report_txt_names
+        Array[String] basename_list
 
         # Qiime2
         File metadata
@@ -67,8 +65,13 @@ workflow metagenomic_analysis_workflow {
             input_files = Kraken2Task.report_txt_file,
             output_filename = "kraken_biom_output.biom"
     }
+    
+    # Step 5.1: strcat krona output-file names
+    Array[String] krona_output_html_names = basename_list.map { basename => basename + ".kraken_report.html" }
+    Array[String] output_tsv_names = basename_list.map { basename => basename + ".kraken_tsv" }
+    Array[String] report_txt_names = basename_list.map { basename => basename + ".kraken_report" }
 
-    # Step 5: Generate Krona visualizations
+    # Step 5.2: Generate Krona visualizations
     scatter (idx in range(length(Kraken2Task.report_txt_file))) {
         call krona {
             input:
