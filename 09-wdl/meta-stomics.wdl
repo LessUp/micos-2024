@@ -103,21 +103,31 @@ workflow metagenomic_analysis_workflow {
             qiime2_sampling_depth = qiime2_sampling_depth
     }
 
-    call CalculateAndExportAlphaDiversity {
+    call CalculateShannonDiversity {
         input:
             input_table = RarefyTable.rarefied_table
+    }
+
+    call ExportShannonDiversity {
+        input:
+            shannon_diversity = CalculateShannonDiversity.shannon_diversity
     }
 
     # 计算Alpha指数的箱线图
     call AlphaDiversityBoxPlot {
         input:
-            shannon_diversity = CalculateAndExportAlphaDiversity.shannon_diversity,
+            shannon_diversity = CalculateShannonDiversity.shannon_diversity,
             metadata = metadata
     }
 
-    call CalculateAndExportChao1Diversity {
+    call CalculateChao1Diversity {
         input:
             input_table = RarefyTable.rarefied_table
+    }
+
+    call ExportChao1Diversity {
+        input:
+            chao1_diversity = CalculateChao1Diversity.chao1_diversity
     }
 
     call CalculateBetaDiversity {
@@ -161,8 +171,8 @@ workflow metagenomic_analysis_workflow {
         File pcoa_exports = PerformAndVisualizePCoA.exported_files
 
         # alpha 多样性
-        File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
-        File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
+        File shannon_diversity = ExportShannonDiversity.exported_shannon_diversity
+        File chao1_diversity = ExportChao1Diversity.exported_chao1_diversity
 
         # 热图
         File heatmap_qzv = GenerateHeatmap.heatmap_visualization
@@ -458,8 +468,8 @@ task RarefyTable {
     }
 }
 
-# 计算和导出 Alpha 多样性（Shannon 指数）
-task CalculateAndExportAlphaDiversity {
+# 计算 Shannon 指数
+task CalculateShannonDiversity {
     input {
         File input_table
     }
@@ -469,49 +479,90 @@ task CalculateAndExportAlphaDiversity {
         --i-table ${input_table} \
         --p-metric shannon \
         --o-alpha-diversity shannon_diversity.qza
-
-        qiime tools export \
-        --input-path shannon_diversity.qza \
-        --output-path exported_shannon_diversity
     }
 
     output {
         File shannon_diversity = "shannon_diversity.qza"
-        File exported_shannon_diversity = "exported_shannon_diversity/alpha-diversity.tsv"
     }
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
+        req_cpu: 1
         req_mem: "4G"
     }
 }
 
-# 计算和导出 Alpha 多样性（Chao1 指数）
-task CalculateAndExportChao1Diversity {
+# 导出 Shannon 指数
+task ExportShannonDiversity {
     input {
-        File input_table
+        File shannon_diversity
     }
 
-    command {
-        qiime diversity alpha \
-        --i-table ${input_table} \
-        --p-metric chao1 \
-        --o-alpha-diversity chao1-diversity.qza
-
+    command <<<
         qiime tools export \
-        --input-path chao1-diversity.qza \
-        --output-path exported-chao1-diversity
-    }
+        --input-path ~{shannon_diversity} \
+        --output-path exported_shannon_diversity
+
+        mv exported_chao1_diversity/alpha-diversity.tsv exported_chao1_diversity/shannon-diversity.tsv
+    >>>
 
     output {
-        File exported_chao1_diversity = "exported-chao1-diversity/alpha-diversity.tsv"
+        File exported_shannon_diversity = "exported_shannon_diversity/shannon-diversity.tsv"
     }
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        req_cpu: 1
+        req_mem: "1G"
+    }
+}
+
+# 计算 Chao1 指数
+task CalculateChao1Diversity {
+    input {
+        File input_table
+    }
+
+    command <<<
+        qiime diversity alpha \
+        --i-table ~{input_table} \
+        --p-metric chao1 \
+        --o-alpha-diversity chao1_diversity.qza
+    >>>
+
+    output {
+        File chao1_diversity = "chao1_diversity.qza"
+    }
+
+    runtime {
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
+        req_cpu: 1
+        req_mem: "1G"
+    }
+}
+
+# 导出 Chao1 指数
+task ExportChao1Diversity {
+    input {
+        File chao1_diversity
+    }
+
+    command <<<
+        qiime tools export \
+        --input-path ~{chao1_diversity} \
+        --output-path exported_chao1_diversity
+
+        mv exported_chao1_diversity/alpha-diversity.tsv exported_chao1_diversity/chao1-diversity.tsv
+    >>>
+
+    output {
+        File exported_chao1_diversity = "exported_chao1_diversity/chao1-diversity.tsv"
+    }
+
+    runtime {
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
+        req_cpu: 1
+        req_mem: "1G"
     }
 }
 
