@@ -97,15 +97,9 @@ workflow metagenomic_analysis_workflow {
             qiime2_min_samples = qiime2_min_samples
     }
 
-    call RarefyTable {
-        input:
-            input_table = FilterRareFeatures.filtered_table,
-            qiime2_sampling_depth = qiime2_sampling_depth
-    }
-
     call CalculateShannonDiversity {
         input:
-            input_table = RarefyTable.rarefied_table
+            input_table = FilterRareFeatures.filtered_table
     }
 
     call ExportShannonDiversity {
@@ -122,7 +116,7 @@ workflow metagenomic_analysis_workflow {
 
     call CalculateChao1Diversity {
         input:
-            input_table = RarefyTable.rarefied_table
+            input_table = FilterRareFeatures.filtered_table
     }
 
     call ExportChao1Diversity {
@@ -132,7 +126,7 @@ workflow metagenomic_analysis_workflow {
 
     call CalculateBetaDiversity {
         input:
-            input_table = RarefyTable.rarefied_table
+            input_table = FilterRareFeatures.filtered_table
     }
 
     call PerformAndVisualizePCoA {
@@ -143,7 +137,7 @@ workflow metagenomic_analysis_workflow {
 
     call AddPseudocount {
         input:
-            input_table = RarefyTable.rarefied_table
+            input_table = FilterRareFeatures.filtered_table
     }
 
     # 计算热图
@@ -162,7 +156,6 @@ workflow metagenomic_analysis_workflow {
         Array[File] krona_html_reports = krona.output_html
 
         File filtered_table = FilterRareFeatures.filtered_table
-        File rarefied_table = RarefyTable.rarefied_table
         File distance_matrix = CalculateBetaDiversity.distance_matrix
         File comp_table = AddPseudocount.comp_table
 
@@ -434,31 +427,6 @@ task FilterRareFeatures {
 
     output {
         File filtered_table = "filtered-table.qza"
-    }
-
-    runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
-    }
-}
-
-# 这个任务使用 QIIME2 工具对输入表进行稀释
-task RarefyTable {
-    input {
-        File input_table
-        Int qiime2_sampling_depth
-    }
-
-    command {
-        qiime feature-table rarefy \
-        --i-table ${input_table} \
-        --p-sampling-depth ${qiime2_sampling_depth} \
-        --o-rarefied-table rarefied-table.qza
-    }
-
-    output {
-        File rarefied_table = input_table
     }
 
     runtime {
