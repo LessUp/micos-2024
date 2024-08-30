@@ -21,7 +21,7 @@ workflow metagenomic_analysis_workflow {
         Array[String] report_txt_names
 
         # Qiime2
-        File qiime2_sample_metadata
+        File metadata
         Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 1
         Int qiime2_sampling_depth = 100
@@ -94,9 +94,15 @@ workflow metagenomic_analysis_workflow {
             input_tsv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 
-    call FilterRareFeatures {
+    call FilterLowAbundanceFeatures {
         input:
             input_table = ImportFeatureTable.output_qza,
+            qiime2_min_frequency = qiime2_min_frequency
+    }
+
+    call FilterRareFeatures {
+        input:
+            input_table = FilterLowAbundanceFeatures.filtered_table,
             qiime2_min_samples = qiime2_min_samples
     }
 
@@ -106,14 +112,21 @@ workflow metagenomic_analysis_workflow {
             qiime2_sampling_depth = qiime2_sampling_depth
     }
 
-    call CalculateAlphaDiversity {
+    call CalculateAndExportAlphaDiversity {
         input:
             input_table = RarefyTable.rarefied_table
     }
 
-    call ExportAlphaDiversity {
+    # 计算Alpha指数的箱线图
+    call AlphaDiversityBoxPlot {
         input:
-            input_qza = CalculateAlphaDiversity.alpha_diversity
+            shannon_diversity = CalculateAndExportAlphaDiversity.shannon_diversity,
+            metadata = metadata
+    }
+
+    call CalculateAndExportChao1Diversity {
+        input:
+            input_table = RarefyTable.rarefied_table
     }
 
     call CalculateBetaDiversity {
@@ -121,9 +134,10 @@ workflow metagenomic_analysis_workflow {
             input_table = RarefyTable.rarefied_table
     }
 
-    call PerformPCoA {
+    call PerformAndVisualizePCoA {
         input:
-            distance_matrix = CalculateBetaDiversity.distance_matrix
+            distance_matrix = CalculateBetaDiversity.distance_matrix,
+            metadata = metadata
     }
 
     call AddPseudocount {
@@ -131,19 +145,31 @@ workflow metagenomic_analysis_workflow {
             input_table = RarefyTable.rarefied_table
     }
 
+    # 计算热图
+    call GenerateHeatmap {
+        input:
+            input_table = ImportFeatureTable.output_qza,
+            metadata = metadata
+    }
+
     output {
         Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
         Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
         File merged_tsv = MergeTSVTask.merged_tsv
+        File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
         File output_biom = kraken_biom.output_biom
         Array[File] krona_html_reports = krona.output_html
         File filtered_table = FilterRareFeatures.filtered_table
         File rarefied_table = RarefyTable.rarefied_table
         File distance_matrix = CalculateBetaDiversity.distance_matrix
-        File pcoa = PerformPCoA.pcoa
+        File pcoa_qzv = PerformAndVisualizePCoA.visualization
+        Array[File] pcoa_exports = PerformAndVisualizePCoA.exported_files
         File comp_table = AddPseudocount.comp_table
-        File shannon_diversity = ExportAlphaDiversity.exported_diversity
+        File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
+        File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
+        File heatmap_visualization = GenerateHeatmap.heatmap_visualization
+        Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
     }
 }
 
@@ -367,6 +393,31 @@ task ImportTaxonomy {
     }
 }
 
+# 过滤掉丰度较低的特征
+task FilterLowAbundanceFeatures {
+    input {
+        File input_table
+        Int qiime2_min_frequency
+    }
+
+    command {
+        qiime feature-table filter-features \
+        --i-table ${input_table} \
+        --p-min-frequency ${qiime2_min_frequency} \
+        --o-filtered-table filtered-table.qza
+    }
+
+    output {
+        File filtered_table = "filtered-table.qza"
+    }
+
+    runtime {
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
+    }
+}
+
 # 过滤掉在样本中出现频率较低的特征
 task FilterRareFeatures {
     input {
@@ -417,8 +468,8 @@ task RarefyTable {
     }
 }
 
-# 计算输入表的 Alpha 多样性（Shannon 指数）
-task CalculateAlphaDiversity {
+# 计算和导出 Alpha 多样性（Shannon 指数）
+task CalculateAndExportAlphaDiversity {
     input {
         File input_table
     }
@@ -427,11 +478,16 @@ task CalculateAlphaDiversity {
         qiime diversity alpha \
         --i-table ${input_table} \
         --p-metric shannon \
-        --o-alpha-diversity alpha-diversity.qza
+        --o-alpha-diversity shannon_diversity.qza
+
+        qiime tools export \
+        --input-path shannon_diversity.qza \
+        --output-path exported_shannon_diversity
     }
 
     output {
-        File alpha_diversity = "alpha-diversity.qza"
+        File shannon_diversity = "shannon_diversity.qza"
+        File exported_shannon_diversity = "exported_shannon_diversity/alpha-diversity.tsv"
     }
 
     runtime {
@@ -441,20 +497,25 @@ task CalculateAlphaDiversity {
     }
 }
 
-# 导出 Alpha 多样性结果
-task ExportAlphaDiversity {
+# 计算和导出 Alpha 多样性（Chao1 指数）
+task CalculateAndExportChao1Diversity {
     input {
-        File input_qza
+        File input_table
     }
 
     command {
+        qiime diversity alpha \
+        --i-table ${input_table} \
+        --p-metric chao1 \
+        --o-alpha-diversity chao1-diversity.qza
+
         qiime tools export \
-        --input-path ${input_qza} \
-        --output-path exported-diversity
+        --input-path chao1-diversity.qza \
+        --output-path exported-chao1-diversity
     }
 
     output {
-        File exported_diversity = "exported-diversity/alpha-diversity.tsv"
+        File exported_chao1_diversity = "exported-chao1-diversity/alpha-diversity.tsv"
     }
 
     runtime {
@@ -488,20 +549,36 @@ task CalculateBetaDiversity {
     }
 }
 
-# 对输入的距离矩阵文件执行主坐标分析（PCoA）
-task PerformPCoA {
+# 对输入的距离矩阵文件执行主坐标分析(PCoA)，并进行可视化
+task PerformAndVisualizePCoA {
     input {
         File distance_matrix
+        File metadata
     }
 
     command {
+        # 执行主坐标分析（PCoA）
         qiime diversity pcoa \
         --i-distance-matrix ${distance_matrix} \
         --o-pcoa pcoa.qza
+
+        # 使用QIIME 2的Emperor工具对PCoA结果进行可视化
+        qiime emperor plot \
+        --i-pcoa pcoa.qza \
+        --m-metadata-file ${metadata} \
+        --o-visualization pcoa-visualization.qzv
+
+        # 导出可视化文件为通用图像格式
+        mkdir -p exported_visualization
+        qiime tools export \
+        --input-path pcoa-visualization.qzv \
+        --output-path exported_visualization
     }
 
     output {
-        File pcoa = "pcoa.qza"
+        # File pcoa = "pcoa.qza"
+        File visualization = "pcoa-visualization.qzv"
+        Array[File] exported_files = glob("exported_visualization/**/*")
     }
 
     runtime {
@@ -525,6 +602,71 @@ task AddPseudocount {
 
     output {
         File comp_table = "comp-table.qza"
+    }
+
+    runtime {
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
+    }
+}
+
+# 增加热图的计算
+task GenerateHeatmap {
+    input {
+        File input_table
+        File metadata
+    }
+
+    command <<<
+        # 生成热图
+        qiime feature-table heatmap \
+        --i-table ~{input_table} \
+        --m-sample-metadata-file ~{metadata} \
+        --m-sample-metadata-column treatment \
+        --o-visualization feature-table-heatmap.qzv
+
+        # 导出可视化文件为通用图像格式
+        mkdir -p exported_heatmap
+        qiime tools export \
+        --input-path feature-table-heatmap.qzv \
+        --output-path exported_heatmap
+    >>>
+
+    output {
+        File heatmap_visualization = "feature-table-heatmap.qzv"
+        Array[File] exported_files = glob("exported_heatmap/**/*")
+    }
+
+    runtime {
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        req_cpu: 4
+        req_mem: "4G"
+    }
+}
+
+# 生成 Alpha 多样性指数的箱线图
+task AlphaDiversityBoxPlot {
+    input {
+        File shannon_diversity
+        File metadata
+    }
+
+    command {
+        qiime diversity alpha-group-significance \
+        --i-alpha-diversity ${shannon_diversity} \
+        --m-metadata-file ${metadata} \
+        --o-visualization alpha-group-significance.qzv
+
+        mkdir -p exported_alpha_group_significance
+        qiime tools export \
+        --input-path alpha-group-significance.qzv \
+        --output-path exported_alpha_group_significance
+    }
+
+    output {
+        File alpha_group_significance_visualization = "alpha-group-significance.qzv"
+        Array[File] exported_files = glob("exported_alpha_group_significance/**/*")
     }
 
     runtime {

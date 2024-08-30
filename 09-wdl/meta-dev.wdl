@@ -26,7 +26,6 @@ workflow metagenomic_analysis_workflow {
         Int qiime2_min_samples = 1
         Int qiime2_sampling_depth = 100
         File taxonomy_convert_script
-        File extract_taxonomy_feature_ids_script
     }
 
     # Step 1: Run KneadData on input files
@@ -87,8 +86,7 @@ workflow metagenomic_analysis_workflow {
     call ConvertKraken2Tsv {
         input:
             qiime2_merged_taxonomy_tsv = MergeTSVTask.merged_tsv,
-            taxonomy_convert_script = taxonomy_convert_script,
-            extract_taxonomy_feature_ids_script = extract_taxonomy_feature_ids_script
+            taxonomy_convert_script = taxonomy_convert_script
     }
 
     call ImportTaxonomy {
@@ -147,15 +145,6 @@ workflow metagenomic_analysis_workflow {
             input_table = RarefyTable.rarefied_table
     }
 
-    # 计算丰度柱状图
-    # call GenerateBarPlot {
-    #     input:
-    #         input_table = ImportFeatureTable.output_qza,
-    #         taxonomy = ImportTaxonomy.output_qza,
-    #         metadata = metadata,
-    #         # taxonomy_feature_ids = ConvertKraken2Tsv.taxonomy_feature_ids
-    # }
-
     # 计算热图
     call GenerateHeatmap {
         input:
@@ -179,10 +168,9 @@ workflow metagenomic_analysis_workflow {
         File comp_table = AddPseudocount.comp_table
         File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
         File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
-        # File barplot_visualization = GenerateBarPlot.barplot_visualization
-        # Array[File] barplot_exported_files = GenerateBarPlot.exported_files
         File heatmap_visualization = GenerateHeatmap.heatmap_visualization
         Array[File] heatmap_exported_files = GenerateHeatmap.exported_files
+    }
 }
 
 # KneadData task to preprocess raw sequencing data
@@ -339,17 +327,14 @@ task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
         File taxonomy_convert_script
-        File extract_taxonomy_feature_ids_script
     }
 
     command <<<
         python3 ~{taxonomy_convert_script} ~{qiime2_merged_taxonomy_tsv} merge_converted_taxonomy.tsv
-        # python3 ~{extract_taxonomy_feature_ids_script} merge_converted_taxonomy.tsv taxonomy_feature_ids.txt
     >>>
 
     output {
         File merge_converted_taxonomy = "merge_converted_taxonomy.tsv"
-        # File taxonomy_feature_ids = "taxonomy_feature_ids.txt"
     }
 
     runtime {
@@ -625,48 +610,6 @@ task AddPseudocount {
         memory: "32 GB"
     }
 }
-
-# # 增加丰度柱状图的计算
-# task GenerateBarPlot {
-#     input {
-#         File input_table
-#         File taxonomy
-#         File metadata
-#         # File taxonomy_feature_ids
-#     }
-
-#     command <<<
-#         # 过滤掉特征表中，不在分类文件中的特征
-#         qiime feature-table filter-features \
-#         --i-table ~{input_table} \
-#         --m-metadata-file ~{taxonomy_feature_ids} \
-#         --o-filtered-table filtered-feature-table.qza
-        
-#         # 生成丰度柱状图
-#         qiime taxa barplot \
-#         --i-table filtered-feature-table.qza \
-#         --i-taxonomy ~{taxonomy} \
-#         --m-metadata-file ~{metadata} \
-#         --o-visualization taxa-bar-plots.qzv
-#     >>>
-
-#     # 导出可视化文件为通用图像格式
-#     # mkdir -p exported_taxa_bar_plots
-#     # qiime tools export \
-#     # --input-path taxa-bar-plots.qzv \
-#     # --output-path exported_taxa_bar_plots
-
-#     output {
-#         File barplot_visualization = "taxa-bar-plots.qzv"
-#         # Array[File] exported_files = glob("exported_taxa_bar_plots/**/*")
-#     }
-
-#     runtime {
-#         docker: "quay.io/qiime2/metagenome:2024.5"
-#         cpu: 16
-#         memory: "32 GB"
-#     }
-# }
 
 # 增加热图的计算
 task GenerateHeatmap {

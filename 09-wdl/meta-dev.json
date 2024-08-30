@@ -88,7 +88,6 @@
   ],
   "metagenomic_analysis_workflow.metadata": "/home/shuai/Workspace/ILC/mm-dev/01-data/metadata.tsv",
   "metagenomic_analysis_workflow.taxonomy_convert_script": "/media/shuai/TOSHBA/mm-dev/ManualData/Scripts/convert-format-qiime2.py",
-  "metagenomic_analysis_workflow.extract_taxonomy_feature_ids_script": "/media/shuai/TOSHBA/mm-dev/ManualData/Scripts/extract_taxonomy_feature_ids_script.py",
   "metagenomic_analysis_workflow.qiime2_min_frequency": 1,
   "metagenomic_analysis_workflow.qiime2_min_samples": 1,
   "metagenomic_analysis_workflow.qiime2_sampling_depth": 1
