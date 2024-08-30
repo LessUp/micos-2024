@@ -97,21 +97,31 @@ workflow metagenomic_analysis_workflow {
             qiime2_min_samples = qiime2_min_samples
     }
 
-    call CalculateAndExportAlphaDiversity {
+    call CalculateShannonDiversity {
         input:
             input_table = FilterRareFeatures.filtered_table
+    }
+
+    call ExportShannonDiversity {
+        input:
+            shannon_diversity = CalculateShannonDiversity.shannon_diversity
     }
 
     # 计算Alpha指数的箱线图
     call AlphaDiversityBoxPlot {
         input:
-            shannon_diversity = CalculateAndExportAlphaDiversity.shannon_diversity,
+            shannon_diversity = CalculateShannonDiversity.shannon_diversity,
             metadata = metadata
     }
 
-    call CalculateAndExportChao1Diversity {
+    call CalculateChao1Diversity {
         input:
             input_table = FilterRareFeatures.filtered_table
+    }
+
+    call ExportChao1Diversity {
+        input:
+            chao1_diversity = CalculateChao1Diversity.chao1_diversity
     }
 
     call CalculateBetaDiversity {
@@ -154,8 +164,8 @@ workflow metagenomic_analysis_workflow {
         File pcoa_exports = PerformAndVisualizePCoA.exported_files
 
         # alpha 多样性
-        File shannon_diversity = CalculateAndExportAlphaDiversity.exported_shannon_diversity
-        File chao1_diversity = CalculateAndExportChao1Diversity.exported_chao1_diversity
+        File shannon_diversity = ExportShannonDiversity.exported_shannon_diversity
+        File chao1_diversity = ExportChao1Diversity.exported_chao1_diversity
 
         # 热图
         File heatmap_qzv = GenerateHeatmap.heatmap_visualization
@@ -426,8 +436,8 @@ task FilterRareFeatures {
     }
 }
 
-# 计算和导出 Alpha 多样性（Shannon 指数）
-task CalculateAndExportAlphaDiversity {
+# 计算 Shannon 指数
+task CalculateShannonDiversity {
     input {
         File input_table
     }
@@ -437,15 +447,10 @@ task CalculateAndExportAlphaDiversity {
         --i-table ${input_table} \
         --p-metric shannon \
         --o-alpha-diversity shannon_diversity.qza
-
-        qiime tools export \
-        --input-path shannon_diversity.qza \
-        --output-path exported_shannon_diversity
     }
 
     output {
         File shannon_diversity = "shannon_diversity.qza"
-        File exported_shannon_diversity = "exported_shannon_diversity/alpha-diversity.tsv"
     }
 
     runtime {
@@ -455,25 +460,71 @@ task CalculateAndExportAlphaDiversity {
     }
 }
 
-# 计算和导出 Alpha 多样性（Chao1 指数）
-task CalculateAndExportChao1Diversity {
+# 导出 Shannon 指数
+task ExportShannonDiversity {
+    input {
+        File shannon_diversity
+    }
+
+    command <<<
+        qiime tools export \
+        --input-path ~{shannon_diversity} \
+        --output-path exported_shannon_diversity
+
+        mv exported_chao1_diversity/alpha-diversity.tsv exported_chao1_diversity/shannon-diversity.tsv
+    >>>
+
+    output {
+        File exported_shannon_diversity = "exported_shannon_diversity/shannon-diversity.tsv"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 计算 Chao1 指数
+task CalculateChao1Diversity {
     input {
         File input_table
     }
 
-    command {
+    command <<<
         qiime diversity alpha \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --p-metric chao1 \
-        --o-alpha-diversity chao1-diversity.qza
-
-        qiime tools export \
-        --input-path chao1-diversity.qza \
-        --output-path exported-chao1-diversity
-    }
+        --o-alpha-diversity chao1_diversity.qza
+    >>>
 
     output {
-        File exported_chao1_diversity = "exported-chao1-diversity/alpha-diversity.tsv"
+        File chao1_diversity = "chao1_diversity.qza"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 导出 Chao1 指数
+task ExportChao1Diversity {
+    input {
+        File chao1_diversity
+    }
+
+    command <<<
+        qiime tools export \
+        --input-path ~{chao1_diversity} \
+        --output-path exported_chao1_diversity
+
+        mv exported_chao1_diversity/alpha-diversity.tsv exported_chao1_diversity/chao1-diversity.tsv
+    >>>
+
+    output {
+        File exported_chao1_diversity = "exported_chao1_diversity/chao1-diversity.tsv"
     }
 
     runtime {
