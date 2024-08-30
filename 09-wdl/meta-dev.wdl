@@ -48,8 +48,7 @@ workflow metagenomic_analysis_workflow {
                 confidence = confidence,
                 min_base_quality = min_base_quality,
                 min_hit_groups = min_hit_groups,
-                output_tsv_name = output_tsv_names[i],
-                report_txt_name = report_txt_names[i]
+                output_basename = basename_list[i],
         }
     }
 
@@ -65,18 +64,13 @@ workflow metagenomic_analysis_workflow {
             input_files = Kraken2Task.report_txt_file,
             output_filename = "kraken_biom_output.biom"
     }
-    
-    # Step 5.1: strcat krona output-file names
-    Array[String] krona_output_html_names = basename_list.map { basename => basename + ".kraken_report.html" }
-    Array[String] output_tsv_names = basename_list.map { basename => basename + ".kraken_tsv" }
-    Array[String] report_txt_names = basename_list.map { basename => basename + ".kraken_report" }
 
-    # Step 5.2: Generate Krona visualizations
+    # Step 5: Generate Krona visualizations
     scatter (idx in range(length(Kraken2Task.report_txt_file))) {
         call krona {
             input:
                 input_file = Kraken2Task.report_txt_file[idx],
-                output_filename = krona_output_html_names[idx]
+                output_basename = basename_list[idx]
         }
     }
 
@@ -224,10 +218,12 @@ task Kraken2Task {
         Float confidence
         Int min_base_quality
         Int min_hit_groups
-        String output_tsv_name
-        String report_txt_name
+        String output_basename
     }
 
+    # 定义输出文件路径变量
+    String output_tsv_name = output_basename + ".kraken_tsv"
+    String report_txt_name = output_basename + ".kraken_report"
 
     command <<<
         mkdir -p kraken2_db
@@ -305,8 +301,11 @@ task kraken_biom {
 task krona {
     input {
         File input_file
-        String output_filename
+        String output_basename
     }
+
+    # 定义输出文件路径变量
+    String output_filename = output_basename + ".kraken_report.html"
 
     command {
         ktImportTaxonomy \

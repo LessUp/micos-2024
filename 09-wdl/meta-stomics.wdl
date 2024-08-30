@@ -16,9 +16,7 @@ workflow metagenomic_analysis_workflow {
         Int min_hit_groups
 
         # Krona
-        Array[String] krona_output_html_names
-        Array[String] output_tsv_names
-        Array[String] report_txt_names
+        Array[String] basename_list
 
         # Qiime2
         File metadata
@@ -50,8 +48,7 @@ workflow metagenomic_analysis_workflow {
                 confidence = confidence,
                 min_base_quality = min_base_quality,
                 min_hit_groups = min_hit_groups,
-                output_tsv_name = output_tsv_names[i],
-                report_txt_name = report_txt_names[i]
+                output_basename = basename_list[i],
         }
     }
 
@@ -73,7 +70,7 @@ workflow metagenomic_analysis_workflow {
         call krona {
             input:
                 input_file = Kraken2Task.report_txt_file[idx],
-                output_filename = krona_output_html_names[idx]
+                output_basename = basename_list[idx]
         }
     }
 
@@ -221,10 +218,12 @@ task Kraken2Task {
         Float confidence
         Int min_base_quality
         Int min_hit_groups
-        String output_tsv_name
-        String report_txt_name
+        String output_basename
     }
 
+    # 定义输出文件路径变量
+    String output_tsv_name = output_basename + ".kraken_tsv"
+    String report_txt_name = output_basename + ".kraken_report"
 
     command <<<
         mkdir -p kraken2_db
@@ -302,8 +301,11 @@ task kraken_biom {
 task krona {
     input {
         File input_file
-        String output_filename
+        String output_basename
     }
+
+    # 定义输出文件路径变量
+    String output_filename = output_basename + ".kraken_report.html"
 
     command {
         ktImportTaxonomy \
@@ -329,9 +331,9 @@ task ConvertKraken2Tsv {
         File taxonomy_convert_script
     }
 
-    command {
-        python3 ${taxonomy_convert_script} ${qiime2_merged_taxonomy_tsv} merge_converted_taxonomy.tsv
-    }
+    command <<<
+        python3 ~{taxonomy_convert_script} ~{qiime2_merged_taxonomy_tsv} merge_converted_taxonomy.tsv
+    >>>
 
     output {
         File merge_converted_taxonomy = "merge_converted_taxonomy.tsv"
