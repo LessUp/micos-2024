@@ -24,7 +24,7 @@ workflow metagenomic_analysis_workflow {
         File metadata
         Int qiime2_min_frequency = 1
         Int qiime2_min_samples = 1
-        Int qiime2_sampling_depth = 100
+        Int qiime2_sampling_depth = 1
         File taxonomy_convert_script
     }
 
@@ -362,7 +362,7 @@ task ImportFeatureTable {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -387,7 +387,7 @@ task ImportTaxonomy {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -412,7 +412,7 @@ task FilterLowAbundanceFeatures {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -437,7 +437,7 @@ task FilterRareFeatures {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -462,7 +462,7 @@ task RarefyTable {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -491,7 +491,7 @@ task CalculateAndExportAlphaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -519,7 +519,7 @@ task CalculateAndExportChao1Diversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -543,7 +543,7 @@ task CalculateBetaDiversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -582,7 +582,7 @@ task PerformAndVisualizePCoA {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -605,7 +605,7 @@ task AddPseudocount {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -639,7 +639,7 @@ task GenerateHeatmap {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
@@ -670,7 +670,7 @@ task AlphaDiversityBoxPlot {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_e1df3829699449a5ac47b3deb2b31e8a_private:latest"
+        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
         req_cpu: 4
         req_mem: "4G"
     }
