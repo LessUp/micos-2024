@@ -1,9 +1,9 @@
-# 宏基因组分析流程
+# 宏基因组-物种分类的分析流程
 
 ## 概述
 
 
-`metagenomic_analysis_workflow` 设计用于通过一系列生物信息学工具处理成对的宏基因组测序数据，包括 KneadData、Kraken2、Krona 和 QIIME2。该流程包括以下主要步骤：
+`taxonomic_profiling_workflow` 设计用于通过一系列生物信息学工具处理成对的宏基因组测序数据进行物种分类的分析流程，包括 KneadData、Kraken2、Krona 和 QIIME2。该流程包括以下主要步骤：
 
 1. **使用 KneadData 进行质量控制**：
     - 使用 KneadData 对输入的成对读段进行处理，以去除污染物并进行质量过滤。KneadData 尤其适用于人类微生物组研究，因为它可以去除宿主 DNA 序列。
@@ -22,9 +22,6 @@
 
 6. **QIIME2 分析**：
     - 将 BIOM 文件和分类学数据导入 QIIME2 进行进一步分析。这包括特征表过滤、分类学导入和各种多样性分析。
-
-7. **功能分析**
-    - 基于过滤后的fq，使用humann3进行无组装功能分析，并得到genefamily与metacyc代谢通路的丰度和覆盖度，并将结果转换为相应的eggnog、go、ko、ec信息。
 
 ## 工作流程步骤
 
@@ -48,13 +45,11 @@
     - 导入特征表和分类学
     - 过滤低丰度和罕见特征
     - 稀疏化特征表
+    - 为成分数据分析添加伪计数
     - 计算 alpha 和 beta 多样性
     - 执行主坐标分析（PCoA）
-    - 为成分数据分析添加伪计数
-
-6. **humann3 分析** 
-    - 输入过滤后的fq表格和分组信息
-    - 执行gemefamily和代谢通路注释
+    - 特征丰度的热图
+    - alpha 多样性分析的箱线图
 
 ## 输入要求
 
@@ -71,10 +66,7 @@
 - Kraken2 分类报告
 - BIOM 文件
 - Krona 可视化 HTML 文件
-- QIIME2 工件（.qza 文件），用于特征表、多样性指标和 PCoA 结果
-- 各样本的genefamily.tsv结果表格
-- 各样本的代谢通路tsv结果表格
-- 各样本的eggnog、go、ko、ec信息
+- QIIME2 结果（.qza 文件），用于特征表、多样性指标和 PCoA 结果
 
 ## 依赖项
 
@@ -85,8 +77,6 @@
 - Kraken-biom (v1.0.0)
 - Krona (v2.8.1)
 - QIIME2 (2024.5)
-- humann3（3.9.1）
-- metaphlan4（4.0.1）
 
 ## 自定义
 
