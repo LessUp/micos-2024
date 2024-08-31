@@ -100,7 +100,23 @@ workflow metagenomic_analysis_workflow {
             qiime2_min_samples = qiime2_min_samples
     }
 
-    # Step 10: 计算 Chao1 指数
+    call CalculateShannonDiversity {
+        input:
+            input_table = FilterRareFeatures.filtered_table
+    }
+
+    call ExportShannonDiversity {
+        input:
+            shannon_diversity = CalculateShannonDiversity.shannon_diversity
+    }
+
+    # 计算Alpha指数的箱线图
+    call AlphaDiversityBoxPlot {
+        input:
+            shannon_diversity = CalculateShannonDiversity.shannon_diversity,
+            metadata = metadata
+    }
+
     call CalculateChao1Diversity {
         input:
             input_table = FilterRareFeatures.filtered_table
@@ -112,14 +128,6 @@ workflow metagenomic_analysis_workflow {
             chao1_diversity = CalculateChao1Diversity.chao1_diversity
     }
 
-    # Step12: 计算Alpha指数的箱线图
-    call AlphaDiversityBoxPlot {
-        input:
-            chao1_diversity = CalculateChao1Diversity.chao1_diversity,
-            metadata = metadata
-    }
-
-    # Step 13: 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
     call CalculateBetaDiversity {
         input:
             input_table = FilterRareFeatures.filtered_table
@@ -162,6 +170,7 @@ workflow metagenomic_analysis_workflow {
         File pcoa_exports = PerformAndVisualizePCoA.exported_files
 
         # alpha 多样性
+        File shannon_diversity = ExportShannonDiversity.exported_shannon_diversity
         File chao1_diversity = ExportChao1Diversity.exported_chao1_diversity
 
         # 热图
@@ -214,9 +223,9 @@ task KneadDataTask {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_61de51c7c6c94844b47e7ea1d7b8830e_private:latest"
-        req_cpu: 4
-        req_mem: "4GB"
+        docker: "shuai/kneaddata:0.12.0.2"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -261,9 +270,9 @@ task Kraken2Task {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_6c85305847034eadb18c77824949bcc6_private:latest"
-        req_cpu: 4
-        req_mem: "4GB"
+        docker: "shuai/kraken2:2.1.3"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -273,18 +282,18 @@ task MergeTSVTask {
         Array[File] input_files
     }
 
-    command {
-        cat ${sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
-    }
+    command <<<
+        cat ~{sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
+    >>>
 
     output {
         File merged_tsv = "merged_taxonomy.tsv"
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_a185cfae5f194b339ad0cc511cc46eeb_private:latest"
-        req_cpu: 1
-        req_mem: "1G"
+        docker: "ubuntu:20.04"
+        cpu: 1
+        memory: "1 GB"
     }
 }
 
@@ -295,14 +304,14 @@ task kraken_biom {
         String output_filename
     }
 
-    command {
-        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ${output_filename}
-    }
+    command <<<
+        kraken-biom ~{sep=" " input_files} --fmt hdf5 -o ~{output_filename}
+    >>>
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_5adecffec5fc45f0980a2a9b7ba0b607_private:latest"
-        req_cpu: 1
-        req_mem: "1G"
+        docker: "shuai/kraken-biom:1.0.0"
+        cpu: 16
+        memory: "32 GB"
     }
 
     output {
@@ -320,16 +329,16 @@ task krona {
     # 定义输出文件路径变量
     String output_filename = output_basename + ".kraken_report.html"
 
-    command {
+    command <<<
         ktImportTaxonomy \
-        -o ${output_filename} \
-        ${input_file}
-    }
+        -o ~{output_filename} \
+        ~{input_file}
+    >>>
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_209cb871c67c4cb3996ac80e426f45c6_private:latest"        
-        req_cpu: 2
-        req_mem: "2G"
+        docker: "shuai/krona:2.8.1"
+        cpu: 16
+        memory: "32 GB"
     }
 
     output {
@@ -353,9 +362,9 @@ task ConvertKraken2Tsv {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_41343869128b4502a4801b3f5078e89e_private:latest"
-        req_cpu: 1
-        req_mem: "1G"
+        docker: "amancevice/pandas:1.1.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -365,21 +374,21 @@ task ImportFeatureTable {
         File input_biom
     }
 
-    command {
+    command <<<
         qiime tools import \
         --type 'FeatureTable[Frequency]' \
-        --input-path ${input_biom} \
+        --input-path ~{input_biom} \
         --output-path feature-table.qza
-    }
+    >>>
 
     output {
         File output_qza = "feature-table.qza"
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -389,22 +398,22 @@ task ImportTaxonomy {
         File input_tsv
     }
 
-    command {
+    command <<<
         qiime tools import \
         --type 'FeatureData[Taxonomy]' \
         --input-format HeaderlessTSVTaxonomyFormat \
-        --input-path ${input_tsv} \
+        --input-path ~{input_tsv} \
         --output-path taxonomy.qza
-    }
+    >>>
 
     output {
         File output_qza = "taxonomy.qza"
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -415,25 +424,72 @@ task FilterRareFeatures {
         Int qiime2_min_samples
     }
 
-    command {
+    command <<<
         qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --p-min-samples ${qiime2_min_samples} \
+        --i-table ~{input_table} \
+        --p-min-samples ~{qiime2_min_samples} \
         --o-filtered-table filtered-table.qza
-    }
+    >>>
 
     output {
         File filtered_table = "filtered-table.qza"
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
+# 计算 Shannon 指数
+task CalculateShannonDiversity {
+    input {
+        File input_table
+    }
 
+    command {
+        qiime diversity alpha \
+        --i-table ${input_table} \
+        --p-metric shannon \
+        --o-alpha-diversity shannon_diversity.qza
+    }
+
+    output {
+        File shannon_diversity = "shannon_diversity.qza"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
+
+# 导出 Shannon 指数
+task ExportShannonDiversity {
+    input {
+        File shannon_diversity
+    }
+
+    command <<<
+        qiime tools export \
+        --input-path ~{shannon_diversity} \
+        --output-path exported_shannon_diversity
+
+        mv exported_chao1_diversity/alpha-diversity.tsv exported_chao1_diversity/shannon-diversity.tsv
+    >>>
+
+    output {
+        File exported_shannon_diversity = "exported_shannon_diversity/shannon-diversity.tsv"
+    }
+
+    runtime {
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
+    }
+}
 
 # QIIME2 计算Chao1指数
 task CalculateChao1Diversity {
@@ -453,9 +509,9 @@ task CalculateChao1Diversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 1
-        req_mem: "1G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -478,9 +534,9 @@ task ExportChao1Diversity {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 1
-        req_mem: "1G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -490,21 +546,21 @@ task CalculateBetaDiversity {
         File input_table
     }
 
-    command {
+    command <<<
         qiime diversity beta \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --p-metric braycurtis \
         --o-distance-matrix distance-matrix.qza
-    }
+    >>>
 
     output {
         File distance_matrix = "distance-matrix.qza"
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -515,16 +571,16 @@ task PerformAndVisualizePCoA {
         File metadata
     }
 
-    command {
+    command <<<
         # 执行主坐标分析（PCoA）
         qiime diversity pcoa \
-        --i-distance-matrix ${distance_matrix} \
+        --i-distance-matrix ~{distance_matrix} \
         --o-pcoa pcoa.qza
 
         # 使用QIIME 2的Emperor工具对PCoA结果进行可视化
         qiime emperor plot \
         --i-pcoa pcoa.qza \
-        --m-metadata-file ${metadata} \
+        --m-metadata-file ~{metadata} \
         --o-visualization pcoa.qzv
 
         # 导出可视化文件为通用图像格式
@@ -535,7 +591,7 @@ task PerformAndVisualizePCoA {
 
         # 打包所有导出的文件
         tar -czvf pcoa.tar.gz pcoa
-    }
+    >>>
 
     output {
         # File pcoa = "pcoa.qza"
@@ -544,9 +600,9 @@ task PerformAndVisualizePCoA {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -556,20 +612,20 @@ task AddPseudocount {
         File input_table
     }
 
-    command {
+    command <<<
         qiime composition add-pseudocount \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --o-composition-table comp-table.qza
-    }
+    >>>
 
     output {
         File comp_table = "comp-table.qza"
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -604,9 +660,9 @@ task GenerateHeatmap {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }
 
@@ -638,8 +694,8 @@ task AlphaDiversityBoxPlot {
     }
 
     runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 4
-        req_mem: "4G"
+        docker: "quay.io/qiime2/metagenome:2024.5"
+        cpu: 16
+        memory: "32 GB"
     }
 }

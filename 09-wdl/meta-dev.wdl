@@ -2,31 +2,31 @@ version 1.0
 
 workflow metagenomic_analysis_workflow {
     input {
-        # KneadData inputs
+        # KneadData
         Array[File] input_files_r1
         Array[File] input_files_r2
         Array[File] kneaddata_db_files
-        Int kneaddata_threads
+        Int kneaddata_threads = 4
 
         # Kraken2
         Array[File] kraken2_db_files
-        Int kraken_threads
-        Float confidence
-        Int min_base_quality
-        Int min_hit_groups
+        Int kraken_threads = 4
+        Float confidence = 0.01
+        Int min_base_quality = 20
+        Int min_hit_groups = 3
 
         # Krona
         Array[String] basename_list
 
         # Qiime2
         File metadata
-        Int qiime2_min_frequency = 1
-        Int qiime2_min_samples = 1
-        Int qiime2_sampling_depth = 1
+        Int qiime2_min_frequency = 10
+        Int qiime2_min_samples = 3
+        Int qiime2_sampling_depth = 1000
         File taxonomy_convert_script
     }
 
-    # Step 1: Run KneadData on input files
+    # Step 1: 使用kneaddata进行质控
     scatter (i in range(length(input_files_r1))) {
         call KneadDataTask {
             input:
@@ -37,7 +37,7 @@ workflow metagenomic_analysis_workflow {
         }
     }
 
-    # Step 2: Run Kraken2 on KneadData output
+    # Step 2: 使用kraken2进行物种分类
     scatter (i in range(length(KneadDataTask.output_paired_1))) {
         call Kraken2Task {
             input:
@@ -52,20 +52,20 @@ workflow metagenomic_analysis_workflow {
         }
     }
 
-    # Step 3: Merge Kraken2 TSV outputs
+    # Step 3: 合并多组分类结果
     call MergeTSVTask {
         input:
             input_files = Kraken2Task.output_tsv_file
     }
 
-    # Step 4: Generate BIOM file from Kraken2 reports
+    # Step 4: 分类结果标准化BIOM格式
     call kraken_biom {
         input:
             input_files = Kraken2Task.report_txt_file,
             output_filename = "kraken_biom_output.biom"
     }
 
-    # Step 5: Generate Krona visualizations
+    # Step 5: krona 进行分类结果可视化
     scatter (idx in range(length(Kraken2Task.report_txt_file))) {
         call krona {
             input:
@@ -74,73 +74,71 @@ workflow metagenomic_analysis_workflow {
         }
     }
 
-    # Step 6: QIIME2 analysis
-    call ImportFeatureTable {
-        input:
-            input_biom = kraken_biom.output_biom
-    }
-
+    # Step 6: 将 Kraken2 的 TSV 文件转换为 QIIME2 兼容的格式
     call ConvertKraken2Tsv {
         input:
             qiime2_merged_taxonomy_tsv = MergeTSVTask.merged_tsv,
             taxonomy_convert_script = taxonomy_convert_script
     }
 
+    # Step 7: 导入特征表数据
+    call ImportFeatureTable {
+        input:
+            input_biom = kraken_biom.output_biom
+    }
+
+    # Step 8: 导入分类学数据
     call ImportTaxonomy {
         input:
             input_tsv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 
+    # Step 9: 过滤掉在样本中出现频率较低的特征
     call FilterRareFeatures {
         input:
             input_table = ImportFeatureTable.output_qza,
             qiime2_min_samples = qiime2_min_samples
     }
 
-    call CalculateShannonDiversity {
-        input:
-            input_table = FilterRareFeatures.filtered_table
-    }
-
-    call ExportShannonDiversity {
-        input:
-            shannon_diversity = CalculateShannonDiversity.shannon_diversity
-    }
-
-    # 计算Alpha指数的箱线图
-    call AlphaDiversityBoxPlot {
-        input:
-            shannon_diversity = CalculateShannonDiversity.shannon_diversity,
-            metadata = metadata
-    }
-
+    # Step 10: 计算 Chao1 指数
     call CalculateChao1Diversity {
         input:
             input_table = FilterRareFeatures.filtered_table
     }
 
+    # Step 11: 导出 Chao1 指数
     call ExportChao1Diversity {
         input:
             chao1_diversity = CalculateChao1Diversity.chao1_diversity
     }
 
+    # Step12: 计算Alpha指数的箱线图
+    call AlphaDiversityBoxPlot {
+        input:
+            chao1_diversity = CalculateChao1Diversity.chao1_diversity,
+            metadata = metadata
+    }
+
+    # Step 13: 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
     call CalculateBetaDiversity {
         input:
             input_table = FilterRareFeatures.filtered_table
     }
 
+    # Step 14: 对输入的距离矩阵文件执行主坐标分析(PCoA)，并进行可视化
     call PerformAndVisualizePCoA {
         input:
             distance_matrix = CalculateBetaDiversity.distance_matrix,
             metadata = metadata
     }
 
+    # Step 15: 输入表添加伪计数，避免零值问题，提高数据稳定性
     call AddPseudocount {
         input:
             input_table = FilterRareFeatures.filtered_table
     }
 
-    # 计算热图
+    # Step 16: 生成热图，对特征丰度进行可视化
     call GenerateHeatmap {
         input:
             input_table = ImportFeatureTable.output_qza,
@@ -164,7 +162,6 @@ workflow metagenomic_analysis_workflow {
         File pcoa_exports = PerformAndVisualizePCoA.exported_files
 
         # alpha 多样性
-        File shannon_diversity = ExportShannonDiversity.exported_shannon_diversity
         File chao1_diversity = ExportChao1Diversity.exported_chao1_diversity
 
         # 热图
@@ -186,7 +183,7 @@ workflow metagenomic_analysis_workflow {
     }
 }
 
-# KneadData task to preprocess raw sequencing data
+# KneadData 对原始数据进行质控处理
 task KneadDataTask {
     input {
         File input_file_r1
@@ -224,7 +221,7 @@ task KneadDataTask {
 }
 
 
-# 分类学分类 taxonomic classification
+# Kraken2 分类学分类
 task Kraken2Task {
     input {
         File input_file_r1
@@ -270,15 +267,15 @@ task Kraken2Task {
     }
 }
 
-# 合并 Kraken2 的 TSV 输出文件，并去除重复行
+# 合并Kraken2的 TSV 输出文件，并去除重复行
 task MergeTSVTask {
     input {
         Array[File] input_files
     }
 
-    command {
-        cat ${sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
-    }
+    command <<<
+        cat ~{sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
+    >>>
 
     output {
         File merged_tsv = "merged_taxonomy.tsv"
@@ -291,16 +288,16 @@ task MergeTSVTask {
     }
 }
 
-# 生成 BIOM 文件
+# 分类结果标准化成BIOM格式
 task kraken_biom {
     input {
         Array[File] input_files
         String output_filename
     }
 
-    command {
-        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ${output_filename}
-    }
+    command <<<
+        kraken-biom ~{sep=" " input_files} --fmt hdf5 -o ~{output_filename}
+    >>>
 
     runtime {
         docker: "shuai/kraken-biom:1.0.0"
@@ -313,7 +310,7 @@ task kraken_biom {
     }
 }
 
-# 生成分类学数据的可视化图表
+# Krona 可视化分类学结果
 task krona {
     input {
         File input_file
@@ -323,11 +320,11 @@ task krona {
     # 定义输出文件路径变量
     String output_filename = output_basename + ".kraken_report.html"
 
-    command {
+    command <<<
         ktImportTaxonomy \
-        -o ${output_filename} \
-        ${input_file}
-    }
+        -o ~{output_filename} \
+        ~{input_file}
+    >>>
 
     runtime {
         docker: "shuai/krona:2.8.1"
@@ -340,7 +337,7 @@ task krona {
     }
 }
 
-# 将 Kraken2 的 TSV 文件转换为 QIIME2 兼容的格式
+# 将Kraken2的TSV文件转换为QIIME2兼容的格式
 task ConvertKraken2Tsv {
     input {
         File qiime2_merged_taxonomy_tsv
@@ -362,18 +359,18 @@ task ConvertKraken2Tsv {
     }
 }
 
-# 导入特征表数据
+# QIIME2 导入特征表数据
 task ImportFeatureTable {
     input {
         File input_biom
     }
 
-    command {
+    command <<<
         qiime tools import \
         --type 'FeatureTable[Frequency]' \
-        --input-path ${input_biom} \
+        --input-path ~{input_biom} \
         --output-path feature-table.qza
-    }
+    >>>
 
     output {
         File output_qza = "feature-table.qza"
@@ -386,19 +383,19 @@ task ImportFeatureTable {
     }
 }
 
-# 导入分类学数据
+# QIIME2 导入分类学数据
 task ImportTaxonomy {
     input {
         File input_tsv
     }
 
-    command {
+    command <<<
         qiime tools import \
         --type 'FeatureData[Taxonomy]' \
         --input-format HeaderlessTSVTaxonomyFormat \
-        --input-path ${input_tsv} \
+        --input-path ~{input_tsv} \
         --output-path taxonomy.qza
-    }
+    >>>
 
     output {
         File output_qza = "taxonomy.qza"
@@ -411,19 +408,19 @@ task ImportTaxonomy {
     }
 }
 
-# 过滤掉在样本中出现频率较低的特征
+# QIIME2 过滤掉在样本中出现频率较低的特征
 task FilterRareFeatures {
     input {
         File input_table
         Int qiime2_min_samples
     }
 
-    command {
+    command <<<
         qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --p-min-samples ${qiime2_min_samples} \
+        --i-table ~{input_table} \
+        --p-min-samples ~{qiime2_min_samples} \
         --o-filtered-table filtered-table.qza
-    }
+    >>>
 
     output {
         File filtered_table = "filtered-table.qza"
@@ -485,7 +482,7 @@ task ExportShannonDiversity {
     }
 }
 
-# 计算 Chao1 指数
+# QIIME2 计算Chao1指数
 task CalculateChao1Diversity {
     input {
         File input_table
@@ -509,7 +506,7 @@ task CalculateChao1Diversity {
     }
 }
 
-# 导出 Chao1 指数
+# QIIME2 导出 Chao1 指数
 task ExportChao1Diversity {
     input {
         File chao1_diversity
@@ -534,18 +531,18 @@ task ExportChao1Diversity {
     }
 }
 
-# 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
+# QIIME2 计算输入表的beta多样性（Bray-Curtis 距离矩阵）
 task CalculateBetaDiversity {
     input {
         File input_table
     }
 
-    command {
+    command <<<
         qiime diversity beta \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --p-metric braycurtis \
         --o-distance-matrix distance-matrix.qza
-    }
+    >>>
 
     output {
         File distance_matrix = "distance-matrix.qza"
@@ -558,34 +555,34 @@ task CalculateBetaDiversity {
     }
 }
 
-# 对输入的距离矩阵文件执行主坐标分析(PCoA)，并进行可视化
+# QIIME2 对输入的距离矩阵文件执行主坐标分析(PCoA)，并进行可视化
 task PerformAndVisualizePCoA {
     input {
         File distance_matrix
         File metadata
     }
 
-    command {
+    command <<<
         # 执行主坐标分析（PCoA）
         qiime diversity pcoa \
-        --i-distance-matrix ${distance_matrix} \
+        --i-distance-matrix ~{distance_matrix} \
         --o-pcoa pcoa.qza
 
         # 使用QIIME 2的Emperor工具对PCoA结果进行可视化
         qiime emperor plot \
         --i-pcoa pcoa.qza \
-        --m-metadata-file ${metadata} \
+        --m-metadata-file ~{metadata} \
         --o-visualization pcoa.qzv
 
         # 导出可视化文件为通用图像格式
         mkdir -p pcoa
         qiime tools export \
-        --input-path pcoa-visualization.qzv \
+        --input-path pcoa.qzv \
         --output-path pcoa
 
         # 打包所有导出的文件
         tar -czvf pcoa.tar.gz pcoa
-    }
+    >>>
 
     output {
         # File pcoa = "pcoa.qza"
@@ -600,17 +597,17 @@ task PerformAndVisualizePCoA {
     }
 }
 
-# 输入表添加伪计数
+# QIIME2 输入表添加伪计数
 task AddPseudocount {
     input {
         File input_table
     }
 
-    command {
+    command <<<
         qiime composition add-pseudocount \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --o-composition-table comp-table.qza
-    }
+    >>>
 
     output {
         File comp_table = "comp-table.qza"
@@ -623,7 +620,7 @@ task AddPseudocount {
     }
 }
 
-# 增加热图的计算
+# QIIME2 增加热图的计算
 task GenerateHeatmap {
     input {
         File input_table
@@ -660,16 +657,16 @@ task GenerateHeatmap {
     }
 }
 
-# 生成 Alpha 多样性指数的箱线图
+# QIIME2 生成 Alpha 多样性指数的箱线图
 task AlphaDiversityBoxPlot {
     input {
-        File shannon_diversity
+        File chao1_diversity
         File metadata
     }
 
     command <<<
         qiime diversity alpha-group-significance \
-        --i-alpha-diversity ~{shannon_diversity} \
+        --i-alpha-diversity ~{chao1_diversity} \
         --m-metadata-file ~{metadata} \
         --o-visualization alpha-group-significance.qzv
 
