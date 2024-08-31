@@ -1,0 +1,71 @@
+{
+  "metagenomic_analysis_workflow.input_files_r1": [
+    "/Files/RawData/20240829/SRR8291345_Control_T12-1_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291346_Control_T12-2_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291358_Amoxicillin_T12-3_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291360_Ciprofloxacin_T24-3_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291362_Amoxicillin_T12-1_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291363_Amoxicillin_T12-2_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291366_Ciprofloxacin_T24-1_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291367_Ciprofloxacin_T24-2_metagenome_1.fq.gz",
+    "/Files/RawData/20240829/SRR8291368_Control_T24-1_metagenome_1.fq.gz"
+  ],
+  "metagenomic_analysis_workflow.input_files_r2": [
+    "/Files/RawData/20240829/SRR8291345_Control_T12-1_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291346_Control_T12-2_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291358_Amoxicillin_T12-3_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291360_Ciprofloxacin_T24-3_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291362_Amoxicillin_T12-1_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291363_Amoxicillin_T12-2_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291366_Ciprofloxacin_T24-1_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291367_Ciprofloxacin_T24-2_metagenome_2.fq.gz",
+    "/Files/RawData/20240829/SRR8291368_Control_T24-1_metagenome_2.fq.gz"
+  ],
+  "metagenomic_analysis_workflow.kneaddata_db_files": [
+    "/Files/ReferenceData/db_kneaddata/bowtie2/hg37dec_v0.1.1.bt2",
+    "/Files/ReferenceData/db_kneaddata/bowtie2/hg37dec_v0.1.2.bt2",
+    "/Files/ReferenceData/db_kneaddata/bowtie2/hg37dec_v0.1.3.bt2",
+    "/Files/ReferenceData/db_kneaddata/bowtie2/hg37dec_v0.1.4.bt2",
+    "/Files/ReferenceData/db_kneaddata/bowtie2/hg37dec_v0.1.rev.1.bt2",
+    "/Files/ReferenceData/db_kneaddata/bowtie2/hg37dec_v0.1.rev.2.bt2"
+  ],
+  "metagenomic_analysis_workflow.kneaddata_threads": 8,
+  "metagenomic_analysis_workflow.kraken2_db_files": [
+    "/Files/ReferenceData/db_kraken2/08gb/database50mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/database75mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/database100mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/database150mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/database200mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/database250mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/database300mers.kmer_distrib",
+    "/Files/ReferenceData/db_kraken2/08gb/hash.k2d",
+    "/Files/ReferenceData/db_kraken2/08gb/inspect.txt",
+    "/Files/ReferenceData/db_kraken2/08gb/ktaxonomy.tsv",
+    "/Files/ReferenceData/db_kraken2/08gb/library_report.tsv",
+    "/Files/ReferenceData/db_kraken2/08gb/opts.k2d",
+    "/Files/ReferenceData/db_kraken2/08gb/seqid2taxid.map",
+    "/Files/ReferenceData/db_kraken2/08gb/standard08gb.md5",
+    "/Files/ReferenceData/db_kraken2/08gb/taxo.k2d",
+    "/Files/ReferenceData/db_kraken2/08gb/unmapped_accessions.txt"
+  ],
+  "metagenomic_analysis_workflow.kraken_threads": 8,
+  "metagenomic_analysis_workflow.confidence": 0.01,
+  "metagenomic_analysis_workflow.min_base_quality": 20,
+  "metagenomic_analysis_workflow.min_hit_groups": 1,
+  "metagenomic_analysis_workflow.basename_list": [
+    "SRR8291345_Control_T12-1",
+    "SRR8291346_Control_T12-2",
+    "SRR8291358_Amoxicillin_T12-3",
+    "SRR8291360_Ciprofloxacin_T24-3",
+    "SRR8291362_Amoxicillin_T12-1",
+    "SRR8291363_Amoxicillin_T12-2",
+    "SRR8291366_Ciprofloxacin_T24-1",
+    "SRR8291367_Ciprofloxacin_T24-2",
+    "SRR8291368_Control_T24-1"
+  ],
+  "metagenomic_analysis_workflow.metadata": "/Files/RawData/20240829/metadata.tsv",
+  "metagenomic_analysis_workflow.taxonomy_convert_script": "/Files/ManualData/Scripts/convert-format-qiime2.py",
+  "metagenomic_analysis_workflow.qiime2_min_frequency": 10,
+  "metagenomic_analysis_workflow.qiime2_min_samples": 3,
+  "metagenomic_analysis_workflow.qiime2_sampling_depth": 1000
+}
