@@ -148,7 +148,7 @@ workflow metagenomic_analysis_workflow {
     output {
         # 分类结果
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
-        Array[File] kraken2_tsv_file = Kraken2Task.output_tsv_file
+        # Array[File] kraken2_tsv_file = Kraken2Task.output_tsv_file
 
         # 物种分类图
         Array[File] krona_html_reports = krona.output_html
@@ -173,12 +173,12 @@ workflow metagenomic_analysis_workflow {
         File alpha_diversity_boxplot_exports = AlphaDiversityBoxPlot.exported_files
 
         # 过滤后的fastq
-        Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
-        Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
+        # Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
+        # Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
 
         # 其他文件
-        File output_biom = kraken_biom.output_biom
-        File merged_tsv = MergeTSVTask.merged_tsv
+        # File output_biom = kraken_biom.output_biom
+        # File merged_tsv = MergeTSVTask.merged_tsv
         File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 }
@@ -273,9 +273,9 @@ task MergeTSVTask {
         Array[File] input_files
     }
 
-    command {
+    command <<<
         cat ${sep=" " input_files} | awk '!seen[$0]++' > merged_taxonomy.tsv
-    }
+    >>>
 
     output {
         File merged_tsv = "merged_taxonomy.tsv"
@@ -295,9 +295,9 @@ task kraken_biom {
         String output_filename
     }
 
-    command {
-        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ${output_filename}
-    }
+    command <<<
+        kraken-biom ~{sep=" " input_files} --fmt hdf5 -o ~{output_filename}
+    >>>
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_5adecffec5fc45f0980a2a9b7ba0b607_private:latest"
@@ -320,11 +320,11 @@ task krona {
     # 定义输出文件路径变量
     String output_filename = output_basename + ".kraken_report.html"
 
-    command {
+    command <<<
         ktImportTaxonomy \
-        -o ${output_filename} \
-        ${input_file}
-    }
+        -o ~{output_filename} \
+        ~{input_file}
+    >>>
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_209cb871c67c4cb3996ac80e426f45c6_private:latest"        
@@ -365,12 +365,12 @@ task ImportFeatureTable {
         File input_biom
     }
 
-    command {
+    command <<<
         qiime tools import \
         --type 'FeatureTable[Frequency]' \
-        --input-path ${input_biom} \
+        --input-path ~{input_biom} \
         --output-path feature-table.qza
-    }
+    >>>
 
     output {
         File output_qza = "feature-table.qza"
@@ -389,13 +389,13 @@ task ImportTaxonomy {
         File input_tsv
     }
 
-    command {
+    command <<<
         qiime tools import \
         --type 'FeatureData[Taxonomy]' \
         --input-format HeaderlessTSVTaxonomyFormat \
-        --input-path ${input_tsv} \
+        --input-path ~{input_tsv} \
         --output-path taxonomy.qza
-    }
+    >>>
 
     output {
         File output_qza = "taxonomy.qza"
@@ -415,12 +415,12 @@ task FilterRareFeatures {
         Int qiime2_min_samples
     }
 
-    command {
+    command <<<
         qiime feature-table filter-features \
-        --i-table ${input_table} \
-        --p-min-samples ${qiime2_min_samples} \
+        --i-table ~{input_table} \
+        --p-min-samples ~{qiime2_min_samples} \
         --o-filtered-table filtered-table.qza
-    }
+    >>>
 
     output {
         File filtered_table = "filtered-table.qza"
@@ -432,8 +432,6 @@ task FilterRareFeatures {
         req_mem: "4G"
     }
 }
-
-
 
 # QIIME2 计算Chao1指数
 task CalculateChao1Diversity {
@@ -490,12 +488,12 @@ task CalculateBetaDiversity {
         File input_table
     }
 
-    command {
+    command <<<
         qiime diversity beta \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --p-metric braycurtis \
         --o-distance-matrix distance-matrix.qza
-    }
+    >>>
 
     output {
         File distance_matrix = "distance-matrix.qza"
@@ -515,16 +513,16 @@ task PerformAndVisualizePCoA {
         File metadata
     }
 
-    command {
+    command <<<
         # 执行主坐标分析（PCoA）
         qiime diversity pcoa \
-        --i-distance-matrix ${distance_matrix} \
+        --i-distance-matrix ~{distance_matrix} \
         --o-pcoa pcoa.qza
 
         # 使用QIIME 2的Emperor工具对PCoA结果进行可视化
         qiime emperor plot \
         --i-pcoa pcoa.qza \
-        --m-metadata-file ${metadata} \
+        --m-metadata-file ~{metadata} \
         --o-visualization pcoa.qzv
 
         # 导出可视化文件为通用图像格式
@@ -535,7 +533,7 @@ task PerformAndVisualizePCoA {
 
         # 打包所有导出的文件
         tar -czvf pcoa.tar.gz pcoa
-    }
+    >>>
 
     output {
         # File pcoa = "pcoa.qza"
@@ -556,11 +554,11 @@ task AddPseudocount {
         File input_table
     }
 
-    command {
+    command <<<
         qiime composition add-pseudocount \
-        --i-table ${input_table} \
+        --i-table ~{input_table} \
         --o-composition-table comp-table.qza
-    }
+    >>>
 
     output {
         File comp_table = "comp-table.qza"

@@ -148,7 +148,7 @@ workflow metagenomic_analysis_workflow {
     output {
         # 分类结果
         Array[File] kraken2_report_txt = Kraken2Task.report_txt_file
-        Array[File] kraken2_tsv_file = Kraken2Task.output_tsv_file
+        # Array[File] kraken2_tsv_file = Kraken2Task.output_tsv_file
 
         # 物种分类图
         Array[File] krona_html_reports = krona.output_html
@@ -173,12 +173,12 @@ workflow metagenomic_analysis_workflow {
         File alpha_diversity_boxplot_exports = AlphaDiversityBoxPlot.exported_files
 
         # 过滤后的fastq
-        Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
-        Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
+        # Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
+        # Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
 
         # 其他文件
-        File output_biom = kraken_biom.output_biom
-        File merged_tsv = MergeTSVTask.merged_tsv
+        # File output_biom = kraken_biom.output_biom
+        # File merged_tsv = MergeTSVTask.merged_tsv
         File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
     }
 }
