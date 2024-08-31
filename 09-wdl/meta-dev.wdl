@@ -296,7 +296,7 @@ task kraken_biom {
     }
 
     command <<<
-        kraken-biom ~{sep=" " input_files} --fmt hdf5 -o ~{output_filename}
+        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ~{output_filename}
     >>>
 
     runtime {
