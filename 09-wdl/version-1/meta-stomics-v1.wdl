@@ -176,7 +176,7 @@ workflow metagenomic_analysis_workflow {
         # Array[File] kneaddata_paired_1 = KneadDataTask.output_paired_1
         # Array[File] kneaddata_paired_2 = KneadDataTask.output_paired_2
 
-        # 其他文件
+        # Other Files
         # File output_biom = kraken_biom.output_biom
         # File merged_tsv = MergeTSVTask.merged_tsv
         File convert_csv = ConvertKraken2Tsv.merge_converted_taxonomy
