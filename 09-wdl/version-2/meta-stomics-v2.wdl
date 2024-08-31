@@ -295,9 +295,9 @@ task kraken_biom {
         String output_filename
     }
 
-    command <<<
-        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ~{output_filename}
-    >>>
+    command {
+        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ${output_filename}
+    }
 
     runtime {
         docker_url: "stereonote_ali_hpc_external/jiashuai.shi_5adecffec5fc45f0980a2a9b7ba0b607_private:latest"
