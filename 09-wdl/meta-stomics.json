@@ -65,7 +65,7 @@
   ],
   "metagenomic_analysis_workflow.metadata": "/Files/RawData/20240829/metadata.tsv",
   "metagenomic_analysis_workflow.taxonomy_convert_script": "/Files/ManualData/Scripts/convert-format-qiime2.py",
-  "metagenomic_analysis_workflow.qiime2_min_frequency": 1,
-  "metagenomic_analysis_workflow.qiime2_min_samples": 1,
-  "metagenomic_analysis_workflow.qiime2_sampling_depth": 1
+  "metagenomic_analysis_workflow.qiime2_min_frequency": 10,
+  "metagenomic_analysis_workflow.qiime2_min_samples": 3,
+  "metagenomic_analysis_workflow.qiime2_sampling_depth": 1000
 }

@@ -6,24 +6,24 @@ workflow metagenomic_analysis_workflow {
         Array[File] input_files_r1
         Array[File] input_files_r2
         Array[File] kneaddata_db_files
-        Int kneaddata_threads
+        Int kneaddata_threads = 4
 
         # Kraken2
         Array[File] kraken2_db_files
-        Int kraken_threads
-        Float confidence
-        Int min_base_quality
-        Int min_hit_groups
+        Int kraken_threads = 4
+        Float confidence = 0.01
+        Int min_base_quality = 20
+        Int min_hit_groups = 3
 
         # Krona
         Array[String] basename_list
 
         # Qiime2
         File metadata
-        Int qiime2_min_frequency = 1
-        Int qiime2_min_samples = 1
-        Int qiime2_sampling_depth = 1
-        File taxonomy_convert_script
+        Int qiime2_min_frequency = 10
+        Int qiime2_min_samples = 3
+        Int qiime2_sampling_depth = 1000
+        File taxonomy_convert_script = /Files/ManualData/Scripts/convert-format-qiime2.py
     }
 
     # Step 1: Run KneadData on input files
@@ -97,23 +97,6 @@ workflow metagenomic_analysis_workflow {
             qiime2_min_samples = qiime2_min_samples
     }
 
-    call CalculateShannonDiversity {
-        input:
-            input_table = FilterRareFeatures.filtered_table
-    }
-
-    call ExportShannonDiversity {
-        input:
-            shannon_diversity = CalculateShannonDiversity.shannon_diversity
-    }
-
-    # 计算Alpha指数的箱线图
-    call AlphaDiversityBoxPlot {
-        input:
-            shannon_diversity = CalculateShannonDiversity.shannon_diversity,
-            metadata = metadata
-    }
-
     call CalculateChao1Diversity {
         input:
             input_table = FilterRareFeatures.filtered_table
@@ -123,6 +106,16 @@ workflow metagenomic_analysis_workflow {
         input:
             chao1_diversity = CalculateChao1Diversity.chao1_diversity
     }
+
+
+    # 计算Alpha指数的箱线图
+    call AlphaDiversityBoxPlot {
+        input:
+            chao1_diversity = CalculateChao1Diversity.chao1_diversity,
+            metadata = metadata
+    }
+
+
 
     call CalculateBetaDiversity {
         input:
@@ -164,7 +157,6 @@ workflow metagenomic_analysis_workflow {
         File pcoa_exports = PerformAndVisualizePCoA.exported_files
 
         # alpha 多样性
-        File shannon_diversity = ExportShannonDiversity.exported_shannon_diversity
         File chao1_diversity = ExportChao1Diversity.exported_chao1_diversity
 
         # 热图
@@ -436,54 +428,7 @@ task FilterRareFeatures {
     }
 }
 
-# 计算 Shannon 指数
-task CalculateShannonDiversity {
-    input {
-        File input_table
-    }
 
-    command {
-        qiime diversity alpha \
-        --i-table ${input_table} \
-        --p-metric shannon \
-        --o-alpha-diversity shannon_diversity.qza
-    }
-
-    output {
-        File shannon_diversity = "shannon_diversity.qza"
-    }
-
-    runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 1
-        req_mem: "4G"
-    }
-}
-
-# 导出 Shannon 指数
-task ExportShannonDiversity {
-    input {
-        File shannon_diversity
-    }
-
-    command <<<
-        qiime tools export \
-        --input-path ~{shannon_diversity} \
-        --output-path exported_shannon_diversity
-
-        mv exported_chao1_diversity/alpha-diversity.tsv exported_chao1_diversity/shannon-diversity.tsv
-    >>>
-
-    output {
-        File exported_shannon_diversity = "exported_shannon_diversity/shannon-diversity.tsv"
-    }
-
-    runtime {
-        docker_url: "stereonote_ali_hpc_external/jiashuai.shi_8cae64f3b5b346db85bc9976cbd51bf8_private:latest"
-        req_cpu: 1
-        req_mem: "1G"
-    }
-}
 
 # 计算 Chao1 指数
 task CalculateChao1Diversity {
@@ -663,13 +608,13 @@ task GenerateHeatmap {
 # 生成 Alpha 多样性指数的箱线图
 task AlphaDiversityBoxPlot {
     input {
-        File shannon_diversity
+        File chao1_diversity
         File metadata
     }
 
     command <<<
         qiime diversity alpha-group-significance \
-        --i-alpha-diversity ~{shannon_diversity} \
+        --i-alpha-diversity ~{chao1_diversity} \
         --m-metadata-file ~{metadata} \
         --o-visualization alpha-group-significance.qzv
 
