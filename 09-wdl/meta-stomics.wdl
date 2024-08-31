@@ -23,7 +23,7 @@ workflow metagenomic_analysis_workflow {
         Int qiime2_min_frequency = 10
         Int qiime2_min_samples = 3
         Int qiime2_sampling_depth = 1000
-        File taxonomy_convert_script = /Files/ManualData/Scripts/convert-format-qiime2.py
+        File taxonomy_convert_script
     }
 
     # Step 1: Run KneadData on input files
