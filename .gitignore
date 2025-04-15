@@ -1,0 +1,31 @@
+# IDE files
+.idea/
+*.iml
+*.iws
+
+# Environment files
+.env
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Data and Results (adjust based on your needs)
+# If your raw data is large, uncomment the line below
+# data/raw_input/
+results/
+*.log
+*.tmp
+*.temp
+
+# OS generated files
+.DS_Store
+Thumbs.db 

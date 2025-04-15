@@ -1,160 +1,157 @@
-# 宏基因组分析流程
+# 宏基因组分析流程 (Metagenomic Analysis Workflow)
 
-## 概述
+<!-- Optional: Add badges here (e.g., license, build status) -->
+<!-- [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) -->
 
-本仓库包含一个使用工作流程描述语言（WDL）编写的宏基因组分析流程脚本。该流程集成了多个关键的生物信息学工具，用于处理、分析和可视化宏基因组测序数据。
+## 概述 (Overview)
 
+`metagenomic_analysis_workflow` (建议将仓库重命名为此或类似的描述性名称) 设计用于通过一系列生物信息学工具处理成对的宏基因组测序数据。该流程包括以下主要步骤：
 
-`metagenomic_analysis_workflow` 设计用于通过一系列生物信息学工具处理成对的宏基因组测序数据，包括 KneadData、Kraken2、Krona 和 QIIME2。该流程包括以下主要步骤：
+1.  **使用 KneadData 进行质量控制**: 去除污染物并进行质量过滤。
+2.  **使用 Kraken2 进行分类学分类**: 将序列分配到分类学标签。
+3.  **生成 BIOM 文件**: 用于下游分析 (如 QIIME2)。
+4.  **Krona 可视化**: 创建交互式分类组成图。
+5.  **QIIME2 分析**: 进行特征表过滤、多样性分析等。
+6.  **(可选) 功能分析**: (例如使用 HUMAnN，根据 `origin-HUMAnN.wdl` 推断)
+7.  **(可选) 其他分析**: (例如 Phyloseq, MEGAN，根据目录推断)
 
-1. **使用 KneadData 进行质量控制**：
-    - 使用 KneadData 对输入的成对读段进行处理，以去除污染物并进行质量过滤。KneadData 尤其适用于人类微生物组研究，因为它可以去除宿主 DNA 序列。
+## 项目结构 (Project Structure)
 
-2. **使用 Kraken2 进行分类学分类**：
-    - 对经过质量控制的读段使用 Kraken2 进行分类。Kraken2 是一种高度精确且快速的工具，用于将宏基因组序列分配到分类学标签。Kraken2 输出详细报告和汇总的 TSV 文件。
+```
+.
+├── .gitignore               # Git 忽略规则
+├── README.md                # 项目入口和文档
+├── LICENSE                  # 开源许可证
+├── CONTRIBUTING.md          # 贡献指南
+├── CODE_OF_CONDUCT.md       # 社区行为准则
+├── config/                  # 配置文件
+│   └── config.conf
+├── data/                    # 数据 (通常不提交到 Git)
+│   └── raw_input/           # 原始输入数据
+├── docs/                    # 详细文档和图片
+│   ├── taxonomic-profiling.md
+│   ├── functional-profiling.md
+│   └── images/
+│       └── img.png
+├── results/                 # 分析结果 (通常不提交到 Git)
+├── scripts/                 # 通用或遗留脚本
+│   └── legacy_scripts/
+├── workflows/               # 工作流定义 (WDL)
+│   ├── origin-HUMAnN.wdl
+│   └── wdl_scripts/         # 其他 WDL 相关脚本
+├── steps/                   # 各分析步骤的脚本/说明
+│   ├── 01_quality_control/
+│   ├── 02_read_cleaning/
+│   ├── 03_taxonomic_profiling_kraken/
+│   ├── 04_taxonomic_conversion_biom/
+│   ├── 05_taxonomic_visualization_krona/
+│   ├── 06_qiime2_analysis/
+│   ├── 07_phyloseq_analysis/
+│   ├── 08_megan_analysis/
+│   ├── 09_qiime2_whole_analysis/
+│   └── ...                  # 其他步骤
+└── containers/              # 容器构建文件
+    └── sif_build/
+```
 
-3. **合并 Kraken2 输出**：
-    - 合并 Kraken2 输出文件，生成包含所有样本的分类学分类结果的整合 TSV 文件。
+## 安装 (Installation)
 
-4. **生成 BIOM 文件**：
-    - 从 Kraken2 报告中生成一个兼容 QIIME2 的 BIOM 文件，以用于下游分析。
+描述安装项目所需的依赖项和步骤。
 
-5. **Krona 可视化**：
-    - 使用 Krona 创建每个样本分类组成的交互式 HTML 可视化文件。
+1.  **克隆仓库:**
+    ```bash
+    git clone <repository-url>
+    cd <repository-name>
+    ```
+2.  **依赖软件:**
+    列出需要的核心软件及其版本 (根据 `Description.md` 推断):
+    *   KneadData (v0.12.0)
+    *   Kraken2 (v2.1.3)
+    *   Kraken-biom (v1.0.0)
+    *   Krona (v2.8.1)
+    *   QIIME2 (2024.5)
+    *   HUMAnN (如果使用)
+    *   Phyloseq (R 包)
+    *   MEGAN
+    *   WDL 运行环境 (如 Cromwell)
+    *   Singularity/Apptainer (如果使用 sif 文件)
+    *   ...(其他依赖)
 
-6. **QIIME2 分析**：
-    - 将 BIOM 文件和分类学数据导入 QIIME2 进行进一步分析。这包括特征表过滤、分类学导入和各种多样性分析。
+    建议使用 Conda 或 Mamba 来管理环境。可以提供一个 `environment.yml` 文件。
+    ```bash
+    # conda env create -f environment.yml
+    # conda activate <env_name>
+    ```
+3.  **容器 (Containers):**
+    如果项目依赖 Singularity/Apptainer 镜像，说明如何构建或拉取它们。参考 `containers/` 目录。
+    ```bash
+    # cd containers/sif_build
+    # singularity build <image_name>.sif <definition_file>
+    ```
+4.  **数据库 (Databases):**
+    说明需要下载哪些数据库以及放置在何处。
+    *   KneadData 数据库 (例如：人类参考基因组)
+    *   Kraken2 数据库
+    *   HUMAnN 数据库 (如果使用)
 
+## 配置 (Configuration)
 
-## 流程组件
+说明如何配置分析流程。
 
-该流程包括以下几个关键步骤：
+*   主要的配置文件位于 `config/config.conf`。根据需要修改其中的参数，例如：
+    *   输入文件路径 (`data/raw_input/`)
+    *   输出目录 (`results/`)
+    *   数据库路径
+    *   线程数
+    *   Kraken2 置信度阈值等
+*   QIIME2 分析可能需要一个样本元数据文件 (Metadata)。说明其格式和位置。
 
-1. **KneadData**: 原始测序数据的预处理
-2. **Kraken2**: 分类学分类
-3. **Kraken-biom**: 生成 BIOM 文件
-4. **Krona**: 分类学分类的交互式可视化
-5. **QIIME2**: 进一步分析，包括多样性指标和特征表操作
+## 使用方法 (Usage)
 
-### KneadData
+描述如何运行分析流程。
 
-KneadData 是一个设计用于宏基因组测序数据质量控制的工具。它执行以下操作：
+1.  **准备输入数据:**
+    将成对的 FASTQ 文件放入 `data/raw_input/` 目录。
+    准备 QIIME2 元数据文件。
 
-- 修剪低质量序列
-- 去除人类污染（如果提供了人类基因组数据库）
-- 去除技术序列（如接头）
+2.  **运行完整流程 (示例):**
+    如果使用 WDL 工作流:
+    ```bash
+    # java -jar cromwell.jar run workflows/origin-HUMAnN.wdl --inputs config/config.conf
+    ```
+    或者，如果流程是通过一系列脚本组织的：
+    ```bash
+    # cd steps/01_quality_control && ./run_fastqc.sh ../../config/config.conf
+    # cd ../02_read_cleaning && ./run_kneaddata.sh ../../config/config.conf
+    # ... etc.
+    ```
+    请根据你的实际运行方式详细说明。
 
-### Kraken2
+3.  **运行单个步骤:**
+    说明如何独立运行 `steps/` 目录下的某个特定分析步骤。
 
-Kraken2 是一个使用精确 k-mer 匹配的分类学分类系统，可以实现高准确度和快速分类。该工具为宏基因组 DNA 序列分配分类学标签。
+## 输出 (Output)
 
-### Kraken-biom
+描述流程生成的主要输出文件及其位置 (`results/`)。
 
-Kraken-biom 是一个从 Kraken 输出文件创建 BIOM 格式表格的工具。BIOM（生物观察矩阵）格式在微生物组分析流程中被广泛使用。
+*   清洗后的 FASTQ 文件
+*   Kraken2 分类报告 (`*.kraken`, `*.report`)
+*   BIOM 文件 (`*.biom`)
+*   Krona 可视化 HTML 文件 (`*.krona.html`)
+*   QIIME2 工件 (`*.qza`, `*.qzv`)
+*   HUMAnN 功能谱文件 (如果运行)
+*   ...(其他结果)
 
-### Krona
+参考 `docs/` 目录下的文档获取更详细的分析说明。
 
-Krona 是一个可视化工具，允许直观地探索宏基因组分类复杂层次结构中的相对丰度和置信度。
+## 如何贡献 (Contributing)
 
-### QIIME2
+请参考 `CONTRIBUTING.md`。
 
-QIIME2（微生物生态学定量洞察 2）是一个下一代微生物组生物信息学平台，具有可扩展性，免费，开源，并由社区开发。在这个流程中，QIIME2 用于：
+## 行为准则 (Code of Conduct)
 
-- 导入和过滤特征表
-- 计算 alpha 和 beta 多样性指标
-- 执行主坐标分析（PCoA）
+请参考 `CODE_OF_CONDUCT.md`。
 
-## 工作流程步骤
+## 许可证 (License)
 
-1. **使用 KneadData 进行数据预处理**
-    - 输入：双端 FASTQ 文件
-    - 输出：清洗后的 FASTQ 文件
-
-2. **使用 Kraken2 进行分类学分类**
-    - 输入：来自 KneadData 的清洗后 FASTQ 文件
-    - 输出：Kraken2 报告和 TSV 文件
-
-3. **BIOM 文件生成**
-    - 输入：Kraken2 报告
-    - 输出：BIOM 文件
-
-4. **Krona 可视化**
-    - 输入：Kraken2 报告
-    - 输出：交互式 分类可视化HTML
-
-5. **QIIME2 分析**
-    - 导入特征表和分类学
-    - 过滤低丰度和罕见特征
-    - 稀疏化特征表
-    - 计算 alpha 和 beta 多样性
-    - 执行主坐标分析（PCoA）
-    - 为成分数据分析添加伪计数
-
-## 使用方法
-
-要运行此流程，您需要安装 Cromwell 或其他兼容 WDL 的工作流引擎。您还需要安装 Docker，因为流程为每个工具使用 Docker 容器。
-
-1. 克隆此仓库：
-
-   ```
-   git clone https://github.com/your-username/metagenomic-analysis-pipeline.git
-   cd metagenomic-analysis-pipeline
-   ```
-
-2. 准备您的输入文件并在 JSON 文件中更新工作流输入（例如，`inputs.json`）。
-
-3. 运行工作流：
-
-   ```
-   cromwell run meta-dev.wdl -i inputs.json
-   ```
-
-## 输入要求
-
-- 双端 FASTQ 文件
-- KneadData 数据库文件
-- Kraken2 数据库文件
-- QIIME2 样本元数据文件
-- 分类学转换脚本
-
-## 输出
-
-该流程生成各种输出，包括：
-
-- 来自 KneadData 的清洗后 FASTQ 文件
-- Kraken2 分类报告
-- BIOM 文件
-- Krona 可视化 HTML 文件
-- QIIME2 工件（.qza 文件），用于特征表、多样性指标和 PCoA 结果
-
-## 依赖项
-
-此流程依赖于以下工具：
-
-- KneadData (v0.12.0)
-- Kraken2 (v2.1.3)
-- Kraken-biom (v1.0.0)
-- Krona (v2.8.1)
-- QIIME2 (2024.5)
-
-所有工具都使用 Docker 容器化，确保了在不同系统上的可重复性和易用性。
-
-## 自定义
-
-该流程允许自定义各种参数，包括：
-
-- KneadData 和 Kraken2 的线程数
-- Kraken2 的置信度阈值
-- Kraken2 的最小碱基质量和命中组
-- QIIME2 中特征过滤的最小频率和样本存在
-- 稀疏化的采样深度（目前在工作流中被注释掉）
-
-要自定义这些参数，请修改输入 JSON 文件中的相应值。
-
-## 贡献
-
-欢迎对改进流程的贡献。如果您有建议或遇到任何问题，请随时提交拉取请求或开启一个问题。
-
----
-
-本 README 提供了宏基因组分析流程的概述。有关每个工具的更详细信息，请参阅它们各自的文档。
+本项目使用 MIT 许可证。详情请见 `LICENSE` 文件。
