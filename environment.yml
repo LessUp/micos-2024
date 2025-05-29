@@ -1,0 +1,120 @@
+name: micos-2024
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - qiime2
+  - r
+
+dependencies:
+  # Python and core packages
+  - python=3.9
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - plotly
+  - jupyter
+  - notebook
+
+  # Bioinformatics tools
+  - fastqc=0.11.9
+  - multiqc
+  - kneaddata=0.12.0
+  - kraken2=2.1.3
+  - krona=2.8.1
+  - biom-format
+  - qiime2=2024.5
+
+  # R and R packages
+  - r-base=4.3.0
+  - r-essentials
+  - r-devtools
+  - r-ggplot2
+  - r-dplyr
+  - r-tidyr
+  - r-readr
+  - r-stringr
+  - r-plotly
+  - r-dt
+  - r-shiny
+  - r-shinydashboard
+  - r-rmarkdown
+  - r-knitr
+  - bioconductor-phyloseq
+  - bioconductor-deseq2
+  - bioconductor-biomformat
+  - bioconductor-microbiome
+  - bioconductor-aldex2
+  - bioconductor-ancombc
+  - bioconductor-edger
+  - bioconductor-limma
+  - r-vegan
+  - r-ape
+  - r-phangorn
+  - r-ggtree
+  - r-igraph
+  - r-corrplot
+
+  # Workflow management
+  - cromwell
+  - nextflow
+  - snakemake
+
+  # Container tools
+  - docker-py
+  - singularity
+
+  # Additional bioinformatics tools
+  - muscle
+  - fasttree
+  - mafft
+  - salmon
+  - kallisto
+  - diamond
+  - blast
+  - hmmer
+  - prodigal
+
+  # Additional utilities
+  - wget
+  - curl
+  - git
+  - parallel
+  - pigz
+  - samtools
+  - bedtools
+
+  # Python packages via pip
+  - pip:
+    - kraken-biom==1.2.0
+    - biopython
+    - scikit-learn
+    - umap-learn
+    - networkx
+    - python-louvain
+    - community
+    - dash
+    - dash-bootstrap-components
+    - plotly-dash
+    - streamlit
+    - bokeh
+    - altair
+    - pyyaml
+    - click
+    - tqdm
+    - joblib
+    - psutil
+    - memory-profiler
+    - line-profiler
+    - ete3
+    - dendropy
+    - skbio
+    - qiime2
+    - dada2
+    - phyloseq
+    - deseq2
+    - aldex2
+    - ancom

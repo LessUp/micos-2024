@@ -1,0 +1,121 @@
+# Pre-commit hooks for MICOS-2024
+# 代码质量检查和格式化配置
+
+repos:
+  # Python代码格式化
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3
+        args: [--line-length=88]
+
+  # Python导入排序
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=88]
+
+  # Python代码质量检查
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88, --extend-ignore=E203,W503]
+
+  # Python类型检查
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-PyYAML, types-requests]
+        args: [--ignore-missing-imports]
+
+  # 通用文件检查
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: [--maxkb=10240]  # 10MB limit
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+  # Shell脚本检查
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+        args: [--severity=warning]
+
+  # Markdown格式检查
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+      - id: markdownlint
+        args: [--fix]
+
+  # YAML格式化
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types: [yaml]
+
+  # 安全性检查
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: [-r, ., -f, json, -o, bandit-report.json]
+        exclude: ^tests/
+
+  # 文档字符串检查
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: [--convention=google]
+
+# 配置选项
+default_language_version:
+  python: python3
+
+# 排除的文件和目录
+exclude: |
+  (?x)^(
+    .*\.min\.js|
+    .*\.min\.css|
+    node_modules/|
+    .git/|
+    .tox/|
+    .venv/|
+    venv/|
+    env/|
+    build/|
+    dist/|
+    .*\.egg-info/|
+    data/|
+    results/|
+    logs/|
+    temp/|
+    tmp/|
+    .*\.log|
+    .*\.tmp|
+    .*\.temp|
+    legacy_scripts/
+  )$
+
+# 安装说明:
+# 1. 安装pre-commit: pip install pre-commit
+# 2. 安装hooks: pre-commit install
+# 3. 运行所有文件检查: pre-commit run --all-files
+# 4. 更新hooks: pre-commit autoupdate

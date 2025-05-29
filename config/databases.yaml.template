@@ -1,0 +1,131 @@
+# MICOS-2024 数据库配置文件模板
+# 复制此文件为 databases.yaml 并修改为实际的数据库路径
+
+# 数据库根目录
+database_root: "/path/to/databases"
+
+# 质量控制数据库
+quality_control:
+  # KneadData数据库
+  kneaddata:
+    human_genome: "${database_root}/kneaddata/human_genome"
+    mouse_genome: "${database_root}/kneaddata/mouse_genome"
+    ribosomal_rna: "${database_root}/kneaddata/ribosomal_rna"
+    
+  # Trimmomatic适配器序列
+  trimmomatic:
+    adapters: "${database_root}/trimmomatic/adapters"
+
+# 分类学数据库
+taxonomy:
+  # Kraken2数据库
+  kraken2:
+    standard: "${database_root}/kraken2/standard"
+    minikraken: "${database_root}/kraken2/minikraken2_v2_8GB"
+    pluspf: "${database_root}/kraken2/pluspf"
+    pluspfp: "${database_root}/kraken2/pluspfp"
+    
+  # QIIME2分类器
+  qiime2:
+    silva_138_99_515_806: "${database_root}/qiime2/silva-138-99-515-806-nb-classifier.qza"
+    silva_138_99_full_length: "${database_root}/qiime2/silva-138-99-nb-classifier.qza"
+    greengenes_13_8_99: "${database_root}/qiime2/gg-13-8-99-nb-classifier.qza"
+    
+  # 参考序列数据库
+  reference_sequences:
+    silva_138_99: "${database_root}/silva/silva_138_99_otus.fasta"
+    greengenes_13_8: "${database_root}/greengenes/gg_13_8_otus.fasta"
+
+# 功能注释数据库
+functional:
+  # HUMAnN数据库
+  humann:
+    chocophlan: "${database_root}/humann/chocophlan"
+    uniref90: "${database_root}/humann/uniref90"
+    uniref50: "${database_root}/humann/uniref50"
+    
+  # KEGG数据库
+  kegg:
+    genes: "${database_root}/kegg/genes"
+    pathways: "${database_root}/kegg/pathways"
+    modules: "${database_root}/kegg/modules"
+    
+  # COG数据库
+  cog:
+    database: "${database_root}/cog/cog_database"
+    
+  # Pfam数据库
+  pfam:
+    database: "${database_root}/pfam/Pfam-A.hmm"
+
+# 抗性基因数据库
+resistance:
+  # CARD数据库
+  card:
+    database: "${database_root}/card/card_database"
+    
+  # ResFinder数据库
+  resfinder:
+    database: "${database_root}/resfinder/resfinder_database"
+
+# 病毒数据库
+virus:
+  # RefSeq病毒基因组
+  refseq_viral:
+    database: "${database_root}/refseq/viral_genomes"
+    
+  # ICTV分类
+  ictv:
+    taxonomy: "${database_root}/ictv/taxonomy"
+
+# 宿主基因组
+host_genomes:
+  human:
+    genome: "${database_root}/host/human/GRCh38"
+    annotation: "${database_root}/host/human/gencode.v38.annotation.gtf"
+    
+  mouse:
+    genome: "${database_root}/host/mouse/GRCm39"
+    annotation: "${database_root}/host/mouse/gencode.vM27.annotation.gtf"
+
+# 数据库版本信息
+versions:
+  kraken2_standard: "2023-06-05"
+  silva: "138"
+  greengenes: "13_8"
+  humann_chocophlan: "v3.0.0"
+  humann_uniref: "v3.0.0"
+  card: "3.2.6"
+  
+# 下载配置
+download:
+  # 自动下载设置
+  auto_download: false
+  
+  # 下载源
+  sources:
+    kraken2: "https://genome-idx.s3.amazonaws.com/kraken/"
+    silva: "https://data.qiime2.org/"
+    humann: "http://huttenhower.sph.harvard.edu/humann_data/"
+    
+  # 下载脚本
+  scripts:
+    download_kraken2: "scripts/download_kraken2_db.sh"
+    download_silva: "scripts/download_silva_db.sh"
+    download_humann: "scripts/download_humann_db.sh"
+
+# 数据库验证
+validation:
+  # 检查文件完整性
+  check_integrity: true
+  
+  # 必需文件列表
+  required_files:
+    kraken2:
+      - "hash.k2d"
+      - "opts.k2d"
+      - "taxo.k2d"
+    silva:
+      - "*.qza"
+    humann:
+      - "*.dmnd"

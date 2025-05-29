@@ -1,23 +1,89 @@
-# Contributing
+# 贡献指南
 
-We welcome contributions to this project! Please follow these guidelines:
+感谢您对MICOS-2024项目的关注！我们欢迎所有形式的贡献，包括代码、文档、测试、问题报告和功能建议。
 
-## Reporting Bugs
+## 贡献方式
 
-- Use the GitHub issue tracker to report bugs.
-- Please include steps to reproduce the bug, expected behavior, and actual behavior.
+### 报告问题
 
-## Suggesting Enhancements
+如果您发现了bug或有改进建议：
 
-- Use the GitHub issue tracker to suggest enhancements.
-- Clearly describe the enhancement and the motivation for it.
+1. 搜索[现有Issues](https://github.com/BGI-MICOS/MICOS-2024/issues)，确保问题尚未被报告
+2. 使用相应的Issue模板：
+   - [Bug报告](.github/ISSUE_TEMPLATE/bug_report.md)
+   - [功能请求](.github/ISSUE_TEMPLATE/feature_request.md)
+3. 提供详细信息：环境信息、重现步骤、期望行为等
 
-## Pull Requests
+### 代码贡献
 
-- Fork the repository and create your branch from `main`.
-- Ensure your code adheres to the project's style guidelines.
-- Make sure your changes are well-tested.
-- Update the README.md or other documentation if necessary.
-- Issue that pull request!
+#### 开发环境设置
 
-Thank you for contributing! 
+```bash
+# 1. Fork并克隆项目
+git clone https://github.com/BGI-MICOS/MICOS-2024.git
+cd MICOS-2024
+
+# 2. 创建开发环境
+mamba env create -f environment.yml
+conda activate micos-2024
+
+# 3. 创建开发分支
+git checkout -b feature/your-feature-name
+```
+
+#### 开发流程
+
+1. 进行开发并提交更改
+2. 确保代码通过测试：`./scripts/verify_installation.sh`
+3. 推送到您的fork并创建Pull Request
+
+### 文档贡献
+
+- 修正错别字和语法错误
+- 改进文档清晰度
+- 添加教程或示例
+- 更新API文档
+
+## Pull Request指南
+
+### 提交前检查
+
+- [ ] 代码通过所有测试
+- [ ] 代码符合项目规范
+- [ ] 添加了必要的测试
+- [ ] 更新了相关文档
+- [ ] 提交信息清晰明确
+
+### 提交信息格式
+
+```
+类型: 简短描述 (不超过50字符)
+
+详细描述（如果需要）
+- 解释更改原因
+- 描述更改影响
+- 引用相关Issue
+
+Fixes #123
+```
+
+提交类型：`Add`、`Fix`、`Update`、`Remove`、`Docs`、`Style`、`Refactor`、`Test`
+
+## 代码规范
+
+- **Python代码**：遵循PEP 8规范
+- **Shell脚本**：使用shellcheck检查
+- **文档**：使用Markdown格式
+- **测试**：为新功能添加测试
+
+## 获取帮助
+
+- **GitHub Issues**：问题报告和功能讨论
+- **GitHub Discussions**：一般讨论和问答
+- **文档**：查看[故障排除指南](docs/troubleshooting.md)
+
+## 许可证
+
+通过贡献代码，您同意您的贡献将在[MIT许可证](LICENSE)下发布。
+
+感谢您的贡献！🎉

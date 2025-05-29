@@ -1,0 +1,16 @@
+sample-id	group	treatment	time-point	subject-id	body-site	age	sex	bmi	description
+Sample001	Control	None	T0	Subject01	Gut	25	Female	22.5	健康对照组，基线样本
+Sample002	Control	None	T0	Subject02	Gut	28	Male	24.1	健康对照组，基线样本
+Sample003	Control	None	T0	Subject03	Gut	32	Female	21.8	健康对照组，基线样本
+Sample004	Treatment	Antibiotic	T0	Subject04	Gut	29	Male	23.7	治疗组，抗生素处理前
+Sample005	Treatment	Antibiotic	T24	Subject04	Gut	29	Male	23.7	治疗组，抗生素处理24小时后
+Sample006	Treatment	Antibiotic	T72	Subject04	Gut	29	Male	23.7	治疗组，抗生素处理72小时后
+Sample007	Treatment	Probiotic	T0	Subject05	Gut	26	Female	22.9	治疗组，益生菌处理前
+Sample008	Treatment	Probiotic	T24	Subject05	Gut	26	Female	22.9	治疗组，益生菌处理24小时后
+Sample009	Treatment	Probiotic	T72	Subject05	Gut	26	Female	22.9	治疗组，益生菌处理72小时后
+Sample010	Disease	IBD	T0	Subject06	Gut	35	Male	25.3	疾病组，炎症性肠病患者
+Sample011	Disease	IBD	T0	Subject07	Gut	42	Female	26.8	疾病组，炎症性肠病患者
+Sample012	Environmental	Soil	Summer	Site01	Soil	NA	NA	NA	环境样本，夏季土壤
+Sample013	Environmental	Water	Spring	Site02	Water	NA	NA	NA	环境样本，春季水体
+Sample014	Environmental	Air	Winter	Site03	Air	NA	NA	NA	环境样本，冬季空气
+Sample015	Food	Fermented	Day7	Batch01	Yogurt	NA	NA	NA	食品样本，发酵第7天酸奶

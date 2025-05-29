@@ -1,0 +1,351 @@
+# MICOS-2024 分析配置文件模板
+# 复制此文件为 analysis.yaml 并根据需要修改参数
+
+# 项目信息
+project:
+  name: "MICOS_Analysis"
+  description: "宏基因组分析项目"
+  version: "1.0.0"
+  author: "Your Name"
+  email: "your.email@example.com"
+
+# 输入输出路径
+paths:
+  input_dir: "data/raw_input"
+  output_dir: "results"
+  temp_dir: "tmp"
+  log_dir: "logs"
+
+  # 数据库路径
+  databases:
+    kraken2: "/path/to/kraken2_db"
+    kneaddata: "/path/to/kneaddata_db"
+    silva_classifier: "/path/to/silva-138-99-515-806-nb-classifier.qza"
+
+# 计算资源配置
+resources:
+  max_threads: 16
+  max_memory: "32GB"
+  max_time: "24h"
+
+# 质量控制参数
+quality_control:
+  fastqc:
+    enabled: true
+    threads: 4
+
+  kneaddata:
+    enabled: true
+    threads: 8
+    min_quality: 20
+    min_length: 50
+    remove_intermediate: true
+    bypass_trf: true
+
+# 物种分类参数
+taxonomic_profiling:
+  kraken2:
+    enabled: true
+    threads: 16
+    confidence: 0.1
+    min_base_quality: 20
+    min_hit_groups: 2
+    use_names: true
+    memory_mapping: true
+
+  kraken_biom:
+    enabled: true
+    format: "hdf5"
+
+  krona:
+    enabled: true
+
+# QIIME2分析参数
+qiime2:
+  enabled: true
+
+  # 特征表过滤
+  feature_filtering:
+    min_frequency: 10
+    min_samples: 3
+
+  # 多样性分析
+  diversity:
+    sampling_depth: 1000
+    metrics:
+      alpha:
+        - "shannon"
+        - "chao1"
+        - "simpson"
+        - "observed_features"
+      beta:
+        - "braycurtis"
+        - "jaccard"
+        - "unweighted_unifrac"
+        - "weighted_unifrac"
+
+  # 分类学分析
+  taxonomy:
+    classifier_confidence: 0.7
+
+# 功能分析参数（可选）
+functional_analysis:
+  humann:
+    enabled: false
+    threads: 16
+    nucleotide_database: "/path/to/chocophlan"
+    protein_database: "/path/to/uniref"
+
+# 统计分析参数
+statistics:
+  alpha_diversity:
+    test_method: "kruskal"
+    pairwise: true
+
+  beta_diversity:
+    test_method: "permanova"
+    permutations: 999
+
+  differential_abundance:
+    method: "deseq2"
+    alpha: 0.05
+    fold_change_threshold: 2.0
+
+# 可视化参数
+visualization:
+  plots:
+    dpi: 300
+    format: ["png", "svg", "pdf"]
+    color_palette: "Set1"
+
+  krona:
+    max_depth: 7
+
+  heatmap:
+    top_features: 50
+    clustering_method: "ward"
+
+# 报告生成
+reporting:
+  enabled: true
+  format: ["html", "pdf"]
+  include_plots: true
+  include_tables: true
+
+# 差异丰度分析参数
+differential_abundance:
+  enabled: true
+  methods:
+    deseq2:
+      enabled: true
+      alpha: 0.05
+      fold_change_threshold: 2.0
+      min_count: 10
+    aldex2:
+      enabled: true
+      mc_samples: 128
+      test: "t"
+      effect_size_threshold: 1.0
+    ancom_bc:
+      enabled: true
+      alpha: 0.05
+      p_adj_method: "BH"
+      zero_cut: 0.90
+      lib_cut: 1000
+
+  # 可视化参数
+  visualization:
+    volcano_plot: true
+    ma_plot: true
+    heatmap: true
+    top_features: 50
+
+# 系统发育分析参数
+phylogenetic_analysis:
+  enabled: true
+
+  # 序列比对
+  alignment:
+    method: "muscle"  # muscle, mafft, clustal
+    threads: 8
+
+  # 系统发育树构建
+  tree_construction:
+    method: "fasttree"  # fasttree, raxml, iqtree
+    bootstrap: 100
+    model: "GTR+G"
+
+  # 可视化
+  visualization:
+    tree_format: ["newick", "nexus"]
+    plot_tree: true
+    color_by_metadata: true
+
+# 功能注释参数
+functional_annotation:
+  enabled: true
+
+  # KEGG注释
+  kegg:
+    enabled: true
+    database_path: "/path/to/kegg_db"
+    evalue: 1e-5
+
+  # COG注释
+  cog:
+    enabled: true
+    database_path: "/path/to/cog_db"
+    evalue: 1e-5
+
+  # Pfam注释
+  pfam:
+    enabled: true
+    database_path: "/path/to/pfam_db"
+    evalue: 1e-5
+
+  # GO注释
+  go:
+    enabled: true
+    database_path: "/path/to/go_db"
+
+  # 通路富集分析
+  pathway_enrichment:
+    enabled: true
+    method: "hypergeometric"
+    p_value_cutoff: 0.05
+    q_value_cutoff: 0.1
+
+# 16S rRNA分析参数
+amplicon_analysis:
+  enabled: true
+
+  # 引物去除
+  primer_removal:
+    forward_primer: "GTGCCAGCMGCCGCGGTAA"
+    reverse_primer: "GGACTACHVGGGTWTCTAAT"
+
+  # 质量过滤
+  quality_filtering:
+    min_quality: 25
+    max_ee: 2.0
+    truncate_len: [250, 200]  # forward, reverse
+
+  # 去噪参数
+  denoising:
+    method: "dada2"  # dada2, deblur
+    chimera_method: "consensus"
+
+  # 分类学分类
+  taxonomy:
+    classifier: "silva"
+    confidence: 0.7
+
+# 宏转录组分析参数
+metatranscriptome_analysis:
+  enabled: true
+
+  # RNA-seq质量控制
+  rna_qc:
+    adapter_removal: true
+    quality_trimming: true
+    min_length: 50
+
+  # 基因表达定量
+  quantification:
+    method: "salmon"  # salmon, kallisto, rsem
+    index_type: "quasi"
+
+  # 功能分析
+  functional_analysis:
+    kegg_pathway: true
+    go_enrichment: true
+
+  # 差异表达分析
+  differential_expression:
+    method: "deseq2"
+    alpha: 0.05
+    fold_change_threshold: 2.0
+
+# 网络分析参数
+network_analysis:
+  enabled: true
+
+  # 相关性分析
+  correlation:
+    method: "spearman"  # spearman, pearson
+    min_abundance: 0.001
+    min_prevalence: 0.1
+
+  # 网络构建
+  network_construction:
+    correlation_threshold: 0.6
+    pvalue_threshold: 0.05
+    multiple_testing_correction: "BH"
+
+  # 拓扑分析
+  topology_analysis:
+    centrality_metrics: true
+    module_detection: true
+    key_species_identification: true
+
+  # 可视化
+  visualization:
+    layout: "spring"  # spring, circular, kamada_kawai
+    node_size_by: "degree"
+    edge_color_by: "correlation"
+
+# 增强质量控制参数
+enhanced_qc:
+  enabled: true
+
+  # 质量阈值
+  quality_thresholds:
+    min_quality: 20
+    min_length: 50
+    max_n_content: 0.1
+    min_gc_content: 0.2
+    max_gc_content: 0.8
+
+  # FastQC参数
+  fastqc:
+    threads: 4
+    memory: "2G"
+
+  # MultiQC参数
+  multiqc:
+    enabled: true
+    config_file: null
+
+  # 高级指标
+  advanced_metrics:
+    calculate_complexity: true
+    detect_adapters: true
+    estimate_insert_size: true
+
+  # 可视化
+  visualization:
+    plot_format: ["png", "svg"]
+    dpi: 300
+    interactive_plots: true
+
+# 高级选项
+advanced:
+  # 容器配置
+  containers:
+    use_singularity: false
+    use_docker: true
+
+  # 工作流配置
+  workflow:
+    engine: "cromwell"
+    backend: "Local"
+
+  # 缓存配置
+  cache:
+    enabled: true
+    directory: ".cache"
+
+  # 日志配置
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

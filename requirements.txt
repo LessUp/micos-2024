@@ -1,0 +1,120 @@
+# MICOS-2024 Python Dependencies
+# 宏基因组综合分析套件 Python 依赖包
+
+# Core Python packages
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+plotly>=5.0.0
+jupyter>=1.0.0
+notebook>=6.4.0
+
+# Bioinformatics packages
+biopython>=1.79
+scikit-learn>=1.0.0
+umap-learn>=0.5.0
+networkx>=2.6.0
+python-louvain>=0.15
+community>=0.13.0
+
+# Web frameworks for interactive analysis
+dash>=2.0.0
+dash-bootstrap-components>=1.0.0
+plotly-dash>=0.4.0
+streamlit>=1.0.0
+bokeh>=2.4.0
+altair>=4.2.0
+
+# Configuration and utilities
+pyyaml>=5.4.0
+click>=8.0.0
+tqdm>=4.62.0
+joblib>=1.1.0
+psutil>=5.8.0
+
+# Performance profiling
+memory-profiler>=0.60.0
+line-profiler>=3.3.0
+
+# Phylogenetic analysis
+ete3>=3.1.2
+dendropy>=4.5.0
+
+# Microbiome-specific packages
+skbio>=0.5.6
+
+# Bioconda packages (install via conda/mamba)
+# These packages are better installed via conda due to complex dependencies:
+# - qiime2
+# - dada2  
+# - phyloseq
+# - deseq2
+# - aldex2
+# - ancom
+# - kraken-biom==1.2.0
+
+# Additional analysis packages
+statsmodels>=0.13.0
+pingouin>=0.5.0
+scikit-bio>=0.5.6
+
+# Data visualization enhancements
+plotnine>=0.8.0
+pygraphviz>=1.7  # Note: requires graphviz system package
+
+# File format support
+h5py>=3.1.0
+tables>=3.6.0
+openpyxl>=3.0.0
+xlsxwriter>=3.0.0
+
+# Parallel processing
+dask>=2021.0.0
+multiprocessing-logging>=0.3.0
+
+# Quality control and validation
+cerberus>=1.3.0
+jsonschema>=4.0.0
+
+# Development and testing (optional)
+pytest>=6.2.0
+pytest-cov>=3.0.0
+black>=21.0.0
+flake8>=4.0.0
+mypy>=0.910
+
+# Documentation (optional)
+sphinx>=4.0.0
+sphinx-rtd-theme>=1.0.0
+myst-parser>=0.17.0
+
+# Note: Some packages require system dependencies
+# For Ubuntu/Debian systems, install these first:
+# sudo apt-get update
+# sudo apt-get install -y build-essential python3-dev
+# sudo apt-get install -y libhdf5-dev libnetcdf-dev
+# sudo apt-get install -y graphviz graphviz-dev
+# sudo apt-get install -y gfortran libopenblas-dev liblapack-dev
+
+# For macOS with Homebrew:
+# brew install graphviz
+# brew install hdf5
+# brew install netcdf
+
+# Installation instructions:
+# 1. Create virtual environment:
+#    python -m venv micos_env
+#    source micos_env/bin/activate  # Linux/macOS
+#    # or micos_env\Scripts\activate  # Windows
+#
+# 2. Install requirements:
+#    pip install -r requirements.txt
+#
+# 3. For bioinformatics tools, use conda/mamba:
+#    mamba env create -f environment.yml
+#    conda activate micos-2024
+#
+# 4. Verify installation:
+#    python -c "import numpy, pandas, matplotlib, seaborn, plotly; print('All packages imported successfully')"
