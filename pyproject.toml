@@ -68,7 +68,7 @@ Documentation = "https://github.com/BGI-MICOS/MICOS-2024/docs"
 "Bug Tracker" = "https://github.com/BGI-MICOS/MICOS-2024/issues"
 
 [project.scripts]
-micos = "scripts.run_full_analysis:main"
+micos = "micos.cli:main"
 
 [tool.setuptools_scm]
 write_to = "micos/_version.py"

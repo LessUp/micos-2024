@@ -1,0 +1,19 @@
+# MICOS-2024 配置文件示例
+#
+# 使用此文件来配置分析流程的默认参数。
+# 将此文件复制为 `config.yaml` 并根据您的环境修改路径。
+# 命令行中指定的参数将覆盖此文件中的设置。
+
+# --- 数据库路径 ---
+# 请将以下路径更新为您系统中参考数据库的实际位置。
+
+# KneadData 使用的人类参考数据库 (例如: hg37dec_v0.1)
+KNEADDATA_DB: "/path/to/your/kneaddata_db/hg37dec_v0.1"
+
+# Kraken2 使用的物种分类数据库
+KRAKEN2_DB: "/path/to/your/kraken2_db"
+
+# --- 默认运行参数 ---
+
+# 默认使用的线程数
+THREADS: 16
