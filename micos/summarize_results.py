@@ -19,7 +19,7 @@ def run_summarize(results_dir, output_file):
     # 动态定位 summarize_results.py 脚本的路径
     # 假设脚本位于项目根目录下的 scripts/ 文件夹中
     project_root = Path(__file__).parent.parent
-    script_path = Path(__file__).parent.parent.parent / "scripts" / "summarize_results.py"
+    script_path = project_root / "scripts" / "summarize_results.py"
 
     if not script_path.exists():
         logger.error(f"总结脚本未找到: {script_path}")
