@@ -63,13 +63,13 @@ check_required_files() {
         "CONTRIBUTING.md"
         "CODE_OF_CONDUCT.md"
         "CITATION.md"
+        "SECURITY.md"
         "requirements.txt"
         "environment.yml"
         "pyproject.toml"
         ".gitignore"
         ".pre-commit-config.yaml"
-        "docker-compose.yml"
-        "install.sh"
+        "deploy/docker-compose.example.yml"
     )
     
     local missing_files=()
@@ -102,6 +102,9 @@ check_directory_structure() {
         "steps"
         "workflows"
         "containers"
+        "deploy"
+        "legacy"
+        "changelog"
         ".github/ISSUE_TEMPLATE"
         "tests"
     )
@@ -280,16 +283,16 @@ check_dependencies() {
         fi
     fi
     
-    # 检查Docker文件
-    if [[ -f "$PROJECT_ROOT/docker-compose.yml" ]]; then
-        if command -v docker-compose &> /dev/null; then
-            if docker-compose -f "$PROJECT_ROOT/docker-compose.yml" config &>/dev/null; then
-                log_success "docker-compose.yml配置有效"
+    # 检查Docker Compose示例文件
+    if [[ -f "$PROJECT_ROOT/deploy/docker-compose.example.yml" ]]; then
+        if docker compose version &> /dev/null; then
+            if docker compose -f "$PROJECT_ROOT/deploy/docker-compose.example.yml" config &>/dev/null; then
+                log_success "deploy/docker-compose.example.yml 配置有效"
             else
-                log_warning "docker-compose.yml配置有问题"
+                log_warning "deploy/docker-compose.example.yml 配置有问题"
             fi
         else
-            log_warning "docker-compose未安装，跳过配置检查"
+            log_warning "docker compose 未安装，跳过配置检查"
         fi
     fi
 }

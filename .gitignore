@@ -75,6 +75,7 @@ ipython_config.py
 results/
 output/
 logs/
+legacy/
 temp/
 tmp/
 *.log

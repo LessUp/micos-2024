@@ -23,9 +23,15 @@
 git clone https://github.com/BGI-MICOS/MICOS-2024.git
 cd MICOS-2024
 
-# 2. 创建开发环境
+# 2A. 使用 Conda/Mamba（推荐用于生物信息学依赖）
 mamba env create -f environment.yml
 conda activate micos-2024
+
+# 2B. 使用 Pip（仅进行 Python 开发/贡献时）
+python -m venv .venv
+source .venv/bin/activate
+pip install -e '.[dev]'
+pre-commit install
 
 # 3. 创建开发分支
 git checkout -b feature/your-feature-name
@@ -34,7 +40,7 @@ git checkout -b feature/your-feature-name
 #### 开发流程
 
 1. 进行开发并提交更改
-2. 确保代码通过测试：`./scripts/verify_installation.sh`
+2. 确保代码通过测试：`pytest -q` 或 `./scripts/verify_installation.sh`
 3. 推送到您的fork并创建Pull Request
 
 ### 文档贡献

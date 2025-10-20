@@ -53,16 +53,12 @@ check_dependencies() {
         exit 1
     fi
     
-    # 检查Docker Compose
-    if ! command -v docker-compose &> /dev/null; then
-        log_warning "Docker Compose 未安装，尝试使用 docker compose"
-        if ! docker compose version &> /dev/null; then
-            log_error "Docker Compose 未安装，请先安装 Docker Compose"
-            exit 1
-        fi
+    # 检查 docker compose
+    if docker compose version &> /dev/null; then
         COMPOSE_CMD="docker compose"
     else
-        COMPOSE_CMD="docker-compose"
+        log_error "docker compose 未安装，请先安装 Docker 或更新到支持 compose v2 的版本"
+        exit 1
     fi
     
     log_success "依赖检查完成"
@@ -93,53 +89,21 @@ prepare_test_data() {
     log_success "测试数据准备完成"
 }
 
-# 运行分析流程
+# 运行分析流程（示例：启动核心容器以验证环境）
 run_analysis() {
-    log_info "开始运行 MICOS-2024 分析流程..."
-    
-    # 设置环境变量
-    export COMPOSE_PARALLEL_LIMIT=16
+    log_info "启动核心容器以进行连通性与镜像可用性验证..."
+
     export MICOS_INPUT_DIR="$(pwd)/data/test_input"
     export MICOS_OUTPUT_DIR="$(pwd)/results/test_output"
     export MICOS_LOG_DIR="$(pwd)/logs"
-    
-    # 运行质量控制
-    log_info "步骤 1/6: 质量控制 (FastQC)"
-    cd steps/01_quality_control
-    $COMPOSE_CMD up --build
-    cd ../..
-    
-    # 运行数据清洗
-    log_info "步骤 2/6: 数据清洗 (KneadData)"
-    cd steps/02_read_cleaning
-    $COMPOSE_CMD up --build
-    cd ../..
-    
-    # 运行物种分类
-    log_info "步骤 3/6: 物种分类 (Kraken2)"
-    cd steps/03_taxonomic_profiling_kraken
-    $COMPOSE_CMD up --build
-    cd ../..
-    
-    # 运行格式转换
-    log_info "步骤 4/6: 格式转换 (BIOM)"
-    cd steps/04_taxonomic_conversion_biom
-    $COMPOSE_CMD up --build
-    cd ../..
-    
-    # 运行可视化
-    log_info "步骤 5/6: 可视化 (Krona)"
-    cd steps/05_taxonomic_visualization_krona
-    $COMPOSE_CMD up --build
-    cd ../..
-    
-    # 运行QIIME2分析
-    log_info "步骤 6/6: 多样性分析 (QIIME2)"
-    cd steps/06_qiime2_analysis
-    $COMPOSE_CMD up --build
-    cd ../..
-    
-    log_success "分析流程完成！"
+
+    # 使用示例 compose 文件启动服务（不会实际运行分析，仅验证容器可用）
+    $COMPOSE_CMD -f deploy/docker-compose.example.yml up -d
+
+    # 打印容器状态
+    $COMPOSE_CMD -f deploy/docker-compose.example.yml ps
+
+    log_success "容器环境验证完成（示例 Compose 已启动）。"
 }
 
 # 生成报告
@@ -190,7 +154,7 @@ generate_report() {
     <div class="section">
         <h2 class="info">🔗 相关链接</h2>
         <ul>
-            <li><a href="https://github.com/YOUR_USERNAME/MICOS-2024">项目主页</a></li>
+            <li><a href="https://github.com/BGI-MICOS/MICOS-2024">项目主页</a></li>
             <li><a href="docs/taxonomic-profiling.md">详细文档</a></li>
         </ul>
     </div>

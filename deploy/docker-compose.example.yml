@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  fastqc:
+    image: biocontainers/fastqc:v0.11.9_cv8
+    container_name: micos-fastqc
+    volumes:
+      - ../data:/data
+      - ../results:/results
+      - ../logs:/logs
+    command: ["echo", "FastQC service ready"]
+
+  kneaddata:
+    image: shuai/kneaddata:0.12.0.2
+    container_name: micos-kneaddata
+    volumes:
+      - ../data:/data
+      - ../results:/results
+      - ../logs:/logs
+      - ../references:/references
+    depends_on:
+      - fastqc
+    command: ["echo", "KneadData service ready"]
+
+  kraken2:
+    image: shuai/kraken2:2.1.3
+    container_name: micos-kraken2
+    volumes:
+      - ../data:/data
+      - ../results:/results
+      - ../logs:/logs
+      - ../references:/references
+    depends_on:
+      - kneaddata
+    command: ["echo", "Kraken2 service ready"]
+
+  kraken-biom:
+    image: shuai/kraken-biom:1.0.0
+    container_name: micos-kraken-biom
+    volumes:
+      - ../data:/data
+      - ../results:/results
+      - ../logs:/logs
+    depends_on:
+      - kraken2
+    command: ["echo", "Kraken-BIOM service ready"]
+
+  krona:
+    image: shuai/krona:2.8.1
+    container_name: micos-krona
+    volumes:
+      - ../data:/data
+      - ../results:/results
+      - ../logs:/logs
+    depends_on:
+      - kraken2
+    command: ["echo", "Krona service ready"]
+
+  qiime2:
+    image: quay.io/qiime2/metagenome:2024.5
+    container_name: micos-qiime2
+    volumes:
+      - ../data:/data
+      - ../results:/results
+      - ../logs:/logs
+    depends_on:
+      - kraken-biom
+    command: ["echo", "QIIME2 service ready"]

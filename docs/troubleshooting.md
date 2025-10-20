@@ -120,14 +120,14 @@ FileNotFoundError: [Errno 2] No such file or directory: '/path/to/kraken2_db'
 ls -la /path/to/kraken2_db
 
 # 2. 下载缺失的数据库
-./scripts/download_databases.sh
+# 请参考 docs/configuration.md 并根据 config/databases.yaml.template 配置本地路径
 
 # 3. 更新配置文件
 nano config/databases.yaml
 # 确保路径正确
 
 # 4. 验证数据库完整性
-./scripts/verify_databases.sh
+# 使用 kraken2/biom 等工具自检，或根据 docs/configuration.md 的步骤手动验证
 ```
 
 ### 问题6: 样本元数据格式错误
@@ -411,13 +411,13 @@ grep -i "error" logs/*.log
 less logs/cromwell.log
 
 # 4. 检查容器日志
-docker-compose logs --tail=100
+docker compose -f deploy/docker-compose.example.yml logs --tail=100
 ```
 
 ### 社区支持
 
-1. **GitHub Issues**: [提交问题](https://github.com/YOUR_USERNAME/MICOS-2024/issues)
-2. **讨论区**: [参与讨论](https://github.com/YOUR_USERNAME/MICOS-2024/discussions)
+1. **GitHub Issues**: [提交问题](https://github.com/BGI-MICOS/MICOS-2024/issues)
+2. **讨论区**: [参与讨论](https://github.com/BGI-MICOS/MICOS-2024/discussions)
 3. **邮件支持**: micos2024@example.com
 
 ### 问题报告模板

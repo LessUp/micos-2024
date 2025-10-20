@@ -211,7 +211,7 @@ check_filesystem() {
     
     # 检查关键文件
     ((TOTAL++))
-    local required_files=("README.md" "environment.yml" "docker-compose.yml")
+    local required_files=("README.md" "environment.yml" "deploy/docker-compose.example.yml")
     local missing_files=()
     
     for file in "${required_files[@]}"; do

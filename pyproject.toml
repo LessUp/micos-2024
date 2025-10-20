@@ -76,10 +76,9 @@ write_to = "micos/_version.py"
 [tool.black]
 line-length = 88
 target-version = ['py39']
-include = '\.pyi?$'
+include = '\\.pyi?$'
 extend-exclude = '''
 /(
-  # directories
   \.eggs
   | \.git
   | \.hg
@@ -88,7 +87,7 @@ extend-exclude = '''
   | \.venv
   | build
   | dist
-  | legacy_scripts
+  | legacy
 )/
 '''
 
@@ -100,7 +99,7 @@ include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
-skip_glob = ["legacy_scripts/*"]
+skip_glob = ["legacy/*"]
 
 [tool.flake8]
 max-line-length = 88
@@ -114,7 +113,7 @@ exclude = [
     "*.egg-info",
     ".venv",
     "venv",
-    "legacy_scripts",
+    "legacy",
 ]
 
 [tool.mypy]
@@ -124,7 +123,7 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 exclude = [
-    "legacy_scripts/",
+    "legacy/",
     "build/",
     "dist/",
 ]
@@ -152,10 +151,10 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["scripts"]
+source = ["micos"]
 omit = [
     "*/tests/*",
-    "*/legacy_scripts/*",
+    "*/legacy/*",
     "setup.py",
 ]
 
@@ -176,4 +175,4 @@ exclude_lines = [
 [tool.pydocstyle]
 convention = "google"
 add-ignore = ["D100", "D104", "D105", "D107"]
-match-dir = "(?!legacy_scripts).*"
+match-dir = "(?!legacy).*"

@@ -20,18 +20,7 @@
 - **存储**: 最少100GB可用空间
 - **CPU**: 多核处理器，推荐16核+
 
-### 一键安装
 
-```bash
-# 下载并运行安装脚本
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/MICOS-2024/main/install.sh | bash
-
-# 或者手动安装
-git clone https://github.com/YOUR_USERNAME/MICOS-2024.git
-cd MICOS-2024
-chmod +x install.sh
-./install.sh
-```
 
 ### 快速测试
 
@@ -57,14 +46,14 @@ sudo sh get-docker.sh
 sudo usermod -aG docker $USER
 
 # 2. 克隆项目
-git clone https://github.com/YOUR_USERNAME/MICOS-2024.git
+git clone https://github.com/BGI-MICOS/MICOS-2024.git
 cd MICOS-2024
 
 # 3. 启动服务
-docker-compose up -d
+docker compose -f deploy/docker-compose.example.yml up -d
 
 # 4. 验证安装
-docker-compose exec micos-web python --version
+docker compose -f deploy/docker-compose.example.yml ps
 ```
 
 ### 方式2: Conda安装
@@ -75,7 +64,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 bash Miniforge3-Linux-x86_64.sh
 
 # 2. 创建环境
-git clone https://github.com/YOUR_USERNAME/MICOS-2024.git
+git clone https://github.com/BGI-MICOS/MICOS-2024.git
 cd MICOS-2024
 mamba env create -f environment.yml
 conda activate micos-2024
@@ -262,17 +251,17 @@ miniwdl run workflows/wdl_scripts/meta-dev.wdl \
 ### 使用Docker运行
 
 ```bash
-# 启动所有服务
-docker-compose up -d
+# 启动核心服务（示例 Compose）
+docker compose -f deploy/docker-compose.example.yml up -d
 
 # 运行特定分析
-docker-compose run --rm kraken2 \
+docker compose -f deploy/docker-compose.example.yml run --rm kraken2 \
   kraken2 --db /references/kraken2_db \
   --paired /data/sample_R1.fastq /data/sample_R2.fastq
 
 # 查看运行状态
-docker-compose ps
-docker-compose logs -f
+docker compose -f deploy/docker-compose.example.yml ps
+docker compose -f deploy/docker-compose.example.yml logs -f
 ```
 
 ## 📊 结果解读

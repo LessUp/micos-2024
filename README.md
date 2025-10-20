@@ -100,8 +100,8 @@ graph LR
 git clone https://github.com/BGI-MICOS/MICOS-2024.git
 cd MICOS-2024
 
-# 启动服务
-docker-compose up -d
+# 启动核心分析服务（示例 Compose）
+docker compose -f deploy/docker-compose.example.yml up -d
 
 # 运行测试
 ./scripts/run_test_data.sh
@@ -128,62 +128,69 @@ conda activate micos-2024
 
 ```
 .
-├── .gitignore               # Git 忽略规则
-├── README.md                # 项目入口和文档
-├── LICENSE                  # 开源许可证
-├── CONTRIBUTING.md          # 贡献指南
-├── CODE_OF_CONDUCT.md       # 社区行为准则
-├── config/                  # 配置文件
-│   └── config.conf
-├── data/                    # 数据 (通常不提交到 Git)
-│   └── raw_input/           # 原始输入数据
-├── docs/                    # 详细文档和图片
+├── .gitignore
+├── README.md
+├── LICENSE
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+├── SECURITY.md
+├── changelog/
+│   └── 2025-10-20_open_source_refactor.md
+├── deploy/
+│   └── docker-compose.example.yml
+├── micos/
+│   └── ...
+├── scripts/
+│   ├── run_full_analysis.sh
+│   ├── run_module.sh
+│   ├── verify_installation.sh
+│   └── ...
+├── legacy/
+│   └── r-scripts/
+├── containers/
+│   └── singularity/
+│       ├── pandas.def
+│       └── ubuntu.def
+├── workflows/
+│   ├── origin-HUMAnN.wdl
+│   └── wdl_scripts/
+├── config/
+│   ├── analysis.yaml.template
+│   ├── databases.yaml.template
+│   ├── samples.tsv.template
+│   └── README.md
+├── data/
+│   └── raw_input/
+├── docs/
+│   ├── user_manual.md
+│   ├── configuration.md
+│   ├── troubleshooting.md
 │   ├── taxonomic-profiling.md
 │   ├── functional-profiling.md
 │   └── images/
-│       └── img.png
-├── results/                 # 分析结果 (通常不提交到 Git)
-├── scripts/                 # 通用或遗留脚本
-│   └── legacy_scripts/
-├── workflows/               # 工作流定义 (WDL)
-│   ├── origin-HUMAnN.wdl
-│   └── wdl_scripts/         # 其他 WDL 相关脚本
-├── steps/                   # 各分析步骤的脚本/说明
-│   ├── 01_quality_control/
-│   ├── 02_read_cleaning/
-│   ├── 03_taxonomic_profiling_kraken/
-│   ├── 04_taxonomic_conversion_biom/
-│   ├── 05_taxonomic_visualization_krona/
-│   ├── 06_qiime2_analysis/
-│   ├── 07_phyloseq_analysis/
-│   ├── 08_megan_analysis/
-│   ├── 09_qiime2_whole_analysis/
-│   └── ...                  # 其他步骤
-└── containers/              # 容器构建文件
-    └── sif_build/
+├── tests/
+│   ├── test_enhanced_qc.py
+│   └── test_utils.py
+├── pyproject.toml
+├── requirements.txt
+├── environment.yml
+└── .github/
+    └── workflows/ci.yml
 ```
 
 ## 安装指南
 
 详细的安装说明请参考：[📖 完整安装指南](docs/user_manual.md#详细安装指南)
 
-### 数据库下载
+### 数据库准备
 
-MICOS-2024需要以下参考数据库：
+MICOS-2024 需要以下参考数据库：
 
-- **Kraken2数据库**: 用于分类学分类（~100GB）
-- **KneadData数据库**: 用于宿主DNA去除
-- **QIIME2分类器**: 用于分类学注释
+- Kraken2 数据库（用于物种分类）
+- KneadData 数据库（用于宿主 DNA 去除）
+- QIIME2 分类器（用于分类学注释）
 
-数据库下载脚本：
-```bash
-# 下载所有必需数据库
-./scripts/download_databases.sh
-
-# 或单独下载
-./scripts/download_kraken2_db.sh
-./scripts/download_kneaddata_db.sh
-```
+请参考 `docs/configuration.md` 获取下载与准备指南，并根据 `config/databases.yaml.template` 填写本地路径。
 
 ## 配置
 
@@ -320,6 +327,7 @@ java -jar cromwell.jar run \
 - **GitHub Issues**: [报告问题](https://github.com/BGI-MICOS/MICOS-2024/issues)
 - **GitHub Discussions**: [参与讨论](https://github.com/BGI-MICOS/MICOS-2024/discussions)
 - **故障排除**: [查看常见问题](docs/troubleshooting.md)
+- **安全策略**: 查看 `SECURITY.md`
 
 ## 许可证
 
