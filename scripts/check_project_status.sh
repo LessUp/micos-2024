@@ -95,6 +95,7 @@ check_directory_structure() {
     log_step "检查目录结构..."
     
     local required_dirs=(
+        "micos"
         "scripts"
         "config"
         "docs"
@@ -103,7 +104,6 @@ check_directory_structure() {
         "workflows"
         "containers"
         "deploy"
-        "legacy"
         "changelog"
         ".github/ISSUE_TEMPLATE"
         "tests"
