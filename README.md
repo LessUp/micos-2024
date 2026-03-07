@@ -14,7 +14,7 @@
 
 **2024“猛犸杯”国际生命科学数据创新大赛 · 参赛作品**
 
-[关于猛犸杯](#关于猛犸杯大赛) • [新手导读](#新手导读) • [快速开始](#快速开始) • [核心功能](#核心功能) • [安装指南](#安装指南) • [文档](#文档)
+[关于猛犸杯](#关于猛犸杯大赛) • [快速开始](#快速开始) • [核心功能](#核心功能) • [安装指南](#安装指南) • [文档](#文档)
 
 </div>
 
@@ -175,95 +175,32 @@ conda activate micos-2024
 
 ```
 .
-├── .gitignore
-├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── CODE_OF_CONDUCT.md
-├── SECURITY.md
-├── changelog/
-│   └── 2025-10-20_open_source_refactor.md
-├── deploy/
-│   └── docker-compose.example.yml
-├── micos/
+├── micos/                  # 核心 Python 包（质控、物种分类、多样性分析、功能注释等）
+├── scripts/                # 运行脚本与分析模块（Shell / Python / R）
+│   ├── run_full_analysis.sh    # 一键运行完整分析
+│   ├── run_module.sh           # 按模块运行分析
+│   ├── verify_installation.sh  # 验证安装环境
+│   ├── enhanced_qc.py          # 增强质控
+│   ├── functional_annotation.py
+│   ├── network_analysis.py
 │   └── ...
-├── scripts/
-│   ├── run_full_analysis.sh
-│   ├── run_module.sh
-│   ├── verify_installation.sh
-│   └── ...
-├── legacy/
-│   └── r-scripts/
-├── containers/
-│   └── singularity/
-│       ├── pandas.def
-│       └── ubuntu.def
-├── workflows/
-│   ├── origin-HUMAnN.wdl
-│   └── wdl_scripts/
-├── config/
-│   ├── analysis.yaml.template
-│   ├── databases.yaml.template
-│   ├── samples.tsv.template
-│   └── README.md
-├── data/
-│   └── raw_input/
-├── docs/
-│   ├── user_manual.md
-│   ├── configuration.md
-│   ├── troubleshooting.md
-│   ├── taxonomic-profiling.md
-│   ├── functional-profiling.md
-│   └── images/
-├── tests/
-│   ├── test_enhanced_qc.py
-│   └── test_utils.py
-├── pyproject.toml
-├── requirements.txt
-├── environment.yml
-└── .github/
-    └── workflows/ci.yml
+├── steps/                  # 分步骤分析教程（01-09，从质控到统计分析）
+├── workflows/              # WDL 工作流定义
+│   └── wdl_scripts/            # 各版本 WDL 脚本和配置
+├── config/                 # 配置模板（分析参数、数据库路径、样本元数据）
+├── containers/singularity/ # Singularity 容器定义文件
+├── deploy/                 # Docker Compose 部署配置
+├── data/raw_input/         # 原始测序数据输入目录
+├── docs/                   # 用户手册、配置指南、故障排除
+├── tests/                  # 单元测试和集成测试
+├── changelog/              # 版本更新日志
+├── .github/                # GitHub Actions CI 和 Issue 模板
+├── CITATION.md             # 引用信息
+├── pyproject.toml          # Python 项目配置
+├── requirements.txt        # Python 依赖
+├── environment.yml         # Conda 环境配置
+└── README.md
 ```
-
-## 新手导读
-
-如果你是第一次接触本项目，建议按以下顺序阅读和探索：
-
-### 第一步：了解项目背景
-
-1. 阅读上方 [关于"猛犸杯"大赛](#关于猛犸杯大赛) 章节，了解本项目的比赛背景和赛题要求
-2. 阅读 [项目概述](#项目概述) 和 [核心功能](#核心功能)，掌握 MICOS-2024 的分析流程和能力范围
-
-### 第二步：熟悉代码结构
-
-| 目录 | 作用 | 建议阅读顺序 |
-|:---|:---|:---:|
-| `micos/` | **核心 Python 模块** — 质控、物种分类、多样性分析、功能注释等 | 1 |
-| `workflows/` | **WDL 工作流** — 定义分析流水线的串联逻辑 | 2 |
-| `config/` | **配置模板** — 分析参数、数据库路径、样本元数据 | 3 |
-| `scripts/` | **运行脚本** — 一键运行完整分析或单个模块 | 4 |
-| `containers/` | **容器定义** — Singularity 镜像构建文件 | 5 |
-| `docs/` | **详细文档** — 用户手册、配置指南、故障排除 | 随时查阅 |
-| `tests/` | **测试用例** — 单元测试和集成测试 | 随时查阅 |
-| `legacy/` | **历史代码** — 早期 R 脚本，仅供参考 | 可选 |
-
-### 第三步：动手实践
-
-1. 按照 [快速开始](#快速开始) 完成环境搭建
-2. 使用 `data/raw_input/` 下的测试数据运行第一次分析
-3. 查看 `results/` 目录下的输出报告，理解各模块的输出格式
-
-### 第四步：深入学习
-
-| 学习方向 | 推荐资源 |
-|:---|:---|
-| 宏基因组分析原理 | [`docs/taxonomic-profiling.md`](docs/taxonomic-profiling.md)、[`docs/functional-profiling.md`](docs/functional-profiling.md) |
-| 工具配置与调优 | [`docs/configuration.md`](docs/configuration.md) |
-| 常见问题 | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 完整操作指南 | [`docs/user_manual.md`](docs/user_manual.md) |
-| 参与贡献 | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-
-> **提示**：建议从 `micos/cli.py` 开始阅读代码，它是命令行入口，可以帮你快速理解各模块的调用关系。
 
 ## 安装指南
 
