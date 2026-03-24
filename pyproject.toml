@@ -70,6 +70,9 @@ Documentation = "https://github.com/BGI-MICOS/MICOS-2024/docs"
 [project.scripts]
 micos = "micos.cli:main"
 
+[tool.setuptools]
+packages = ["micos"]
+
 [tool.setuptools_scm]
 write_to = "micos/_version.py"
 
