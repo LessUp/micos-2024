@@ -1,0 +1,382 @@
+{# 
+  独立首页模板 - 用于完全定制的着陆页
+  可通过 mike 部署为默认版本
+#}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MICOS-2024 | 专业宏基因组分析平台</title>
+  
+  <!-- 预加载关键资源 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #3f51b5;
+      --primary-light: #757de8;
+      --accent: #ff4081;
+      --dark: #1a237e;
+      --text: #333;
+      --text-light: #666;
+      --bg: #fff;
+      --bg-alt: #f5f5f5;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+    }
+    
+    /* 导航栏 */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .navbar-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    /* 英雄区域 */
+    .hero {
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.15);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    
+    .hero .gradient-text {
+      background: linear-gradient(135deg, #ff4081, #ffab40);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.25rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+    
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 64, 129, 0.5);
+    }
+    
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+    
+    .stat {
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #ffab40;
+    }
+    
+    .stat-label {
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+    
+    /* 语言选择 */
+    .lang-section {
+      padding: 5rem 2rem;
+      background: var(--bg-alt);
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 3rem;
+    }
+    
+    .lang-cards {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    
+    .lang-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 350px;
+      padding: 2.5rem;
+      border-radius: 16px;
+      text-decoration: none;
+      color: white;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .lang-card.en {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .lang-card.zh {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      box-shadow: 0 10px 30px rgba(245, 87, 108, 0.3);
+    }
+    
+    .lang-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    
+    .lang-flag {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .lang-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .lang-card p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+    
+    /* 页脚 */
+    .footer {
+      background: #1a1a2e;
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .footer-copy {
+      opacity: 0.6;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="/" class="logo">🧬 MICOS-2024</a>
+      <ul class="nav-links">
+        <li><a href="en/">English</a></li>
+        <li><a href="zh/">中文</a></li>
+        <li><a href="https://github.com/BGI-MICOS/MICOS-2024">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- 英雄区域 -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="badge">🚀 最新版本 v1.1.0</div>
+      <h1>
+        MICOS-2024<br>
+        <span class="gradient-text">专业宏基因组分析平台</span>
+      </h1>
+      <p class="hero-subtitle">
+        端到端分析从原始测序数据到生物学洞察<br>
+        整合 Kraken2、QIIME2、HUMAnN 等业界标准工具
+      </p>
+      <div class="hero-buttons">
+        <a href="en/installation/" class="btn btn-primary">🚀 快速开始</a>
+        <a href="en/" class="btn btn-secondary">📚 浏览文档</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">10+</div>
+          <div class="stat-label">分析模块</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">3</div>
+          <div class="stat-label">部署方式</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">开源免费</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 语言选择 -->
+  <section class="lang-section">
+    <h2 class="section-title">🌐 选择语言 / Select Language</h2>
+    <div class="lang-cards">
+      <a href="en/" class="lang-card en">
+        <div class="lang-flag">🇺🇸</div>
+        <h3>English</h3>
+        <p>Professional metagenomic analysis platform with comprehensive documentation</p>
+      </a>
+      <a href="zh/" class="lang-card zh">
+        <div class="lang-flag">🇨🇳</div>
+        <h3>中文</h3>
+        <p>专业宏基因组分析平台，提供完整的中文文档支持</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="https://github.com/BGI-MICOS/MICOS-2024">GitHub</a>
+      <a href="https://github.com/BGI-MICOS/MICOS-2024/issues">Issues</a>
+      <a href="https://github.com/BGI-MICOS/MICOS-2024/discussions">Discussions</a>
+      <a href="en/changelog/">Changelog</a>
+    </div>
+    <p class="footer-copy">© 2024-2025 MICOS-2024 Team. Licensed under MIT.</p>
+  </footer>
+
+</body>
+</html>

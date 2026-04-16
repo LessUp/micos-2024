@@ -1,0 +1,374 @@
+{# =============================================================================
+   主页自定义模板 - 完整覆盖 Material 主题
+   ============================================================================= #}
+
+{% extends "base.html" %}
+
+{# ==================== 自定义头部 ==================== #}
+{% block extrahead %}
+  {{ super() }}
+  
+  <!-- Open Graph / 社交分享 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MICOS-2024 - 专业宏基因组分析平台">
+  <meta property="og:description" content="端到端宏基因组分析平台，整合 Kraken2、QIIME2、HUMAnN 等工具，提供从原始测序数据到生物学洞察的完整流程">
+  <meta property="og:image" content="https://bgi-micos.github.io/MICOS-2024/assets/images/social-card.png">
+  <meta property="og:url" content="https://bgi-micos.github.io/MICOS-2024/">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MICOS-2024">
+  <meta name="twitter:description" content="Metagenomic Intelligence and Comprehensive Omics Suite">
+  <meta name="twitter:image" content="https://bgi-micos.github.io/MICOS-2024/assets/images/social-card.png">
+  
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MICOS-2024",
+    "description": "专业宏基因组分析平台",
+    "url": "https://bgi-micos.github.io/MICOS-2024/",
+    "applicationCategory": "ScientificSoftware",
+    "operatingSystem": "Linux, macOS",
+    "softwareVersion": "1.1.0",
+    "license": "https://github.com/BGI-MICOS/MICOS-2024/blob/main/LICENSE"
+  }
+  </script>
+  
+  <!-- 加速加载 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://github.com">
+{% endblock %}
+
+{# ==================== 英雄区域 (仅首页) ==================== #}
+{% block announce %}
+  {% if page.is_homepage %}
+    <!-- 首页英雄区域 -->
+    <style>
+      .mdx-hero {
+        background: linear-gradient(135deg, #1a237e 0%, #3949ab 50%, #5c6bc0 100%);
+        color: white;
+        padding: 6rem 2rem 5rem;
+        margin: -2rem -2rem 3rem -2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .mdx-hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: drift 30s linear infinite;
+      }
+      
+      @keyframes drift {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+      }
+      
+      .mdx-hero__content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      
+      .mdx-hero__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+      
+      .mdx-hero__badge .twemoji {
+        width: 1.2em;
+        height: 1.2em;
+      }
+      
+      .mdx-hero h1 {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        border: none !important;
+        color: white !important;
+      }
+      
+      .mdx-hero h1 .gradient {
+        background: linear-gradient(135deg, #ff4081, #ffab40);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .mdx-hero__subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+      
+      .mdx-hero__buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+      }
+      
+      .mdx-hero__button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.9rem 1.8rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+      
+      .mdx-hero__button--primary {
+        background: #ff4081;
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+      }
+      
+      .mdx-hero__button--primary:hover {
+        background: #f50057;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 64, 129, 0.5);
+      }
+      
+      .mdx-hero__button--secondary {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border: 2px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(10px);
+      }
+      
+      .mdx-hero__button--secondary:hover {
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.5);
+      }
+      
+      .mdx-hero__stats {
+        display: flex;
+        justify-content: center;
+        gap: 3rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+      
+      .mdx-hero__stat {
+        text-align: center;
+      }
+      
+      .mdx-hero__stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffab40;
+      }
+      
+      .mdx-hero__stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+      
+      @media (max-width: 768px) {
+        .mdx-hero {
+          padding: 4rem 1.5rem 3rem;
+        }
+        .mdx-hero__stats {
+          gap: 1.5rem;
+        }
+      }
+    </style>
+    
+    <div class="mdx-hero" data-md-component="hero">
+      <div class="mdx-hero__content">
+        <div class="mdx-hero__badge">
+          <span class="twemoji">{% include ".icons/octicons/tag-16.svg" %}</span>
+          最新版本 v1.1.0
+        </div>
+        
+        <h1>
+          MICOS-2024<br>
+          <span class="gradient">专业宏基因组分析平台</span>
+        </h1>
+        
+        <p class="mdx-hero__subtitle">
+          端到端分析从原始测序数据到生物学洞察<br>
+          整合 Kraken2、QIIME2、HUMAnN 等业界标准工具
+        </p>
+        
+        <div class="mdx-hero__buttons">
+          <a href="{{ 'en/installation' | url }}" class="mdx-hero__button mdx-hero__button--primary">
+            <span class="twemoji">{% include ".icons/octicons/rocket-16.svg" %}</span>
+            快速开始
+          </a>
+          <a href="{{ 'en/' | url }}" class="mdx-hero__button mdx-hero__button--secondary">
+            <span class="twemoji">{% include ".icons/octicons/book-16.svg" %}</span>
+            文档中心
+          </a>
+        </div>
+        
+        <div class="mdx-hero__stats">
+          <div class="mdx-hero__stat">
+            <div class="mdx-hero__stat-value">10+</div>
+            <div class="mdx-hero__stat-label">分析模块</div>
+          </div>
+          <div class="mdx-hero__stat">
+            <div class="mdx-hero__stat-value">3</div>
+            <div class="mdx-hero__stat-label">部署方式</div>
+          </div>
+          <div class="mdx-hero__stat">
+            <div class="mdx-hero__stat-value">100%</div>
+            <div class="mdx-hero__stat-label">开源免费</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{# ==================== 内容区域增强 ==================== #}
+{% block content %}
+  {{ super() }}
+  
+  <!-- 页面编辑/反馈按钮 -->
+  {% if page.edit_url %}
+    <style>
+      .mdx-feedback {
+        margin-top: 4rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--md-default-fg-color--lightest);
+      }
+      
+      .mdx-feedback__title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--md-default-fg-color);
+      }
+      
+      .mdx-feedback__buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      
+      .mdx-feedback__button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid var(--md-default-fg-color--lightest);
+        background: var(--md-code-bg-color);
+        color: var(--md-default-fg-color);
+      }
+      
+      .mdx-feedback__button:hover {
+        background: var(--md-accent-fg-color);
+        color: white;
+        border-color: var(--md-accent-fg-color);
+      }
+    </style>
+    
+    <div class="mdx-feedback">
+      <div class="mdx-feedback__title">💡 帮助我们改进文档</div>
+      <div class="mdx-feedback__buttons">
+        <a href="{{ page.edit_url }}" class="mdx-feedback__button" target="_blank">
+          <span class="twemoji">{% include ".icons/octicons/pencil-16.svg" %}</span>
+          编辑本页
+        </a>
+        <a href="{{ config.repo_url }}/issues/new?title=[Docs]%20{{ page.title | urlencode }}&body=问题描述：" 
+           class="mdx-feedback__button" target="_blank">
+          <span class="twemoji">{% include ".icons/octicons/bug-16.svg" %}</span>
+          报告问题
+        </a>
+        <a href="{{ config.repo_url }}/discussions" class="mdx-feedback__button" target="_blank">
+          <span class="twemoji">{% include ".icons/octicons/comment-discussion-16.svg" %}</span>
+          参与讨论
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{# ==================== 页脚增强 ==================== #}
+{% block footer %}
+  {{ super() }}
+  
+  <!-- 返回顶部按钮 -->
+  <style>
+    .mdx-back-to-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--md-primary-fg-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+    
+    .mdx-back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .mdx-back-to-top:hover {
+      background: var(--md-accent-fg-color);
+      transform: translateY(-3px);
+    }
+    
+    .mdx-back-to-top svg {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+  
+  <button class="mdx-back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="返回顶部">
+    {% include ".icons/octicons/arrow-up-24.svg" %}
+  </button>
+  
+  <script>
+    const backToTop = document.querySelector('.mdx-back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 500) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+  </script>
+{% endblock %}

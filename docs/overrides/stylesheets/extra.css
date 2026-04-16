@@ -1,0 +1,274 @@
+/* =============================================================================
+   MICOS-2024 自定义样式 - 最强视觉体验
+   ============================================================================= */
+
+/* ==================== CSS 变量定义 ==================== */
+:root {
+  --md-primary-fg-color: #3f51b5;
+  --md-primary-fg-color--light: #757de8;
+  --md-primary-fg-color--dark: #002984;
+  --md-accent-fg-color: #ff4081;
+  --md-accent-bg-color: #ff4081;
+  
+  /* 自定义组件 */
+  --micos-border-radius: 8px;
+  --micos-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --micos-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --micos-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==================== 全局优化 ==================== */
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 选择文本高亮 */
+::selection {
+  background: var(--md-primary-fg-color--light);
+  color: white;
+}
+
+/* ==================== 导航栏优化 ==================== */
+
+/* 导航栏玻璃态效果 */
+.md-header {
+  backdrop-filter: blur(10px);
+  background-color: rgba(63, 81, 181, 0.95) !important;
+  box-shadow: var(--micos-shadow);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: rgba(48, 48, 48, 0.95) !important;
+}
+
+/* 导航链接悬停效果 */
+.md-tabs__link {
+  position: relative;
+  transition: var(--micos-transition);
+}
+
+.md-tabs__link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: var(--micos-transition);
+  transform: translateX(-50%);
+}
+
+.md-tabs__link:hover::after {
+  width: 80%;
+}
+
+/* ==================== 侧边栏优化 ==================== */
+
+/* 侧边栏项目悬停 */
+.md-nav__link {
+  border-radius: var(--micos-border-radius);
+  transition: var(--micos-transition);
+  padding: 0.4rem 0.8rem !important;
+  margin: 0.1rem 0;
+}
+
+.md-nav__link:hover {
+  background-color: rgba(63, 81, 181, 0.1);
+  transform: translateX(4px);
+}
+
+.md-nav__link--active {
+  background-color: rgba(63, 81, 181, 0.15);
+  font-weight: 600;
+  border-left: 3px solid var(--md-primary-fg-color);
+}
+
+/* ==================== 内容区域优化 ==================== */
+
+/* 文章卡片效果 */
+.md-content {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 标题样式 */
+.md-typeset h1 {
+  color: var(--md-primary-fg-color);
+  font-weight: 700;
+  border-bottom: 3px solid var(--md-primary-fg-color--light);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.md-typeset h2 {
+  color: var(--md-primary-fg-color--dark);
+  font-weight: 600;
+  position: relative;
+  padding-left: 1rem;
+}
+
+.md-typeset h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.3rem;
+  bottom: 0.3rem;
+  width: 4px;
+  background: var(--md-primary-fg-color);
+  border-radius: 2px;
+}
+
+/* ==================== 代码块优化 ==================== */
+
+/* 代码块容器 */
+.md-typeset pre {
+  border-radius: var(--micos-border-radius);
+  box-shadow: var(--micos-shadow);
+  transition: var(--micos-transition);
+}
+
+.md-typeset pre:hover {
+  box-shadow: var(--micos-shadow-lg);
+}
+
+/* 行号样式 */
+.highlight .linenos {
+  background-color: rgba(63, 81, 181, 0.1) !important;
+  border-right: 2px solid var(--md-primary-fg-color--light) !important;
+}
+
+/* 代码高亮 */
+.highlight .hll {
+  background-color: rgba(255, 64, 129, 0.2) !important;
+  border-radius: 3px;
+}
+
+/* ==================== 提示框优化 ==================== */
+
+/* 提示框动画 */
+.md-typeset .admonition {
+  border-radius: var(--micos-border-radius);
+  box-shadow: var(--micos-shadow);
+  transition: var(--micos-transition);
+  border-left-width: 4px;
+}
+
+.md-typeset .admonition:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--micos-shadow-lg);
+}
+
+/* 不同类型提示框颜色 */
+.md-typeset .admonition.note {
+  border-left-color: #448aff;
+}
+
+.md-typeset .admonition.warning {
+  border-left-color: #ff9100;
+}
+
+.md-typeset .admonition.danger {
+  border-left-color: #ff5252;
+}
+
+.md-typeset .admonition.tip {
+  border-left-color: #00bfa5;
+}
+
+/* ==================== 表格优化 ==================== */
+
+.md-typeset table {
+  border-radius: var(--micos-border-radius);
+  box-shadow: var(--micos-shadow);
+  overflow: hidden;
+}
+
+.md-typeset table thead {
+  background: linear-gradient(135deg, var(--md-primary-fg-color), var(--md-primary-fg-color--dark)) !important;
+}
+
+.md-typeset table th {
+  color: white !important;
+  font-weight: 600;
+}
+
+.md-typeset table tr:hover {
+  background-color: rgba(63, 81, 181, 0.05);
+}
+
+/* ==================== 按钮样式 ==================== */
+
+.md-typeset .md-button {
+  border-radius: var(--micos-border-radius);
+  transition: var(--micos-transition);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.md-typeset .md-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--micos-shadow-lg);
+}
+
+.md-typeset .md-button--primary {
+  background: linear-gradient(135deg, var(--md-primary-fg-color), var(--md-primary-fg-color--light));
+}
+
+/* ==================== 标签页优化 ==================== */
+
+.md-typeset .tabbed-set {
+  border-radius: var(--micos-border-radius);
+  box-shadow: var(--micos-shadow);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.md-typeset .tabbed-labels {
+  background: rgba(63, 81, 181, 0.05);
+}
+
+.md-typeset .tabbed-labels > label {
+  font-weight: 600;
+  transition: var(--micos-transition);
+}
+
+.md-typeset .tabbed-labels > label:hover {
+  background: rgba(63, 81, 181, 0.1);
+}
+
+/* ==================== 响应式优化 ==================== */
+
+@media screen and (max-width: 768px) {
+  .md-tabs {
+    display: none;
+  }
+}
+
+/* ==================== 打印优化 ==================== */
+
+@media print {
+  .md-header,
+  .md-tabs,
+  .md-sidebar,
+  .md-search {
+    display: none !important;
+  }
+  
+  .md-content {
+    margin-left: 0 !important;
+  }
+}
