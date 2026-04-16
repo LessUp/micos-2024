@@ -1,0 +1,264 @@
+# MkDocs 配置文件 - Material 主题完整增强版
+# 这是目前最强大的技术文档方案
+
+site_name: MICOS-2024
+site_description: Metagenomic Intelligence and Comprehensive Omics Suite - 宏基因组综合分析平台
+site_url: https://bgi-micos.github.io/MICOS-2024/
+site_author: MICOS-2024 Team
+
+# 仓库设置
+repo_name: BGI-MICOS/MICOS-2024
+repo_url: https://github.com/BGI-MICOS/MICOS-2024
+edit_uri: edit/main/docs/
+
+# 版权
+copyright: Copyright &copy; 2024-2025 MICOS-2024 Team
+
+# ==================== 文档结构 ====================
+nav:
+  - Home: 
+    - English: index.md
+    - 中文: zh/index.md
+  
+  - Getting Started:
+    - Quick Start: en/index.md
+    - Installation: en/installation.md
+    - Configuration: en/configuration.md
+  
+  - Analysis Modules:
+    - Taxonomic Profiling: en/taxonomic-profiling.md
+    - Functional Profiling: en/functional-profiling.md
+    - Diversity Analysis: en/diversity-analysis.md
+  
+  - Reference:
+    - API Reference: en/api-reference.md
+    - FAQ: en/faq.md
+    - Troubleshooting: en/troubleshooting.md
+  
+  - 中文文档:
+    - 快速开始: zh/index.md
+    - 安装指南: zh/installation.md
+    - 配置指南: zh/configuration.md
+    - 用户手册: zh/user_manual.md
+    - 故障排除: zh/troubleshooting.md
+    - 常见问题: zh/faq.md
+  
+  - About:
+    - Changelog: changelog/CHANGELOG.md
+    - Contributing: CONTRIBUTING.md
+    - License: LICENSE.md
+
+# ==================== 主题配置 ====================
+theme:
+  name: material
+  
+  # 自定义目录
+  custom_dir: docs/overrides
+  
+  # 调色板 - 支持亮/暗模式自动切换
+  palette:
+    # 亮色模式
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # 暗色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  # 字体
+  font:
+    text: Roboto
+    code: JetBrains Mono
+  
+  # 图标
+  icon:
+    logo: material/dna
+    repo: fontawesome/brands/github
+  
+  # 功能特性 - 全部开启
+  features:
+    # 导航
+    - navigation.instant          # 即时导航，无刷新
+    - navigation.tabs             # 顶部标签导航
+    - navigation.tabs.sticky      # 粘性标签
+    - navigation.sections         # 可折叠的章节
+    - navigation.expand           # 默认展开章节
+    - navigation.path             # 面包屑导航
+    - navigation.prune            # 只渲染可见内容
+    - navigation.indexes          # 章节首页
+    
+    # 搜索
+    - search.suggest              # 搜索建议
+    - search.highlight            # 高亮搜索结果
+    - search.share                # 分享搜索结果
+    
+    # 内容
+    - content.code.copy           # 代码复制按钮
+    - content.code.annotate       # 代码注释
+    - content.tabs.link           # 关联标签页
+    - content.tooltips            # 工具提示
+    - content.anchors.link        # 标题锚点
+    
+    # 页眉/页脚
+    - header.autohide             # 自动隐藏页眉
+    - announce.dismiss            # 可关闭公告
+    
+    # 其他
+    - toc.integrate               # 集成目录到侧边栏
+    - toc.follow                  # 跟随滚动
+
+# ==================== 插件 ====================
+plugins:
+  # 搜索插件 - 增强版
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|(?<=\w)(?=\.)'
+      lang:
+        - en
+        - zh
+  
+  # 离线支持
+  - offline
+  
+  # Minify 压缩
+  - minify:
+      minify_html: true
+      minify_js: true
+  
+  # 图像优化
+  - optimize:
+      optimize_images: true
+  
+  # Git 修订历史
+  - git-revision-date-localized:
+      type: iso_date
+      enable_creation_date: true
+  
+  # 社会分享
+  - social:
+      cards: true
+      cards_color:
+        fill: "#3F51B5"
+        text: "#FFFFFF"
+  
+  # 站点地图
+  - site-urls
+  
+  # 版本管理（使用 mike）
+  - mike:
+      version_selector: true
+      css_dir: css
+      javascript_dir: js
+
+# ==================== 扩展 ====================
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      permalink_title: 链接到此标题
+      toc_depth: 4
+  
+  # PyMdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: BGI-MICOS
+      repo: MICOS-2024
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# ==================== 额外 CSS/JS ====================
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+# ==================== 额外配置 ====================
+extra:
+  # 版本
+  version:
+    provider: mike
+    default: stable
+  
+  # 社交链接
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/BGI-MICOS
+      name: GitHub
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/r/bgi-micos
+      name: Docker Hub
+  
+  # 多语言支持
+  alternate:
+    - name: English
+      link: /en/
+      lang: en
+    - name: 中文
+      link: /zh/
+      lang: zh
+  
+  # 分析统计
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  
+  # 生成器提示
+  generator: true
+
+# ==================== 验证 ====================
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+
+# ==================== 排除 ====================
+exclude_search:
+  - en/api-reference.md
+  - stylesheets/*
+  - javascripts/*

@@ -163,3 +163,35 @@ config/private.conf
 databases/
 references/
 indices/
+# =============================================================================
+# MkDocs / GitHub Pages 特定
+# =============================================================================
+
+# 构建输出
+/site/
+/docs/site/
+
+# MkDocs 缓存
+.cache/
+
+# Python 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# 临时文件
+*.tmp
+.tmp/
+
+# 社交卡片缓存
+docs/assets/images/social/

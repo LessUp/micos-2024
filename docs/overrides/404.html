@@ -1,0 +1,113 @@
+{# 自定义 404 页面 #}
+
+{% extends "main.html" %}
+
+{% block content %}
+  <style>
+    .not-found {
+      text-align: center;
+      padding: 4rem 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .not-found__icon {
+      font-size: 6rem;
+      margin-bottom: 1rem;
+    }
+    
+    .not-found__title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--md-primary-fg-color);
+      margin-bottom: 1rem;
+    }
+    
+    .not-found__text {
+      font-size: 1.1rem;
+      color: var(--md-default-fg-color--light);
+      margin-bottom: 2rem;
+    }
+    
+    .not-found__actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .not-found__suggestions {
+      margin-top: 3rem;
+      text-align: left;
+    }
+    
+    .not-found__suggestions h3 {
+      margin-bottom: 1rem;
+      color: var(--md-default-fg-color);
+    }
+    
+    .not-found__suggestions ul {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .not-found__suggestions li {
+      margin: 0.5rem 0;
+    }
+    
+    .not-found__suggestions a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--md-code-bg-color);
+      color: var(--md-default-fg-color);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .not-found__suggestions a:hover {
+      background: var(--md-primary-fg-color);
+      color: white;
+    }
+  </style>
+
+  <div class="not-found">
+    <div class="not-found__icon">🔍</div>
+    <h1 class="not-found__title">404</h1>
+    <p class="not-found__text">
+      抱歉，我们找不到您要查找的页面。<br>
+      <em>Sorry, we couldn't find the page you're looking for.</em>
+    </p>
+    <div class="not-found__actions">
+      <a href="{{ base_url }}/en/" class="md-button md-button--primary">
+        🏠 English Home
+      </a>
+      <a href="{{ base_url }}/zh/" class="md-button">
+        🏠 中文首页
+      </a>
+    </div>
+    
+    <div class="not-found__suggestions">
+      <h3>📚 热门页面 / Popular Pages</h3>
+      <ul>
+        <li>
+          <a href="{{ base_url }}/en/installation/">
+            <span>⚡</span> 安装指南 / Installation Guide
+          </a>
+        </li>
+        <li>
+          <a href="{{ base_url }}/en/configuration/">
+            <span>⚙️</span> 配置参考 / Configuration
+          </a>
+        </li>
+        <li>
+          <a href="{{ base_url }}/en/faq/">
+            <span>❓</span> 常见问题 / FAQ
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}
