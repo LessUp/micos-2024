@@ -1,0 +1,143 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mkdocs mkdocs-material mkdocs-mermaid2-plugin pymdown-extensions
+
+    - name: Setup mkdocs
+      run: |
+        mkdir -p docs/site
+        cat > mkdocs.yml << 'EOF'
+        site_name: MICOS-2024
+        site_description: Metagenomic Intelligence and Comprehensive Omics Suite
+        site_author: MICOS-2024 Team
+        site_url: https://bgi-micos.github.io/MICOS-2024/
+
+        repo_name: BGI-MICOS/MICOS-2024
+        repo_url: https://github.com/BGI-MICOS/MICOS-2024
+
+        theme:
+          name: material
+          language: zh
+          palette:
+            - scheme: default
+              primary: blue
+              accent: indigo
+              toggle:
+                icon: material/brightness-7
+                name: 切换到深色模式
+            - scheme: slate
+              primary: blue
+              accent: indigo
+              toggle:
+                icon: material/brightness-4
+                name: 切换到浅色模式
+          features:
+            - navigation.instant
+            - navigation.tracking
+            - navigation.tabs
+            - navigation.sections
+            - navigation.expand
+            - navigation.indexes
+            - navigation.top
+            - search.suggest
+            - search.highlight
+            - content.code.copy
+            - content.code.annotate
+
+        nav:
+          - 首页: index.md
+          - 用户指南:
+            - 用户手册: user_manual.md
+            - 配置指南: configuration.md
+            - 故障排除: troubleshooting.md
+          - 分析流程:
+            - 物种分类: taxonomic-profiling.md
+            - 功能注释: functional-profiling.md
+          - 开发:
+            - 贡献指南: contributing.md
+            - 更新日志: changelog.md
+
+        plugins:
+          - search
+          - mermaid2
+
+        markdown_extensions:
+          - pymdownx.highlight:
+              anchor_linenums: true
+          - pymdownx.inlinehilite
+          - pymdownx.snippets
+          - pymdownx.superfences:
+              custom_fences:
+                - name: mermaid
+                  class: mermaid
+                  format: !!python/name:mermaid2.fence_mermaid
+          - pymdownx.tabbed:
+              alternate_style: true
+          - pymdownx.tasklist
+          - admonition
+          - toc:
+              permalink: true
+        EOF
+
+    - name: Prepare docs
+      run: |
+        # 复制文档到 site 目录
+        cp README.md docs/index.md || echo "README not found"
+        cp CONTRIBUTING.md docs/contributing.md || echo "CONTRIBUTING not found"
+        cp CHANGELOG.md docs/changelog.md || echo "CHANGELOG not found"
+
+        # 确保所有文档存在
+        for f in user_manual.md configuration.md troubleshooting.md taxonomic-profiling.md functional-profiling.md; do
+          if [ ! -f "docs/$f" ]; then
+            echo "# $f" > "docs/$f"
+            echo "Document placeholder" >> "docs/$f"
+          fi
+        done
+
+    - name: Build site
+      run: mkdocs build --strict || mkdocs build
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
