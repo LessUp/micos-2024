@@ -26,7 +26,8 @@ import subprocess
 import yaml
 from typing import Dict, List
 import warnings
-warnings.filterwarnings('ignore')
+# 仅抑制特定的 DeprecationWarning
+warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 # 设置日志
 logging.basicConfig(
