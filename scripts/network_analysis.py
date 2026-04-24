@@ -26,7 +26,8 @@ import subprocess
 import yaml
 from typing import Dict, List, Tuple, Optional
 import warnings
-warnings.filterwarnings('ignore')
+# 仅抑制特定的 DeprecationWarning
+warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 # 网络分析相关库
 try:

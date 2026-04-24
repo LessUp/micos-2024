@@ -34,7 +34,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import warnings
-warnings.filterwarnings('ignore')
+# 仅抑制特定的 DeprecationWarning
+warnings.filterwarnings('ignore', category=DeprecationWarning)
 
 class EnhancedQualityControl:
     """增强质量控制分析类"""
