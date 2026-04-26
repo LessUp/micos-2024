@@ -246,7 +246,7 @@ extra:
   # 分析统计
   analytics:
     provider: google
-    property: G-XXXXXXXXXX
+    property: G-MICOS2024DOCS
   
   # 生成器提示
   generator: true

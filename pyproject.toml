@@ -8,7 +8,7 @@ description = "MICOS-2024: Metagenomic Intelligence and Comprehensive Omics Suit
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "MICOS-2024 Team", email = "micos2024@example.com"}
+    {name = "MICOS-2024 Team", email = "micos-team@bgi-micos.github.io"}
 ]
 keywords = ["metagenomics", "bioinformatics", "microbiome", "genomics"]
 classifiers = [

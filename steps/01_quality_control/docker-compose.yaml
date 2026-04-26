@@ -1,23 +1,32 @@
+# MICOS-2024 Quality Control Docker Compose
+# 使用环境变量配置路径，避免硬编码
+#
+# 使用方法:
+#   export RAW_DATA=/path/to/raw_data
+#   export RESULT_DATA=/path/to/results
+#   export MANUAL_DATA=/path/to/manual
+#   export REFERENCE_DATA=/path/to/reference
+#   docker-compose up
+
 services:
   fastqc:
     image: biocontainers/fastqc:v0.11.9_cv8
     container_name: fastqc
-    # tty: true
-    # stdin_open: true
     command:
       [
         "fastqc",
-        "/RawData/test/SRR12345678_1.fastq",
-        "/RawData/test/SRR12345678_2.fastq"
+        "/RawData/${SAMPLE_NAME}_1.fastq",
+        "/RawData/${SAMPLE_NAME}_2.fastq"
       ]
     volumes:
-      - /media/shuai/TOSHBA/mm-dev/RawData:/RawData
-      - /media/shuai/TOSHBA/mm-dev/ResultData:/ResultData
-      - /media/shuai/TOSHBA/mm-dev/ManualData:/ManualData
-      - /media/shuai/TOSHBA/mm-dev/ReferenceData:/ReferenceData
+      - ${RAW_DATA:-./data/raw}:/RawData
+      - ${RESULT_DATA:-./results}:/ResultData
+      - ${MANUAL_DATA:-./manual}:/ManualData
+      - ${REFERENCE_DATA:-./reference}:/ReferenceData
     working_dir: /
-    user: "1000:1000"
-    restart: no  
+    user: "${UID:-1000}:${GID:-1000}"
+    restart: no
+
 volumes:
   RawData:
     driver: local
