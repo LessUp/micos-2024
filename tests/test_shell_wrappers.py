@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-"""测试 shell 包装层脚本。"""
+"""测试 shell 包装层脚本."""
 
 import subprocess
 from pathlib import Path
 
 
-PROJECT_ROOT = Path('/data5/shijiashuai/lessup/micos-2024')
+# 使用相对路径，支持在不同环境中运行
+PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 RUN_MODULE = PROJECT_ROOT / 'scripts' / 'run_module.sh'
 RUN_FULL = PROJECT_ROOT / 'scripts' / 'run_full_analysis.sh'
 
 
 def test_run_module_help():
-    """run_module.sh 应展示当前支持的包装层模块。"""
+    """run_module.sh 应展示当前支持的包装层模块."""
     result = subprocess.run(
         ['bash', str(RUN_MODULE), '--help'],
         check=False,
@@ -24,7 +25,7 @@ def test_run_module_help():
 
 
 def test_run_module_rejects_unsupported_module():
-    """未收敛到 Python 主链路的模块应直接拒绝。"""
+    """未收敛到 Python 主链路的模块应直接拒绝."""
     result = subprocess.run(
         ['bash', str(RUN_MODULE), 'network_analysis'],
         check=False,
@@ -36,7 +37,7 @@ def test_run_module_rejects_unsupported_module():
 
 
 def test_run_full_analysis_rejects_legacy_skip_and_resume():
-    """完整流程包装层不再维护 skip/resume 逻辑。"""
+    """完整流程包装层不再维护 skip/resume 逻辑."""
     result = subprocess.run(
         ['bash', str(RUN_FULL), '--skip', 'functional_analysis'],
         check=False,
