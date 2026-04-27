@@ -8,20 +8,20 @@ scipy>=1.7.0
 matplotlib>=3.4.0
 seaborn>=0.11.0
 plotly>=5.0.0
-jupyter>=1.0.0
-notebook>=6.4.0
+jupyter>=1.1.1
+notebook>=7.5.5
 
 # Bioinformatics packages
 biopython>=1.79
 scikit-learn>=1.0.0
-umap-learn>=0.5.0
+umap-learn>=0.5.12
 networkx>=2.6.0
-python-louvain>=0.15
+python-louvain>=0.16
 community>=0.13.0
 
 # Web frameworks for interactive analysis
 dash>=2.0.0
-dash-bootstrap-components>=1.0.0
+dash-bootstrap-components>=2.0.4
 plotly-dash>=0.4.0
 streamlit>=1.0.0
 bokeh>=2.4.0
@@ -31,16 +31,16 @@ altair>=4.2.0
 pyyaml>=5.4.0
 click>=8.0.0
 tqdm>=4.62.0
-joblib>=1.1.0
-psutil>=5.8.0
+joblib>=1.5.3
+psutil>=7.2.2
 
 # Performance profiling
-memory-profiler>=0.60.0
-line-profiler>=3.3.0
+memory-profiler>=0.61.0
+line-profiler>=5.0.2
 
 # Phylogenetic analysis
-ete3>=3.1.2
-dendropy>=4.5.0
+ete3>=3.1.3
+dendropy>=5.0.8
 
 # Microbiome-specific packages
 skbio>=0.5.6
@@ -56,27 +56,27 @@ skbio>=0.5.6
 # - kraken-biom==1.2.0
 
 # Additional analysis packages
-statsmodels>=0.13.0
-pingouin>=0.5.0
-scikit-bio>=0.5.6
+statsmodels>=0.14.6
+pingouin>=0.5.5
+scikit-bio>=0.7.0
 
 # Data visualization enhancements
-plotnine>=0.8.0
-pygraphviz>=1.7  # Note: requires graphviz system package
+plotnine>=0.13.6
+pygraphviz>=1.11  # Note: requires graphviz system package
 
 # File format support
-h5py>=3.1.0
-tables>=3.6.0
-openpyxl>=3.0.0
-xlsxwriter>=3.0.0
+h5py>=3.14.0
+tables>=3.9.2
+openpyxl>=3.1.5
+xlsxwriter>=3.2.9
 
 # Parallel processing
-dask>=2021.0.0
-multiprocessing-logging>=0.3.0
+dask>=2024.8.0
+multiprocessing-logging>=0.3.4
 
 # Quality control and validation
-cerberus>=1.3.0
-jsonschema>=4.0.0
+cerberus>=1.3.8
+jsonschema>=4.25.1
 
 # Development and testing (optional)
 pytest>=6.2.0
