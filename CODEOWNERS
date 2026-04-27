@@ -1,0 +1,23 @@
+# CODEOWNERS - MICOS-2024 项目代码所有权
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# 默认所有者
+* @BGI-MICOS/core-team
+
+# Python 核心代码
+micos/ @BGI-MICOS/python-maintainers
+
+# WDL 工作流
+steps/ @BGI-MICOS/wdl-maintainers
+workflows/ @BGI-MICOS/wdl-maintainers
+
+# 文档
+docs/ @BGI-MICOS/docs-maintainers
+*.md @BGI-MICOS/docs-maintainers
+
+# 配置文件
+config/ @BGI-MICOS/config-maintainers
+.github/ @BGI-MICOS/config-maintainers
+
+# 测试
+tests/ @BGI-MICOS/python-maintainers

@@ -1,0 +1,11 @@
+{
+  "include": ["micos", "tests"],
+  "exclude": ["**/__pycache__", "legacy", "build", "dist"],
+  "typeCheckingMode": "basic",
+  "pythonVersion": "3.9",
+  "venvPath": ".",
+  "venv": "venv",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "stubPath": "typings"
+}
