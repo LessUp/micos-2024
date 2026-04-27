@@ -104,20 +104,7 @@ use_parentheses = true
 ensure_newline_before_comments = true
 skip_glob = ["legacy/*"]
 
-[tool.flake8]
-max-line-length = 88
-extend-ignore = ["E203", "W503", "E501"]
-exclude = [
-    ".git",
-    "__pycache__",
-    "build",
-    "dist",
-    ".eggs",
-    "*.egg-info",
-    ".venv",
-    "venv",
-    "legacy",
-]
+# flake8 配置已移至 .flake8 文件（flake8 不支持 pyproject.toml）
 
 [tool.mypy]
 python_version = "3.9"
