@@ -17,7 +17,6 @@ ENV/
 env.bak/
 venv.bak/
 micos_env/
-micos-2024/
 
 # Python cache files
 __pycache__/
@@ -159,10 +158,15 @@ config/secrets.yaml
 config/private.conf
 .secrets/
 
+# OMC (oh-my-claudecode) local config
+.omc/
+.python-version
+
 # Large reference databases (add specific patterns as needed)
 databases/
 references/
 indices/
+
 # =============================================================================
 # MkDocs / GitHub Pages 特定
 # =============================================================================
@@ -170,28 +174,6 @@ indices/
 # 构建输出
 /site/
 /docs/site/
-
-# MkDocs 缓存
-.cache/
-
-# Python 虚拟环境
-venv/
-env/
-ENV/
-
-# IDE 配置
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# macOS
-.DS_Store
-
-# 临时文件
-*.tmp
-.tmp/
 
 # 社交卡片缓存
 docs/assets/images/social/
