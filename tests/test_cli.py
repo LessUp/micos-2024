@@ -38,7 +38,18 @@ def test_full_run_uses_config_defaults(tmp_path, monkeypatch):
 
     captured = {}
 
-    def fake_run_full_pipeline(input_dir_arg, results_dir_arg, threads, kneaddata_db_arg, kraken2_db_arg):
+    def fake_run_full_pipeline(
+        input_dir_arg,
+        results_dir_arg,
+        threads,
+        kneaddata_db_arg,
+        kraken2_db_arg,
+        samples=None,
+        skip_qc=False,
+        skip_taxonomy=False,
+        skip_functional=False,
+        skip_diversity=False,
+    ):
         captured.update(
             {
                 'input_dir': input_dir_arg,

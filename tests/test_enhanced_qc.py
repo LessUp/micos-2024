@@ -14,11 +14,8 @@ import numpy as np
 from unittest.mock import patch, MagicMock
 
 # 导入被测试的模块
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'scripts'))
-
 try:
-    from enhanced_qc import EnhancedQualityControl
+    from micos.enhanced_qc import EnhancedQualityControl
 except ImportError:
     # 如果导入失败，创建一个模拟类用于测试
     class EnhancedQualityControl:

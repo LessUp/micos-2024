@@ -2,20 +2,23 @@
 """MICOS-2024 命令行界面."""
 
 import logging
-import os
 import sys
 from pathlib import Path
 
 import click
-import yaml
 
+from micos.config import (
+    AnalysisConfig,
+    load_databases_config_from_yaml,
+    merge_databases_config,
+)
 from micos.diversity_analysis import run_diversity_analysis
 from micos.full_run import run_full_pipeline
 from micos.functional_annotation import run_functional_annotation
 from micos.quality_control import run_qc
 from micos.summarize_results import run_summarize
 from micos.taxonomic_profiling import run_taxonomic_profiling
-from micos.utils import get_full_run_defaults, load_config, setup_logging
+from micos.utils import setup_logging
 
 # 默认线程数
 DEFAULT_THREADS = 16
@@ -45,8 +48,31 @@ def main(ctx, config_path, log_file, verbose, dry_run):
     ctx.ensure_object(dict)
     ctx.obj['config_path'] = config_path
     ctx.obj['dry_run'] = dry_run
-    ctx.default_map = ctx.default_map or {}
-    ctx.default_map.setdefault('full-run', get_full_run_defaults(config_path))
+
+    # 使用 Pydantic 配置加载默认值
+    if config_path:
+        config_file = Path(config_path)
+    else:
+        config_file = Path("config/analysis.yaml")
+
+    if config_file.exists():
+        try:
+            config = AnalysisConfig.from_yaml(config_file)
+            db_config_path = config_file.parent / "databases.yaml"
+            db_config = load_databases_config_from_yaml(db_config_path)
+            db_paths = merge_databases_config(config, db_config)
+
+            ctx.default_map = ctx.default_map or {}
+            ctx.default_map.setdefault('full-run', {
+                'input_dir': str(config.input_dir) if config.input_dir else None,
+                'results_dir': str(config.results_dir) if config.results_dir else None,
+                'threads': config.threads,
+                'kneaddata_db': db_paths.get('kneaddata_db'),
+                'kraken2_db': db_paths.get('kraken2_db'),
+            })
+        except Exception:
+            # 配置加载失败时使用空默认值
+            pass
 
 
 @main.command('validate-config')
@@ -70,31 +96,39 @@ def validate_config(ctx, config_path):
         click.secho(f"✗ 配置文件不存在: {config_file}", fg="red")
         sys.exit(EXIT_CONFIG_ERROR)
 
-    # 检查语法
+    # 使用 Pydantic 验证配置
     try:
-        config = load_config(config_file)
-        click.secho(f"✓ 配置文件语法有效", fg="green")
-    except yaml.YAMLError as e:
-        click.secho(f"✗ 配置文件语法错误: {e}", fg="red")
+        config = AnalysisConfig.from_yaml(config_path_obj)
+        click.secho("✓ 配置文件语法有效", fg="green")
+
+        # 检查必要配置
+        if not config.input_dir:
+            warnings.append("未配置输入目录 (input_dir)")
+        if not config.results_dir:
+            warnings.append("未配置结果目录 (results_dir)")
+        if not config.kneaddata_db:
+            warnings.append("未配置 KneadData 数据库路径")
+        if not config.kraken2_db:
+            warnings.append("未配置 Kraken2 数据库路径")
+
+    except Exception as e:
+        click.secho(f"✗ 配置文件验证失败: {e}", fg="red")
         sys.exit(EXIT_CONFIG_ERROR)
 
-    # 检查必需字段
-    required_fields = ['paths', 'resources']
-    for field in required_fields:
-        if field not in config:
-            warnings.append(f"缺少推荐字段: {field}")
-
-    # 检查数据库路径
+    # 检查数据库配置文件
     db_config_path = config_path_obj.parent / 'databases.yaml'
     if db_config_path.exists():
         try:
-            with open(db_config_path) as f:
-                db_config = yaml.safe_load(f) or {}
-            for section, dbs in db_config.items():
-                if isinstance(dbs, dict):
-                    for name, path in dbs.items():
-                        if isinstance(path, str) and path.startswith('/path/to/'):
-                            warnings.append(f"数据库路径为占位符: {section}.{name}")
+            db_config = load_databases_config_from_yaml(db_config_path)
+            # 检查占位符路径
+            if db_config.quality_control and db_config.quality_control.kneaddata:
+                if db_config.quality_control.kneaddata.human_genome:
+                    if db_config.quality_control.kneaddata.human_genome.startswith('/path/to/'):
+                        warnings.append("数据库路径为占位符: quality_control.kneaddata.human_genome")
+            if db_config.taxonomy and db_config.taxonomy.kraken2:
+                if db_config.taxonomy.kraken2.standard:
+                    if db_config.taxonomy.kraken2.standard.startswith('/path/to/'):
+                        warnings.append("数据库路径为占位符: taxonomy.kraken2.standard")
         except Exception as e:
             warnings.append(f"无法读取数据库配置: {e}")
     else:
@@ -120,14 +154,13 @@ def validate_config(ctx, config_path):
 @click.option('--threads', type=int, default=DEFAULT_THREADS, help=f'使用的线程数 (默认: {DEFAULT_THREADS}).')
 @click.option('--kneaddata-db', type=click.Path(exists=True, dir_okay=True), help='KneadData 参考数据库的路径.')
 @click.option('--kraken2-db', type=click.Path(exists=True, dir_okay=True), help='Kraken2 参考数据库的路径.')
-@click.option('--samples', type=str, help='指定分析的样本列表 (逗号分隔).')
 @click.option('--skip-qc', is_flag=True, help='跳过质量控制步骤.')
 @click.option('--skip-taxonomy', is_flag=True, help='跳过物种分类步骤.')
 @click.option('--skip-functional', is_flag=True, help='跳过功能注释步骤.')
 @click.option('--skip-diversity', is_flag=True, help='跳过多样性分析步骤.')
 @click.pass_context
 def full_run(ctx, input_dir, results_dir, threads, kneaddata_db, kraken2_db,
-             samples, skip_qc, skip_taxonomy, skip_functional, skip_diversity):
+             skip_qc, skip_taxonomy, skip_functional, skip_diversity):
     """运行完整的 MICOS 分析流程."""
     logger = logging.getLogger(__name__)
 
@@ -141,18 +174,12 @@ def full_run(ctx, input_dir, results_dir, threads, kneaddata_db, kraken2_db,
             '错误: 必须通过命令行参数 --kraken2-db 或配置文件提供 Kraken2 数据库路径。'
         )
 
-    # 解析样本列表
-    sample_list = None
-    if samples:
-        sample_list = [s.strip() for s in samples.split(',')]
-
     # Dry run 模式
     if ctx.obj.get('dry_run'):
         click.secho("=== Dry Run 模式 ===", fg="cyan")
         click.echo(f"输入目录: {input_dir}")
         click.echo(f"输出目录: {results_dir}")
         click.echo(f"线程数: {threads}")
-        click.echo(f"样本列表: {sample_list or '全部'}")
         click.echo(f"跳过步骤: QC={skip_qc}, Taxonomy={skip_taxonomy}, Functional={skip_functional}, Diversity={skip_diversity}")
         click.echo("不执行实际操作。")
         return
@@ -160,7 +187,6 @@ def full_run(ctx, input_dir, results_dir, threads, kneaddata_db, kraken2_db,
     try:
         run_full_pipeline(
             input_dir, results_dir, threads, kneaddata_db, kraken2_db,
-            samples=sample_list,
             skip_qc=skip_qc,
             skip_taxonomy=skip_taxonomy,
             skip_functional=skip_functional,
