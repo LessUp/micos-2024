@@ -1,18 +1,50 @@
 # -*- coding: utf-8 -*-
-"""功能注释模块 (HUMAnN)."""
+"""功能注释模块 (HUMAnN)。
 
-from pathlib import Path
-import glob
+该模块是**深层模块**，隐藏了功能注释的复杂性：
+- 调用者只需提供输入目录和配置
+- 样本发现、文件合并、工具调用等逻辑被隐藏
+"""
+
+from __future__ import annotations
+
 import gzip
-import shutil
 import logging
+import shutil
 import subprocess
-from micos.utils import run_command
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from micos.sample import Sample
+from micos.utils import run_command_live
+
+if TYPE_CHECKING:
+    from micos.tool_runner import ToolRunner
 
 logger = logging.getLogger(__name__)
 
-def run_functional_annotation(input_dir, output_dir, threads):
-    """执行功能注释 (HUMAnN)."""
+
+def run_functional_annotation(
+    input_dir: str | Path,
+    output_dir: str | Path,
+    threads: int,
+    runner: ToolRunner | None = None,
+) -> None:
+    """执行功能注释 (HUMAnN).
+
+    这是一个深层模块的接口，调用者只需提供必要的配置，
+    样本发现、文件合并、工具调用等细节被隐藏。
+
+    Args:
+        input_dir: 输入目录（KneadData 清理后的 FASTQ 文件）
+        output_dir: 输出目录
+        threads: 线程数
+        runner: 工具执行器（可选，用于测试注入）
+
+    Raises:
+        subprocess.CalledProcessError: 工具执行失败时抛出
+        FileNotFoundError: 工具未安装时抛出
+    """
     logger.info("步骤 4: 开始功能注释分析...")
 
     input_path = Path(input_dir)
@@ -21,41 +53,48 @@ def run_functional_annotation(input_dir, output_dir, threads):
     temp_input_path.mkdir(parents=True, exist_ok=True)
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # 1. 准备 HUMAnN 的输入文件 (合并所有 reads)
-    logger.info("--> 正在准备 HUMAnN 输入文件...")
-    paired_files = sorted(glob.glob(str(input_path / "*_paired_1.fastq")))
-    if not paired_files:
-        logger.warning("警告: 在输入目录中未找到 *_paired_1.fastq 文件，跳过 HUMAnN。")
+    # 1. 使用 Sample 类发现清洗后的样本
+    samples = Sample.discover_cleaned(input_path)
+    if not samples:
+        logger.warning("警告: 在输入目录中未找到清洗后的配对样本文件，跳过 HUMAnN。")
         return
 
-    for r1_file_str in paired_files:
-        r1_file = Path(r1_file_str)
-        base = r1_file.name.replace("_paired_1.fastq", "")
-        r2_file = r1_file.with_name(f"{base}_paired_2.fastq")
-        unmatched1_file = r1_file.with_name(f"{base}_unmatched_1.fastq")
-        unmatched2_file = r1_file.with_name(f"{base}_unmatched_2.fastq")
-        
-        concatenated_file = temp_input_path / f"{base}_concatenated.fastq.gz"
-        logger.info(f"合并样本 {base} 的 reads 到 {concatenated_file}")
+    # 2. 为每个样本准备 HUMAnN 输入并运行
+    for sample in samples:
+        logger.info(f"处理样本: {sample.name}")
 
-        files_to_concat = [r1_file, r2_file, unmatched1_file, unmatched2_file]
+        # 查找 unmatched 文件（如果存在）
+        unmatched1_file = sample.r1_path.parent / f"{sample.name}_unmatched_1.fastq"
+        unmatched2_file = sample.r1_path.parent / f"{sample.name}_unmatched_2.fastq"
+
+        concatenated_file = temp_input_path / f"{sample.name}_concatenated.fastq.gz"
+        logger.info(f"合并样本 {sample.name} 的 reads 到 {concatenated_file}")
+
+        # 合并所有 reads
+        files_to_concat: list[Path] = [sample.r1_path]
+        if sample.is_paired:
+            files_to_concat.append(sample.r2_path)
+        if unmatched1_file.exists():
+            files_to_concat.append(unmatched1_file)
+        if unmatched2_file.exists():
+            files_to_concat.append(unmatched2_file)
+
         with gzip.open(concatenated_file, 'wb') as f_out:
             for f_in_path in files_to_concat:
-                if f_in_path.exists():
-                    with open(f_in_path, 'rb') as f_in:
-                        shutil.copyfileobj(f_in, f_out)
+                with open(f_in_path, 'rb') as f_in:
+                    shutil.copyfileobj(f_in, f_out)
 
-        # 2. 运行 HUMAnN
-        logger.info(f"--> 正在为样本 {base} 运行 HUMAnN...")
+        # 运行 HUMAnN
+        logger.info(f"--> 正在为样本 {sample.name} 运行 HUMAnN...")
         humann_cmd = [
             "humann",
             "--input", str(concatenated_file),
             "--output", str(output_path),
             "--threads", str(threads),
-            "--output-basename", base
+            "--output-basename", sample.name
         ]
         try:
-            run_command(humann_cmd)
+            run_command_live(humann_cmd)
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             logger.error(f"HUMAnN 运行失败: {e}")
             logger.error("请确保 humann 已安装并位于系统的 PATH 中。")
