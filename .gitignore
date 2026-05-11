@@ -177,3 +177,6 @@ indices/
 
 # 社交卡片缓存
 docs/assets/images/social/
+docs/website/node_modules/
+docs/.site/
+docs/website/.next/

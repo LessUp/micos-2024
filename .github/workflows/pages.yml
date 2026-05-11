@@ -1,4 +1,4 @@
-# GitHub Pages 部署工作流
+# GitHub Pages 部署工作流 - Nextra
 
 name: Deploy GitHub Pages
 
@@ -8,8 +8,7 @@ on:
       - main
       - master
     paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
+      - 'docs/website/**'
       - '.github/workflows/pages.yml'
 
   workflow_dispatch:
@@ -26,26 +25,30 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/website
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: docs/website/package-lock.json
 
       - name: Install dependencies
-        run: |
-          pip install mkdocs mkdocs-i18n
+        run: npm ci
 
       - name: Build
-        run: mkdocs build
+        run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
+          path: docs/.site
 
   deploy:
     environment:

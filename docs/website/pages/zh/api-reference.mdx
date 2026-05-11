@@ -1,0 +1,35 @@
+---
+title: API 参考
+---
+
+# API 参考
+
+## CLI 命令
+
+### full-run
+
+运行完整分析流程。
+
+```bash
+python -m micos.cli full-run [选项]
+```
+
+**选项：**
+
+| 选项 | 描述 |
+|------|------|
+| `--input-dir` | FASTQ 文件输入目录 |
+| `--results-dir` | 输出目录 |
+| `--threads` | 线程数 |
+| `--kneaddata-db` | KneadData 数据库路径 |
+| `--kraken2-db` | Kraken2 数据库路径 |
+
+### run
+
+运行单独分析模块。
+
+```bash
+python -m micos.cli run [模块] [选项]
+```
+
+**模块：** `quality-control`, `taxonomic-profiling`, `functional-annotation`, `diversity-analysis`

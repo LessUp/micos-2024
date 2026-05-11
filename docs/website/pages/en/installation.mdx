@@ -1,0 +1,49 @@
+---
+title: Installation
+---
+
+# Installation
+
+## System Requirements
+
+- Python 3.9+
+- 16GB+ RAM recommended
+- Linux / macOS
+
+## Quick Install via Docker
+
+```bash
+docker compose -f deploy/docker-compose.example.yml up -d
+```
+
+## Manual Installation
+
+```bash
+# Clone repository
+git clone https://github.com/LessUp/micos-2024.git
+cd micos-2024
+
+# Create conda environment
+conda env create -f environment.yml
+conda activate micos
+
+# Install package
+pip install -e .
+```
+
+## Database Setup
+
+MICOS-2024 requires several databases:
+
+- **KneadData**: Host genome database
+- **Kraken2**: Taxonomic classification database
+- **HUMAnN**: Functional annotation databases
+
+See [Configuration](/micos-2024/en/configuration) for database paths setup.
+
+## Verify Installation
+
+```bash
+python -m micos.cli --version
+python -m micos.cli --help
+```

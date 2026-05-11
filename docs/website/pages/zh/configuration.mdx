@@ -1,0 +1,29 @@
+---
+title: 配置指南
+---
+
+# 配置指南
+
+## 配置文件
+
+在项目目录创建 `config/config.yaml`：
+
+```yaml
+# 数据库路径
+databases:
+  kneaddata: /path/to/kneaddata_db
+  kraken2: /path/to/kraken2_db
+  humann: /path/to/humann_db
+
+# 分析参数
+threads: 16
+memory: 32G
+```
+
+## 环境变量
+
+| 变量 | 描述 |
+|------|------|
+| `MICOS_DB_PATH` | 数据库基础路径 |
+| `MICOS_THREADS` | 默认线程数 |
+| `MICOS_MEMORY` | 每进程内存限制 |

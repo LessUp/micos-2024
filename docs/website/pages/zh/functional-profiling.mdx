@@ -1,0 +1,21 @@
+---
+title: 功能注释分析
+---
+
+# 功能注释分析
+
+使用 HUMAnN 3.x 进行基因家族和通路分析。
+
+## 快速运行
+
+```bash
+python -m micos.cli run functional-annotation \
+  --input-dir data/cleaned \
+  --output-dir results/function
+```
+
+## 输出文件
+
+- `genefamilies.tsv` - 基因家族丰度
+- `pathabundance.tsv` - 通路丰度
+- `pathcoverage.tsv` - 通路覆盖度

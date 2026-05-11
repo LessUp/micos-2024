@@ -1,0 +1,23 @@
+---
+title: 多样性分析
+---
+
+# 多样性分析
+
+使用 QIIME2 计算 Alpha 和 Beta 多样性指标。
+
+## 快速运行
+
+```bash
+python -m micos.cli run diversity-analysis \
+  --input-dir results/taxonomy \
+  --output-dir results/diversity \
+  --metadata metadata.tsv
+```
+
+## 指标
+
+| 类型 | 指标 |
+|------|------|
+| Alpha | Shannon, Chao1, Observed ASVs |
+| Beta | Bray-Curtis, UniFrac, Jaccard |
