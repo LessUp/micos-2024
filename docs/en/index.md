@@ -1,6 +1,6 @@
 # MICOS-2024
 
-Professional Metagenomic Analysis Platform
+**Professional Metagenomic Analysis Platform**
 
 End-to-end analysis from raw sequencing data to biological insights
 
@@ -13,21 +13,21 @@ MICOS-2024 (Metagenomic Intelligence and Comprehensive Omics Suite) is an end-to
 ### Core Capabilities
 
 | Module | Description | Tools |
-|:---|:---|:---|
-| :material-dna: Quality Control | Host DNA removal and quality filtering | KneadData, FastQC |
-| :material-account-tree: Taxonomic Profiling | Rapid species classification | Kraken2, Bracken |
-| :material-chart-bar: Diversity Analysis | Alpha/Beta diversity metrics | QIIME2 |
-| :material-function: Functional Annotation | Gene family and pathway analysis | HUMAnN 3.x |
-| :material-compare: Differential Analysis | Statistical comparison of taxa/functions | DESeq2, ALDEx2 |
-| :material-graph: Network Analysis | Microbial co-occurrence networks | NetworkX, igraph |
+|--------|-------------|-------|
+| Quality Control | Host DNA removal and quality filtering | KneadData, FastQC |
+| Taxonomic Profiling | Rapid species classification | Kraken2, Bracken |
+| Diversity Analysis | Alpha/Beta diversity metrics | QIIME2 |
+| Functional Annotation | Gene family and pathway analysis | HUMAnN 3.x |
+| Differential Analysis | Statistical comparison of taxa/functions | DESeq2, ALDEx2 |
+| Network Analysis | Microbial co-occurrence networks | NetworkX, igraph |
 
 ### Key Features
 
-- :whale: **Containerized** - Docker & Singularity support for reproducibility
-- :zap: **High Performance** - Multi-threading, optimized for large datasets
-- :chart_with_upwards_trend: **Rich Visualizations** - Interactive HTML reports, Krona charts
-- :wrench: **Modular Design** - Run complete pipeline or individual steps
-- :memo: **WDL Workflows** - Cromwell-compatible for cloud/HPC deployment
+- **Containerized** - Docker & Singularity support
+- **High Performance** - Multi-threading, optimized for large datasets
+- **Rich Visualizations** - Interactive HTML reports
+- **Modular Design** - Run complete pipeline or individual steps
+- **WDL Workflows** - Cromwell-compatible for cloud/HPC deployment
 
 ---
 
@@ -35,8 +35,8 @@ MICOS-2024 (Metagenomic Intelligence and Comprehensive Omics Suite) is an end-to
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
-cd MICOS-2024
+git clone https://github.com/LessUp/micos-2024.git
+cd micos-2024
 
 # 2. Install via Docker (recommended)
 docker compose -f deploy/docker-compose.example.yml up -d
@@ -48,14 +48,14 @@ python -m micos.cli full-run \
   --threads 16
 ```
 
-[:octicons-book-24: Full Installation Guide](installation.md)
+See [Installation Guide](installation.md) for details.
 
 ---
 
 ## Documentation
 
 | Document | Description |
-|:---|:---|
+|----------|-------------|
 | [Installation Guide](installation.md) | Complete installation instructions |
 | [Configuration Guide](configuration.md) | Parameter configuration |
 | [Taxonomic Profiling](taxonomic-profiling.md) | Species classification and visualization |
@@ -66,12 +66,10 @@ python -m micos.cli full-run \
 
 ## Links
 
-- :material-github: [GitHub Repository](https://github.com/BGI-MICOS/MICOS-2024)
-- :material-bug: [Issue Tracker](https://github.com/BGI-MICOS/MICOS-2024/issues)
-- :material-forum: [Discussions](https://github.com/BGI-MICOS/MICOS-2024/discussions)
+- [GitHub Repository](https://github.com/LessUp/micos-2024)
+- [Issue Tracker](https://github.com/LessUp/micos-2024/issues)
+- [Discussions](https://github.com/LessUp/micos-2024/discussions)
 
 ---
 
-<p align="center">
-  <a href="../zh/">中文文档</a> | <a href="https://github.com/BGI-MICOS/MICOS-2024">GitHub</a>
-</p>
+[中文文档](../zh/index.md) | [GitHub](https://github.com/LessUp/micos-2024)
