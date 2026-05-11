@@ -1,49 +1,75 @@
 # MICOS-2024
 
-**专业宏基因组分析平台**
+**Professional Metagenomic Analysis Platform**
 
-端到端分析从原始测序数据到生物学洞察
-
----
-
-## 选择文档语言
-
-- [English Documentation](en/index.md)
-- [中文文档](zh/index.md)
+End-to-end analysis from raw sequencing data to biological insights
 
 ---
 
 ## What is MICOS-2024?
 
-MICOS-2024 (Metagenomic Intelligence and Comprehensive Omics Suite) 是一个端到端宏基因组分析平台，整合 Kraken2、QIIME2、HUMAnN 等业界标准生物信息学工具。
+MICOS-2024 (Metagenomic Intelligence and Comprehensive Omics Suite) is an end-to-end metagenomic analysis platform that integrates industry-standard bioinformatics tools into a unified, reproducible workflow.
 
-### 核心能力
+### Core Capabilities
 
-| 模块 | 描述 | 工具 |
-|------|------|------|
-| 质量控制 | 宿主 DNA 去除与质量过滤 | KneadData, FastQC |
-| 物种分类 | 快速物种分类 | Kraken2, Bracken |
-| 多样性分析 | Alpha/Beta 多样性指标 | QIIME2 |
-| 功能注释 | 基因家族和通路分析 | HUMAnN 3.x |
-| 差异分析 | 物种/功能的统计比较 | DESeq2, ALDEx2 |
-| 网络分析 | 微生物共现网络 | NetworkX, igraph |
+| Module | Description | Tools |
+|--------|-------------|-------|
+| Quality Control | Host DNA removal and quality filtering | KneadData, FastQC |
+| Taxonomic Profiling | Rapid species classification | Kraken2, Bracken |
+| Diversity Analysis | Alpha/Beta diversity metrics | QIIME2 |
+| Functional Annotation | Gene family and pathway analysis | HUMAnN 3.x |
+| Differential Analysis | Statistical comparison of taxa/functions | DESeq2, ALDEx2 |
+| Network Analysis | Microbial co-occurrence networks | NetworkX, igraph |
 
-### 主要特性
+### Key Features
 
-- **容器化** - 支持 Docker 和 Singularity
-- **高性能** - 多线程支持，针对大数据集优化
-- **丰富可视化** - 交互式 HTML 报告
-- **模块化设计** - 可运行完整流程或单独步骤
-- **WDL 工作流** - 兼容 Cromwell，支持云端/HPC 部署
+- **Containerized** - Docker & Singularity support
+- **High Performance** - Multi-threading, optimized for large datasets
+- **Rich Visualizations** - Interactive HTML reports
+- **Modular Design** - Run complete pipeline or individual steps
+- **WDL Workflows** - Cromwell-compatible for cloud/HPC deployment
 
 ---
 
-## 快速链接
+## Quick Start
 
-- [GitHub](https://github.com/LessUp/micos-2024)
-- [Issues](https://github.com/LessUp/micos-2024/issues)
+```bash
+# 1. Clone the repository
+git clone https://github.com/LessUp/micos-2024.git
+cd micos-2024
+
+# 2. Install via Docker (recommended)
+docker compose -f deploy/docker-compose.example.yml up -d
+
+# 3. Run analysis
+python -m micos.cli full-run \
+  --input-dir data/raw_input \
+  --results-dir results \
+  --threads 16
+```
+
+See [Installation Guide](installation.md) for details.
+
+---
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Installation Guide](installation.md) | Complete installation instructions |
+| [Configuration Guide](configuration.md) | Parameter configuration |
+| [Taxonomic Profiling](taxonomic-profiling.md) | Species classification and visualization |
+| [Functional Profiling](functional-profiling.md) | Gene family and pathway analysis |
+| [API Reference](api-reference.md) | Complete CLI command reference |
+
+---
+
+## Links
+
+- [GitHub Repository](https://github.com/LessUp/micos-2024)
+- [Issue Tracker](https://github.com/LessUp/micos-2024/issues)
 - [Discussions](https://github.com/LessUp/micos-2024/discussions)
 
 ---
 
-License: MIT | Team: MICOS-2024 Team
+[中文文档](../zh/index.md) | [GitHub](https://github.com/LessUp/micos-2024)
