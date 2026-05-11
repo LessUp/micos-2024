@@ -16,33 +16,28 @@ copyright: Copyright &copy; 2024-2025 MICOS-2024 Team
 
 # ==================== 文档结构 ====================
 nav:
-  - Home: 
-    - English: index.md
-    - 中文: zh/index.md
-  
-  - Getting Started:
-    - Quick Start: en/index.md
+  - English:
+    - Home: en/index.md
     - Installation: en/installation.md
     - Configuration: en/configuration.md
-  
-  - Analysis Modules:
     - Taxonomic Profiling: en/taxonomic-profiling.md
     - Functional Profiling: en/functional-profiling.md
     - Diversity Analysis: en/diversity-analysis.md
-  
-  - Reference:
     - API Reference: en/api-reference.md
     - FAQ: en/faq.md
     - Troubleshooting: en/troubleshooting.md
-  
-  - 中文文档:
-    - 快速开始: zh/index.md
+
+  - 中文:
+    - 首页: zh/index.md
     - 安装指南: zh/installation.md
     - 配置指南: zh/configuration.md
-    - 用户手册: zh/user_manual.md
-    - 故障排除: zh/troubleshooting.md
+    - 物种分类分析: zh/taxonomic-profiling.md
+    - 功能注释分析: zh/functional-profiling.md
+    - 多样性分析: zh/diversity-analysis.md
+    - API 参考: zh/api-reference.md
     - 常见问题: zh/faq.md
-  
+    - 故障排除: zh/troubleshooting.md
+
   - About:
     - Changelog: changelog/CHANGELOG.md
     - Contributing: CONTRIBUTING.md
@@ -138,9 +133,9 @@ plugins:
       optimize_images: true
   
   # Git 修订历史
-  - git-revision-date-localized:
-      type: iso_date
-      enable_creation_date: true
+  # - git-revision-date-localized:
+  #     type: iso_date
+  #     enable_creation_date: true
   
   # 社会分享
   - social:
@@ -150,13 +145,13 @@ plugins:
         text: "#FFFFFF"
   
   # 站点地图
-  - site-urls
+  # - site-urls
   
   # 版本管理（使用 mike）
-  - mike:
-      version_selector: true
-      css_dir: css
-      javascript_dir: js
+  # - mike:
+  #     version_selector: true
+  #     css_dir: css
+  #     javascript_dir: js
 
 # ==================== 扩展 ====================
 markdown_extensions:
@@ -181,8 +176,8 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -256,9 +251,3 @@ validation:
   omitted_files: warn
   absolute_links: warn
   unrecognized_links: warn
-
-# ==================== 排除 ====================
-exclude_search:
-  - en/api-reference.md
-  - stylesheets/*
-  - javascripts/*
