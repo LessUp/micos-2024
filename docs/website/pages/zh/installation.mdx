@@ -1,0 +1,42 @@
+---
+title: 安装指南
+---
+
+# 安装指南
+
+## 系统要求
+
+- Python 3.9+
+- 推荐 16GB+ 内存
+- Linux / macOS
+
+## Docker 快速安装
+
+```bash
+docker compose -f deploy/docker-compose.example.yml up -d
+```
+
+## 手动安装
+
+```bash
+# 克隆仓库
+git clone https://github.com/LessUp/micos-2024.git
+cd micos-2024
+
+# 创建 conda 环境
+conda env create -f environment.yml
+conda activate micos
+
+# 安装包
+pip install -e .
+```
+
+## 数据库配置
+
+MICOS-2024 需要以下数据库：
+
+- **KneadData**: 宿主基因组数据库
+- **Kraken2**: 物种分类数据库
+- **HUMAnN**: 功能注释数据库
+
+详见 [配置指南](/micos-2024/zh/configuration)。

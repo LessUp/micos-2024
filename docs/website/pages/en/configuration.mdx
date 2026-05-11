@@ -1,0 +1,35 @@
+---
+title: Configuration
+---
+
+# Configuration
+
+## Configuration File
+
+Create `config/config.yaml` in your project directory:
+
+```yaml
+# Database paths
+databases:
+  kneaddata: /path/to/kneaddata_db
+  kraken2: /path/to/kraken2_db
+  humann: /path/to/humann_db
+
+# Analysis parameters
+threads: 16
+memory: 32G
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `MICOS_DB_PATH` | Base path for all databases |
+| `MICOS_THREADS` | Default thread count |
+| `MICOS_MEMORY` | Memory limit per process |
+
+## Command Line Options
+
+```bash
+python -m micos.cli full-run --help
+```

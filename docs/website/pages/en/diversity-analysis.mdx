@@ -1,0 +1,23 @@
+---
+title: Diversity Analysis
+---
+
+# Diversity Analysis
+
+Alpha and Beta diversity metrics using QIIME2.
+
+## Quick Run
+
+```bash
+python -m micos.cli run diversity-analysis \
+  --input-dir results/taxonomy \
+  --output-dir results/diversity \
+  --metadata metadata.tsv
+```
+
+## Metrics
+
+| Type | Metrics |
+|------|---------|
+| Alpha | Shannon, Chao1, Observed ASVs |
+| Beta | Bray-Curtis, UniFrac, Jaccard |

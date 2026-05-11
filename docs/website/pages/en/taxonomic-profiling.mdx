@@ -1,0 +1,22 @@
+---
+title: Taxonomic Profiling
+---
+
+# Taxonomic Profiling
+
+Species classification using Kraken2 and Bracken.
+
+## Quick Run
+
+```bash
+python -m micos.cli run taxonomic-profiling \
+  --input-dir data/cleaned \
+  --output-dir results/taxonomy \
+  --kraken2-db /path/to/db
+```
+
+## Output Files
+
+- `bracken_report.txt` - Abundance table
+- `krona_report.html` - Interactive visualization
+- `kraken2_report.txt` - Raw classification

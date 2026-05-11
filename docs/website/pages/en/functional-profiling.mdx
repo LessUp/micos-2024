@@ -1,0 +1,21 @@
+---
+title: Functional Profiling
+---
+
+# Functional Profiling
+
+Gene family and pathway analysis using HUMAnN 3.x.
+
+## Quick Run
+
+```bash
+python -m micos.cli run functional-annotation \
+  --input-dir data/cleaned \
+  --output-dir results/function
+```
+
+## Output Files
+
+- `genefamilies.tsv` - Gene family abundances
+- `pathabundance.tsv` - Pathway abundances
+- `pathcoverage.tsv` - Pathway coverage

@@ -1,0 +1,22 @@
+---
+title: 物种分类分析
+---
+
+# 物种分类分析
+
+使用 Kraken2 和 Bracken 进行物种分类。
+
+## 快速运行
+
+```bash
+python -m micos.cli run taxonomic-profiling \
+  --input-dir data/cleaned \
+  --output-dir results/taxonomy \
+  --kraken2-db /path/to/db
+```
+
+## 输出文件
+
+- `bracken_report.txt` - 丰度表
+- `krona_report.html` - 交互式可视化
+- `kraken2_report.txt` - 原始分类结果
