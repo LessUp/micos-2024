@@ -35,9 +35,9 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install MkDocs
+      - name: Install dependencies
         run: |
-          pip install mkdocs
+          pip install mkdocs mkdocs-i18n
 
       - name: Build
         run: mkdocs build

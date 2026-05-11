@@ -1,7 +1,7 @@
-# MkDocs 配置文件 - ReadTheDocs 主题
+# MkDocs 配置文件 - ReadTheDocs 主题 + i18n
 
 site_name: MICOS-2024
-site_description: Metagenomic Intelligence and Comprehensive Omics Suite - 宏基因组综合分析平台
+site_description: Metagenomic Intelligence and Comprehensive Omics Suite
 site_url: https://lessup.github.io/micos-2024/
 site_author: MICOS-2024 Team
 
@@ -16,26 +16,14 @@ copyright: Copyright &copy; 2024-2025 MICOS-2024 Team
 # ==================== 文档结构 ====================
 nav:
   - Home: index.md
-  - English:
-    - en/index.md
-    - Installation: en/installation.md
-    - Configuration: en/configuration.md
-    - Taxonomic Profiling: en/taxonomic-profiling.md
-    - Functional Profiling: en/functional-profiling.md
-    - Diversity Analysis: en/diversity-analysis.md
-    - API Reference: en/api-reference.md
-    - FAQ: en/faq.md
-    - Troubleshooting: en/troubleshooting.md
-  - 中文:
-    - zh/index.md
-    - 安装指南: zh/installation.md
-    - 配置指南: zh/configuration.md
-    - 物种分类分析: zh/taxonomic-profiling.md
-    - 功能注释分析: zh/functional-profiling.md
-    - 多样性分析: zh/diversity-analysis.md
-    - API 参考: zh/api-reference.md
-    - 常见问题: zh/faq.md
-    - 故障排除: zh/troubleshooting.md
+  - Installation: installation.md
+  - Configuration: configuration.md
+  - Taxonomic Profiling: taxonomic-profiling.md
+  - Functional Profiling: functional-profiling.md
+  - Diversity Analysis: diversity-analysis.md
+  - API Reference: api-reference.md
+  - FAQ: faq.md
+  - Troubleshooting: troubleshooting.md
 
 # ==================== 主题配置 ====================
 theme:
@@ -49,6 +37,23 @@ theme:
 
 # ==================== 插件 ====================
 plugins:
+  - i18n:
+      default_language: en
+      docs_structure: suffix
+      languages:
+        en: English
+        zh: 中文
+      nav_translations:
+        zh:
+          Home: 首页
+          Installation: 安装指南
+          Configuration: 配置指南
+          Taxonomic Profiling: 物种分类分析
+          Functional Profiling: 功能注释分析
+          Diversity Analysis: 多样性分析
+          API Reference: API 参考
+          FAQ: 常见问题
+          Troubleshooting: 故障排除
   - search:
       lang:
         - en
@@ -63,8 +68,6 @@ markdown_extensions:
   - footnotes
   - tables
   - fenced_code
-  - codehilite:
-      guess_lang: false
 
 # ==================== 额外配置 ====================
 extra:
