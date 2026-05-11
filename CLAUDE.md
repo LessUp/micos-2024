@@ -16,8 +16,6 @@
 ### 上下文管理
 
 - **优先阅读**: `AGENTS.md` 获取完整项目上下文
-- **技术规范**: `openspec/specs/` 目录
-- **架构决策**: `openspec/adr/` 目录
 
 ### 代码生成偏好
 
@@ -125,18 +123,6 @@ mkdocs serve
 # 构建文档
 mkdocs build
 ```
-
----
-
-## OpenSpec 工作流
-
-当处理非平凡任务时，遵循 OpenSpec 流程：
-
-1. **探索**: 理解需求和现有代码
-2. **变更提案**: 在 `openspec/changes/` 创建提案
-3. **实施**: 按提案执行
-4. **审查**: 阶段边界审查
-5. **归档**: 完成后清理提案
 
 ---
 
@@ -384,5 +370,4 @@ conventions:
 |------|------|
 | [AGENTS.md](AGENTS.md) | 完整项目上下文 |
 | [copilot-instructions.md](.github/copilot-instructions.md) | Copilot 指令 |
-| [openspec/README.md](openspec/README.md) | OpenSpec 索引 |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献指南 |

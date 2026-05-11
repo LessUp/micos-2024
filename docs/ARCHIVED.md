@@ -38,7 +38,6 @@
 | `AGENTS.md` | AI 编程助手完整上下文 |
 | `CLAUDE.md` | Claude Code 项目配置 |
 | `.github/copilot-instructions.md` | GitHub Copilot 指令 |
-| `openspec/adr/` | 架构决策记录 |
 | `CODEOWNERS` | 代码所有权定义 |
 
 ## 后续维护

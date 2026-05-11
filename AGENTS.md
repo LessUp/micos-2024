@@ -525,7 +525,6 @@ def test_full_pipeline(test_data_dir: Path, tmp_path: Path):
 
 ## 相关资源
 
-- [OpenSpec 规范](openspec/README.md)
 - [Copilot 指令](.github/copilot-instructions.md)
 - [贡献指南](CONTRIBUTING.md)
 - [变更日志](CHANGELOG.md)
