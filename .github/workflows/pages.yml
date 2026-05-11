@@ -83,7 +83,6 @@ jobs:
             mkdocs-git-revision-date-localized-plugin \
             mkdocs-glightbox \
             mkdocs-git-committers-plugin-2 \
-            mkdocs-sitemap-plugin \
             mike
 
       - name: 🔍 Setup Pages
