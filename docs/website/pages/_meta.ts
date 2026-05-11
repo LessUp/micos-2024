@@ -1,4 +1,5 @@
 export default {
-  "en": "English",
-  "zh": "中文"
+  'index': 'Home',
+  'en': 'English',
+  'zh': '中文'
 }
