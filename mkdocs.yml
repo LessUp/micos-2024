@@ -128,9 +128,9 @@ plugins:
       minify_html: true
       minify_js: true
   
-  # 图像优化
-  - optimize:
-      optimize_images: true
+  # 图像优化 (需要 pngquant，CI 中禁用)
+  # - optimize:
+  #     optimize_images: true
   
   # Git 修订历史
   # - git-revision-date-localized:
