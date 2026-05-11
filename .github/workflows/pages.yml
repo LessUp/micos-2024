@@ -77,12 +77,10 @@ jobs:
           
           # 安装 MkDocs 和 Material 主题
           pip install \
-            mkdocs-material \
-            mkdocs-material-extensions \
+            "mkdocs-material[imaging]" \
             mkdocs-minify-plugin \
             mkdocs-git-revision-date-localized-plugin \
             mkdocs-glightbox \
-            mkdocs-git-committers-plugin-2 \
             mike
 
       - name: 🔍 Setup Pages
