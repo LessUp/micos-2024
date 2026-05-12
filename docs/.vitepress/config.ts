@@ -14,6 +14,18 @@ export default withMermaid(defineConfig({
   title: 'MICOS-2024',
   description: 'Metagenomic Intelligence and Comprehensive Omics Suite',
 
+  head: [
+    // Open Graph
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:title', content: 'MICOS-2024 Documentation' }],
+    ['meta', { property: 'og:description', content: 'Metagenomic Intelligence and Comprehensive Omics Suite' }],
+    ['meta', { property: 'og:site_name', content: 'MICOS-2024' }],
+    // Twitter Card
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'MICOS-2024 Documentation' }],
+    ['meta', { name: 'twitter:description', content: 'Metagenomic Intelligence and Comprehensive Omics Suite' }],
+  ],
+
   locales: {
     zh: {
       label: '简体中文',

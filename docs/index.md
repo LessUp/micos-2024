@@ -18,11 +18,17 @@ import { useRouter } from 'vitepress'
 
 onMounted(() => {
   const router = useRouter()
-  const lang = navigator.language || navigator.userLanguage
-  if (lang.startsWith('zh')) {
-    router.go('/zh/')
-  } else {
-    router.go('/en/')
+  
+  // 优先检查用户保存的语言偏好
+  const savedLang = localStorage.getItem('micos-lang-preference')
+  if (savedLang) {
+    router.go(`/${savedLang}/`)
+    return
   }
+  
+  // 否则检测浏览器语言
+  const browserLang = navigator.language || navigator.userLanguage
+  const lang = browserLang.startsWith('zh') ? 'zh' : 'en'
+  router.go(`/${lang}/`)
 })
 </script>
