@@ -94,6 +94,15 @@ if [[ -z "$MODULE" ]]; then
     exit 1
 fi
 
+case "$MODULE" in
+    quality_control|taxonomic_profiling|diversity_analysis|functional_annotation|summarize_results|report_generation)
+        ;;
+    *)
+        echo "模块 '$MODULE' 当前未纳入稳定 Shell 包装层。请直接使用 micos CLI，或先实现对应 Python 主链路后再开放。" >&2
+        exit 1
+        ;;
+esac
+
 load_defaults "$CONFIG_FILE"
 INPUT_DIR="${DEFAULT_INPUT_DIR:-$PROJECT_ROOT/data/raw_input}"
 RESULTS_DIR="${RESULTS_DIR:-${DEFAULT_RESULTS_DIR:-$PROJECT_ROOT/results}}"
@@ -133,9 +142,5 @@ case "$MODULE" in
         run_micos --config "$CONFIG_FILE" run summarize-results \
             --results-dir "$RESULTS_DIR" \
             --output-file "$RESULTS_DIR/micos_summary_report.html"
-        ;;
-    *)
-        echo "模块 '$MODULE' 当前未纳入稳定 Shell 包装层。请直接使用 micos CLI，或先实现对应 Python 主链路后再开放。" >&2
-        exit 1
         ;;
 esac

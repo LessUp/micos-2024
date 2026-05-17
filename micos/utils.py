@@ -1,22 +1,27 @@
 # -*- coding: utf-8 -*-
 """项目通用工具函数。
 
-提供两类最小且实用的能力：
+提供三类兼容且实用的能力：
 - 日志初始化：`setup_logging()`
 - 命令执行：`run_command_live()`（实时输出并检查返回码）
+- 配置兼容层：`load_config()` / `get_full_run_defaults()`
 
 注意：
-- 配置加载功能已迁移到 `micos.config` 模块，使用 Pydantic 模型提供类型安全。
+- 主要配置模型位于 `micos.config` 模块，基于 Pydantic 提供类型安全。
+- 这里保留对旧脚本和测试仍然需要的轻量兼容接口。
 - 对于需要返回结果或可测试的命令执行，请使用 `micos.tool_runner` 模块。
 """
 
-from pathlib import Path
 import logging
+from pathlib import Path
 import subprocess
 import sys
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 import click
+import yaml
+
+from micos.config import AnalysisConfig, load_databases_config_from_yaml, merge_databases_config
 
 
 def setup_logging(level: int = logging.INFO, log_file: Optional[str] = None) -> None:
@@ -69,6 +74,56 @@ def run_command_live(command: Sequence[str]) -> None:
     if return_code != 0:
         logger.error(f"命令 {' '.join(command)} 执行失败，返回码: {return_code}")
         raise subprocess.CalledProcessError(return_code, command)
+
+
+def load_config(config_path: Optional[str] = None) -> dict[str, Any]:
+    """加载 YAML 配置，并兼容旧版 `config.yaml` 位置。
+
+    Args:
+        config_path: 显式指定的配置文件路径。
+
+    Returns:
+        原始配置字典。
+
+    Raises:
+        FileNotFoundError: 当找不到任何可用配置文件时抛出。
+    """
+    candidate_paths: list[Path] = []
+    if config_path:
+        candidate_paths.append(Path(config_path))
+    else:
+        candidate_paths.extend([Path('config/analysis.yaml'), Path('config.yaml')])
+
+    for candidate in candidate_paths:
+        if candidate.exists():
+            with candidate.open('r', encoding='utf-8') as handle:
+                return yaml.safe_load(handle) or {}
+
+    raise FileNotFoundError('未找到可用配置文件，预期位置: config/analysis.yaml 或 config.yaml')
+
+
+def get_full_run_defaults(config_path: Optional[str] = None) -> dict[str, Any]:
+    """提取 full-run 命令需要的默认参数。
+
+    Args:
+        config_path: 显式指定的分析配置文件路径。
+
+    Returns:
+        包含输入目录、结果目录、线程数和数据库路径的字典。
+    """
+    analysis_path = Path(config_path) if config_path else Path('config/analysis.yaml')
+    analysis_config = AnalysisConfig.from_yaml(analysis_path)
+    databases_config = load_databases_config_from_yaml(analysis_path.parent / 'databases.yaml')
+    merged_db_paths = merge_databases_config(analysis_config, databases_config)
+
+    defaults: dict[str, Any] = {
+        'input_dir': str(analysis_config.input_dir) if analysis_config.input_dir else '',
+        'results_dir': str(analysis_config.results_dir) if analysis_config.results_dir else '',
+        'threads': analysis_config.threads,
+        'kneaddata_db': merged_db_paths.get('kneaddata_db', ''),
+        'kraken2_db': merged_db_paths.get('kraken2_db', ''),
+    }
+    return defaults
 
 
 # 向后兼容别名

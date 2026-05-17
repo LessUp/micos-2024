@@ -14,25 +14,37 @@ Enhanced Quality Control Module
 版本: 1.0.0
 """
 
-import os
-import sys
 import argparse
 import logging
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+import os
+import sys
+import gzip
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
-import subprocess
 import json
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, Iterable, List, Optional, Tuple
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
 import yaml
-from Bio import SeqIO
-from Bio.SeqUtils import GC
-import plotly.graph_objects as go
-import plotly.express as px
-from plotly.subplots import make_subplots
+
+try:
+    from Bio import SeqIO
+except ImportError:  # pragma: no cover - optional dependency
+    SeqIO = None
+
+try:  # pragma: no cover - optional dependency
+    import plotly.express as px
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+except ImportError:  # pragma: no cover - optional dependency
+    px = None
+    go = None
+    make_subplots = None
+
 import warnings
 # 仅抑制特定的 DeprecationWarning
 warnings.filterwarnings('ignore', category=DeprecationWarning)
@@ -62,6 +74,16 @@ class EnhancedQualityControl:
         self.sample_stats = {}
 
         self.logger.info("增强质量控制模块初始化完成")
+
+    @staticmethod
+    def calculate_gc_content(sequence: str) -> float:
+        """计算 GC 含量百分比。"""
+        if not sequence:
+            return 0.0
+
+        seq_upper = sequence.upper()
+        gc_count = seq_upper.count('G') + seq_upper.count('C')
+        return (gc_count / len(seq_upper)) * 100
 
     def setup_logging(self):
         """设置日志系统"""
@@ -217,33 +239,87 @@ class EnhancedQualityControl:
             'n_content': []
         }
 
+        if not os.path.exists(file_path):
+            self.logger.error(f"文件不存在: {file_path}")
+            return stats
+
         file_format = 'fastq' if file_path.endswith(('.fastq', '.fq', '.fastq.gz', '.fq.gz')) else 'fasta'
 
         try:
-            if file_path.endswith('.gz'):
-                import gzip
-                handle = gzip.open(file_path, 'rt')
-            else:
-                handle = open(file_path, 'r')
-
-            for record in SeqIO.parse(handle, file_format):
+            for seq_str, quality_scores in self.iter_sequence_records(file_path, file_format):
                 stats['total_sequences'] += 1
-                seq_str = str(record.seq)
                 stats['total_bases'] += len(seq_str)
                 stats['sequence_lengths'].append(len(seq_str))
-                stats['gc_content'].append(GC(seq_str))
+                stats['gc_content'].append(self.calculate_gc_content(seq_str))
                 stats['complexity_scores'].append(self.calculate_sequence_complexity(seq_str))
                 stats['n_content'].append(seq_str.count('N') / len(seq_str) if len(seq_str) > 0 else 0)
-
-                if hasattr(record, 'letter_annotations') and 'phred_quality' in record.letter_annotations:
-                    stats['quality_scores'].extend(record.letter_annotations['phred_quality'])
-
-            handle.close()
+                stats['quality_scores'].extend(quality_scores)
 
         except Exception as e:
             self.logger.error(f"分析文件 {file_path} 时出错: {e}")
 
         return stats
+
+    def iter_sequence_records(
+        self,
+        file_path: str,
+        file_format: str,
+    ) -> Iterable[Tuple[str, List[int]]]:
+        """迭代序列记录，优先使用 BioPython，缺失时回退到轻量解析器。"""
+        if SeqIO is not None:
+            if file_path.endswith('.gz'):
+                handle = gzip.open(file_path, 'rt')
+            else:
+                handle = open(file_path, 'r', encoding='utf-8')
+
+            with handle:
+                for record in SeqIO.parse(handle, file_format):
+                    quality_scores = []
+                    if hasattr(record, 'letter_annotations') and 'phred_quality' in record.letter_annotations:
+                        quality_scores = list(record.letter_annotations['phred_quality'])
+                    yield str(record.seq), quality_scores
+            return
+
+        if file_format == 'fastq':
+            yield from self.iter_fastq_records(file_path)
+            return
+
+        yield from self.iter_fasta_records(file_path)
+
+    def iter_fastq_records(self, file_path: str) -> Iterable[Tuple[str, List[int]]]:
+        """在缺少 BioPython 时解析 FASTQ。"""
+        opener = gzip.open if file_path.endswith('.gz') else open
+        with opener(file_path, 'rt', encoding='utf-8') as handle:
+            while True:
+                header = handle.readline()
+                if not header:
+                    break
+                sequence = handle.readline().strip()
+                plus = handle.readline()
+                quality = handle.readline().strip()
+                if not plus:
+                    break
+                quality_scores = [max(ord(char) - 33, 0) for char in quality]
+                yield sequence, quality_scores
+
+    def iter_fasta_records(self, file_path: str) -> Iterable[Tuple[str, List[int]]]:
+        """在缺少 BioPython 时解析 FASTA。"""
+        opener = gzip.open if file_path.endswith('.gz') else open
+        with opener(file_path, 'rt', encoding='utf-8') as handle:
+            sequence_parts: List[str] = []
+            for line in handle:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                if stripped.startswith('>'):
+                    if sequence_parts:
+                        yield ''.join(sequence_parts), []
+                        sequence_parts = []
+                    continue
+                sequence_parts.append(stripped)
+
+            if sequence_parts:
+                yield ''.join(sequence_parts), []
 
     def run_enhanced_analysis(self, input_files: List[str]) -> Dict:
         """运行增强质量控制分析"""
