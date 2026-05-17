@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" role="img" aria-labelledby="title desc">
+  <title id="title">MICOS-2024 logo dark</title>
+  <desc id="desc">A dark theme wordmark with a circular systems-biology emblem.</desc>
+  <rect width="160" height="40" rx="20" fill="#111d23"/>
+  <g transform="translate(8 8)">
+    <rect width="24" height="24" rx="12" fill="#59d0c2"/>
+    <path d="M8 7.5c-2 2-2 7 0 9m8-9c2 2 2 7 0 9" fill="none" stroke="#103338" stroke-linecap="round" stroke-width="1.6"/>
+    <path d="M9.5 10.5h5m-7 4h9m-7 4h5" fill="none" stroke="#17484d" stroke-linecap="round" stroke-width="1.4"/>
+  </g>
+  <g fill="#eef6f6">
+    <text x="42" y="19" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="0.18em">MICOS-2024</text>
+    <text x="42" y="30" font-family="Inter, Arial, sans-serif" font-size="8.5" font-weight="500" letter-spacing="0.08em" fill="#a7c1c4">
+      METAGENOMIC INTELLIGENCE SUITE
+    </text>
+  </g>
+</svg>

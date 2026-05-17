@@ -4,230 +4,132 @@ title: CLI Reference
 
 # CLI Reference
 
-Complete reference for MICOS-2024 command-line interface.
+This reference is aligned to the **actual Click commands implemented in `micos/cli.py`**.
 
----
-
-## Overview
-
-MICOS-2024 provides a unified command-line interface (CLI) for metagenomic analysis. All commands follow the pattern:
+## Invocation pattern
 
 ```bash
 python -m micos.cli [GLOBAL_OPTIONS] <COMMAND> [COMMAND_OPTIONS]
 ```
 
-### Getting Help
+If installed via `pyproject.toml`, the entrypoint is also available as:
 
 ```bash
-# General help
-python -m micos.cli --help
-
-# Command-specific help
-python -m micos.cli full-run --help
-python -m micos.cli run quality-control --help
+micos [GLOBAL_OPTIONS] <COMMAND> [COMMAND_OPTIONS]
 ```
 
----
+## Global options
 
-## Global Options
+| Option | Description |
+| --- | --- |
+| `--config` | path to the analysis configuration file |
+| `--log-file` | optional log output file |
+| `--verbose` | enable debug logging |
+| `--dry-run` | print planned work without executing it |
+| `--version` | print version information |
 
-| Option | Short | Description | Default |
-|:---|:---:|:---|:---|
-| `--config` | `-c` | Path to configuration file | `config/analysis.yaml` |
-| `--verbose` | `-v` | Enable verbose output | `false` |
-| `--log-file` | `-l` | Path to log file | `logs/micos.log` |
-| `--threads` | `-t` | Number of parallel threads | `16` |
-| `--dry-run` | `-n` | Show what would be executed | `false` |
-| `--version` | `-V` | Show version information | - |
+## Stable commands
 
----
+### `validate-config`
 
-## Commands
-
-### full-run
-
-Execute the complete analysis pipeline from raw reads to final report.
-
-#### Synopsis
+Validate the effective configuration before a run.
 
 ```bash
-python -m micos.cli full-run [OPTIONS]
+python -m micos.cli validate-config --config config/analysis.yaml
 ```
 
-#### Required Arguments
+### `full-run`
 
-| Argument | Description | Example |
-|:---|:---|:---|
-| `--input-dir` | Directory containing raw FASTQ files | `--input-dir data/raw` |
-| `--results-dir` | Directory for output files | `--results-dir results` |
-
-#### Database Arguments
-
-| Argument | Description | Example |
-|:---|:---|:---|
-| `--kneaddata-db` | Path to KneadData database | `--kneaddata-db /db/human_genome` |
-| `--kraken2-db` | Path to Kraken2 database | `--kraken2-db /db/kraken2_standard` |
-
-#### Optional Arguments
-
-| Argument | Description | Default |
-|:---|:---|:---|
-| `--threads` | Maximum parallel threads | `16` |
-| `--samples` | Comma-separated sample list | All samples |
-| `--skip-qc` | Skip quality control | `false` |
-| `--skip-taxonomy` | Skip taxonomic profiling | `false` |
-| `--skip-functional` | Skip functional annotation | `false` |
-| `--skip-diversity` | Skip diversity analysis | `false` |
-
-#### Output Structure
-
-```
-results/
-├── quality_control/
-│   ├── fastqc_reports/
-│   └── kneaddata/
-├── taxonomic_profiling/
-│   ├── *.kraken
-│   ├── *.report
-│   ├── *.krona.html
-│   └── feature-table.biom
-├── functional_annotation/
-│   ├── *_genefamilies.tsv
-│   └── *_pathabundance.tsv
-├── diversity_analysis/
-│   ├── alpha_diversity/
-│   └── beta_diversity/
-└── report.html
-```
-
----
-
-### run
-
-Execute individual analysis modules.
-
-#### Synopsis
+Run the end-to-end stable pipeline surface.
 
 ```bash
-python -m micos.cli run <MODULE> [OPTIONS]
+python -m micos.cli full-run \
+  --input-dir data/raw_input \
+  --results-dir results \
+  --threads 16 \
+  --kneaddata-db /db/kneaddata/human_genome \
+  --kraken2-db /db/kraken2/standard
 ```
 
-#### Available Modules
+Key flags:
 
-| Module | Description |
-|:---|:---|
-| `quality-control` | FastQC and KneadData processing |
-| `taxonomic-profiling` | Kraken2 classification |
-| `diversity-analysis` | QIIME2 diversity metrics |
-| `functional-annotation` | HUMAnN functional profiling |
-| `summarize-results` | Generate HTML report |
+- `--skip-qc`
+- `--skip-taxonomy`
+- `--skip-functional`
+- `--skip-diversity`
 
----
-
-#### quality-control
+### `run quality-control`
 
 ```bash
-python -m micos.cli run quality-control [OPTIONS]
+python -m micos.cli run quality-control \
+  --input-dir data/raw_input \
+  --output-dir results/quality_control \
+  --threads 8 \
+  --kneaddata-db /db/kneaddata/human_genome
 ```
 
-| Argument | Required | Description |
-|:---|:---:|:---|
-| `--input-dir` | ✓ | Raw FASTQ directory |
-| `--output-dir` | ✓ | QC results directory |
-| `--kneaddata-db` | ✓ | Host genome database |
-| `--threads` | | Parallel threads |
-
----
-
-#### taxonomic-profiling
+### `run taxonomic-profiling`
 
 ```bash
-python -m micos.cli run taxonomic-profiling [OPTIONS]
+python -m micos.cli run taxonomic-profiling \
+  --input-dir results/quality_control/kneaddata \
+  --output-dir results/taxonomic_profiling \
+  --threads 16 \
+  --kraken2-db /db/kraken2/standard \
+  --confidence 0.1
 ```
 
-| Argument | Required | Description |
-|:---|:---:|:---|
-| `--input-dir` | ✓ | Cleaned FASTQ directory (QC output) |
-| `--output-dir` | ✓ | Taxonomy results directory |
-| `--kraken2-db` | ✓ | Kraken2 database path |
-| `--confidence` | | Classification confidence threshold |
-| `--threads` | | Parallel threads |
-
----
-
-#### diversity-analysis
+### `run diversity-analysis`
 
 ```bash
-python -m micos.cli run diversity-analysis [OPTIONS]
+python -m micos.cli run diversity-analysis \
+  --input-biom results/taxonomic_profiling/feature-table.biom \
+  --output-dir results/diversity_analysis
 ```
 
-| Argument | Required | Description |
-|:---|:---:|:---|
-| `--input-biom` | ✓ | BIOM feature table path |
-| `--output-dir` | ✓ | Diversity results directory |
-| `--metadata` | | Sample metadata file |
-| `--sampling-depth` | | Rarefaction depth |
-
----
-
-#### functional-annotation
+### `run functional-annotation`
 
 ```bash
-python -m micos.cli run functional-annotation [OPTIONS]
+python -m micos.cli run functional-annotation \
+  --input-dir results/quality_control/kneaddata \
+  --output-dir results/functional_annotation \
+  --threads 8
 ```
 
-| Argument | Required | Description |
-|:---|:---:|:---|
-| `--input-dir` | ✓ | Cleaned FASTQ directory |
-| `--output-dir` | ✓ | Functional results directory |
-| `--threads` | | Parallel threads |
-| `--nucleotide-db` | | ChocoPhlAN database |
-| `--protein-db` | | UniRef database |
-
----
-
-### validate-config
-
-Validate configuration file before running analysis.
+### `run summarize-results`
 
 ```bash
-python -m micos.cli validate-config [OPTIONS]
+python -m micos.cli run summarize-results \
+  --results-dir results \
+  --output-file results/micos_summary_report.html
 ```
 
-| Argument | Required | Description |
-|:---|:---:|:---|
-| `--config` | | Path to configuration file |
+## Wrapper scripts
 
----
+Two shell wrappers matter operationally:
 
-## Return Codes
+| Wrapper | Role |
+| --- | --- |
+| `scripts/run_full_analysis.sh` | thin compatibility layer around `micos full-run` |
+| `scripts/run_module.sh` | module wrapper that delegates to stable CLI commands |
+
+The important architectural point is that these wrappers **delegate**. They are not documented here as separate pipeline implementations.
+
+## Return codes
+
+The CLI defines explicit exit codes in `micos/cli.py`:
 
 | Code | Meaning |
-|:---:|:---|
-| 0 | Success |
-| 1 | General error |
-| 2 | Invalid arguments |
-| 3 | Configuration error |
-| 4 | Missing dependencies |
-| 5 | Database error |
-| 6 | I/O error |
-| 130 | Interrupted by user |
+| --- | --- |
+| `0` | success |
+| `1` | general error |
+| `2` | invalid arguments |
+| `3` | configuration error |
+| `4` | missing dependencies |
+| `5` | database error |
+| `6` | I/O error |
+| `130` | interrupted |
 
----
+## Practical note
 
-## Environment Variables
-
-| Variable | Description | Example |
-|:---|:---|:---|
-| `MICOS_CONFIG` | Default config file path | `/path/to/config.yaml` |
-| `MICOS_THREADS` | Default thread count | `16` |
-| `MICOS_LOG_LEVEL` | Logging level | `INFO`, `DEBUG` |
-| `KRAKEN2_DB_PATH` | Default Kraken2 database | `/db/kraken2` |
-
----
-
-## See Also
-
-- [Configuration](../configuration.md) - Detailed configuration options
-- [Getting Started](../guides/getting-started.md) - Installation guide
-- [Troubleshooting](../troubleshooting.md) - Common issues and solutions
+If you see older examples that imply additional global flags or broader command coverage, prefer this page. It is aligned to the current implemented surface, not to earlier documentation drift.

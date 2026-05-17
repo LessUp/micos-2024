@@ -9,21 +9,34 @@ const base = rawBase
     : `/${rawBase}/`
   : '/'
 
+const sharedThemeConfig = {
+  logo: {
+    light: '/brand/logo-light.svg',
+    dark: '/brand/logo-dark.svg',
+    alt: 'MICOS-2024',
+  },
+  outline: [2, 3] as [number, number],
+  search: { provider: 'local' as const },
+  socialLinks: [
+    { icon: 'github', link: 'https://github.com/LessUp/micos-2024' },
+  ],
+}
+
 export default withMermaid(defineConfig({
   base,
   title: 'MICOS-2024',
-  description: 'Metagenomic Intelligence and Comprehensive Omics Suite',
+  description: 'A bilingual technical whitepaper for the MICOS-2024 metagenomic analysis platform.',
+  cleanUrls: true,
+  lastUpdated: true,
 
   head: [
-    // Open Graph
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}brand/favicon.svg` }],
+    ['meta', { name: 'theme-color', content: '#0f766e' }],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'MICOS-2024 Documentation' }],
-    ['meta', { property: 'og:description', content: 'Metagenomic Intelligence and Comprehensive Omics Suite' }],
+    ['meta', { property: 'og:title', content: 'MICOS-2024 Whitepaper' }],
+    ['meta', { property: 'og:description', content: 'An architecture-focused documentation site for a metagenomic analysis platform.' }],
     ['meta', { property: 'og:site_name', content: 'MICOS-2024' }],
-    // Twitter Card
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'MICOS-2024 Documentation' }],
-    ['meta', { name: 'twitter:description', content: 'Metagenomic Intelligence and Comprehensive Omics Suite' }],
   ],
 
   locales: {
@@ -31,23 +44,73 @@ export default withMermaid(defineConfig({
       label: '简体中文',
       lang: 'zh-CN',
       link: '/zh/',
-      title: 'MICOS-2024 文档',
-      description: '宏基因组综合分析平台',
+      title: 'MICOS-2024',
+      description: '面向高级开发者与评审者的宏基因组分析平台技术白皮书',
       themeConfig: {
+        ...sharedThemeConfig,
         nav: [
-          { text: '指南', link: '/zh/guides/getting-started', activeMatch: '/zh/guides/' },
-          { text: '分析模块', link: '/zh/analysis/taxonomic-profiling', activeMatch: '/zh/analysis/' },
-          { text: '配置', link: '/zh/configuration', activeMatch: '/zh/configuration' },
-          { text: '参考手册', link: '/zh/reference/cli', activeMatch: '/zh/reference/' },
-          { text: '常见问题', link: '/zh/faq' },
-          { text: '故障排除', link: '/zh/troubleshooting' },
+          { text: '导读', link: '/zh/' },
+          { text: '学院', link: '/zh/academy/pipeline-foundations', activeMatch: '/zh/academy/' },
+          { text: '架构', link: '/zh/architecture/system-overview', activeMatch: '/zh/architecture/' },
+          { text: '指南', link: '/zh/guides/getting-started', activeMatch: '/zh/guides/|/zh/configuration|/zh/faq|/zh/troubleshooting' },
+          { text: '参考', link: '/zh/reference/cli', activeMatch: '/zh/reference/' },
+          { text: '研究', link: '/zh/research/citations', activeMatch: '/zh/research/' },
         ],
         sidebar: {
+          '/zh/academy/': [
+            {
+              text: '学院',
+              items: [
+                { text: '流程基础', link: '/zh/academy/pipeline-foundations' },
+                { text: '数据产物与解释', link: '/zh/academy/data-products' },
+              ],
+            },
+            {
+              text: '模块深潜',
+              items: [
+                { text: '物种分类分析', link: '/zh/analysis/taxonomic-profiling' },
+                { text: '功能注释分析', link: '/zh/analysis/functional-profiling' },
+                { text: '多样性分析', link: '/zh/analysis/diversity-analysis' },
+              ],
+            },
+          ],
+          '/zh/architecture/': [
+            {
+              text: '架构',
+              items: [
+                { text: '系统总览', link: '/zh/architecture/system-overview' },
+                { text: '运行时拓扑', link: '/zh/architecture/runtime-topology' },
+              ],
+            },
+          ],
           '/zh/guides/': [
             {
               text: '指南',
               items: [
                 { text: '快速开始', link: '/zh/guides/getting-started' },
+                { text: '部署模式', link: '/zh/guides/deployment' },
+                { text: '配置系统', link: '/zh/configuration' },
+                { text: '常见问题', link: '/zh/faq' },
+                { text: '故障排除', link: '/zh/troubleshooting' },
+              ],
+            },
+          ],
+          '/zh/reference/': [
+            {
+              text: '参考',
+              items: [
+                { text: 'CLI 参考', link: '/zh/reference/cli' },
+                { text: '项目结构', link: '/zh/reference/project-structure' },
+              ],
+            },
+          ],
+          '/zh/research/': [
+            {
+              text: '研究',
+              items: [
+                { text: '参考文献', link: '/zh/research/citations' },
+                { text: '相关开源项目探究', link: '/zh/research/related-projects' },
+                { text: '演进思考', link: '/zh/research/evolution-notes' },
               ],
             },
           ],
@@ -61,22 +124,15 @@ export default withMermaid(defineConfig({
               ],
             },
           ],
-          '/zh/configuration': [
-            {
-              text: '配置',
-              items: [
-                { text: '配置指南', link: '/zh/configuration' },
-              ],
-            },
-          ],
-          '/zh/reference/': [
-            {
-              text: '参考手册',
-              items: [
-                { text: 'CLI 参考', link: '/zh/reference/cli' },
-              ],
-            },
-          ],
+        },
+        outlineTitle: '本页内容',
+        darkModeSwitchLabel: '主题',
+        sidebarMenuLabel: '菜单',
+        returnToTopLabel: '返回顶部',
+        docFooter: { prev: '上一页', next: '下一页' },
+        footer: {
+          message: 'MICOS-2024 技术白皮书，面向可重现宏基因组分析。',
+          copyright: 'MIT License · LessUp / MICOS-2024',
         },
       },
     },
@@ -84,29 +140,29 @@ export default withMermaid(defineConfig({
       label: 'English',
       lang: 'en-US',
       link: '/en/',
-      title: 'MICOS-2024 Docs',
-      description: 'Metagenomic Intelligence and Comprehensive Omics Suite',
+      title: 'MICOS-2024',
+      description: 'A technical whitepaper and architecture guide for the MICOS-2024 metagenomics platform',
       themeConfig: {
+        ...sharedThemeConfig,
         nav: [
-          { text: 'Guides', link: '/en/guides/getting-started', activeMatch: '/en/guides/' },
-          { text: 'Analysis', link: '/en/analysis/taxonomic-profiling', activeMatch: '/en/analysis/' },
-          { text: 'Configuration', link: '/en/configuration', activeMatch: '/en/configuration' },
+          { text: 'Overview', link: '/en/' },
+          { text: 'Academy', link: '/en/academy/pipeline-foundations', activeMatch: '/en/academy/' },
+          { text: 'Architecture', link: '/en/architecture/system-overview', activeMatch: '/en/architecture/' },
+          { text: 'Guides', link: '/en/guides/getting-started', activeMatch: '/en/guides/|/en/configuration|/en/faq|/en/troubleshooting' },
           { text: 'Reference', link: '/en/reference/cli', activeMatch: '/en/reference/' },
-          { text: 'FAQ', link: '/en/faq' },
-          { text: 'Troubleshooting', link: '/en/troubleshooting' },
+          { text: 'Research', link: '/en/research/citations', activeMatch: '/en/research/' },
         ],
         sidebar: {
-          '/en/guides/': [
+          '/en/academy/': [
             {
-              text: 'Guides',
+              text: 'Academy',
               items: [
-                { text: 'Getting Started', link: '/en/guides/getting-started' },
+                { text: 'Pipeline Foundations', link: '/en/academy/pipeline-foundations' },
+                { text: 'Data Products and Interpretation', link: '/en/academy/data-products' },
               ],
             },
-          ],
-          '/en/analysis/': [
             {
-              text: 'Analysis',
+              text: 'Module Deep Dives',
               items: [
                 { text: 'Taxonomic Profiling', link: '/en/analysis/taxonomic-profiling' },
                 { text: 'Functional Profiling', link: '/en/analysis/functional-profiling' },
@@ -114,11 +170,24 @@ export default withMermaid(defineConfig({
               ],
             },
           ],
-          '/en/configuration': [
+          '/en/architecture/': [
             {
-              text: 'Configuration',
+              text: 'Architecture',
               items: [
-                { text: 'Configuration Guide', link: '/en/configuration' },
+                { text: 'System Overview', link: '/en/architecture/system-overview' },
+                { text: 'Runtime Topology', link: '/en/architecture/runtime-topology' },
+              ],
+            },
+          ],
+          '/en/guides/': [
+            {
+              text: 'Guides',
+              items: [
+                { text: 'Getting Started', link: '/en/guides/getting-started' },
+                { text: 'Deployment Modes', link: '/en/guides/deployment' },
+                { text: 'Configuration System', link: '/en/configuration' },
+                { text: 'FAQ', link: '/en/faq' },
+                { text: 'Troubleshooting', link: '/en/troubleshooting' },
               ],
             },
           ],
@@ -127,20 +196,42 @@ export default withMermaid(defineConfig({
               text: 'Reference',
               items: [
                 { text: 'CLI Reference', link: '/en/reference/cli' },
+                { text: 'Project Structure', link: '/en/reference/project-structure' },
+              ],
+            },
+          ],
+          '/en/research/': [
+            {
+              text: 'Research',
+              items: [
+                { text: 'Citations', link: '/en/research/citations' },
+                { text: 'Related Open Source Projects', link: '/en/research/related-projects' },
+                { text: 'Evolution Notes', link: '/en/research/evolution-notes' },
+              ],
+            },
+          ],
+          '/en/analysis/': [
+            {
+              text: 'Analysis Modules',
+              items: [
+                { text: 'Taxonomic Profiling', link: '/en/analysis/taxonomic-profiling' },
+                { text: 'Functional Profiling', link: '/en/analysis/functional-profiling' },
+                { text: 'Diversity Analysis', link: '/en/analysis/diversity-analysis' },
               ],
             },
           ],
         },
+        outlineTitle: 'On this page',
+        darkModeSwitchLabel: 'Appearance',
+        sidebarMenuLabel: 'Menu',
+        returnToTopLabel: 'Return to top',
+        docFooter: { prev: 'Previous page', next: 'Next page' },
+        footer: {
+          message: 'MICOS-2024 whitepaper for reproducible metagenomics engineering.',
+          copyright: 'MIT License · LessUp / MICOS-2024',
+        },
       },
     },
-  },
-
-  themeConfig: {
-    outline: [2, 3],
-    search: { provider: 'local' },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/LessUp/micos-2024' },
-    ],
   },
 
   vite: {

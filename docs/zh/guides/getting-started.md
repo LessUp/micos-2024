@@ -1,295 +1,89 @@
 ---
-title: 安装指南
+title: 快速开始
 ---
 
-# 安装指南
+# 快速开始
 
-MICOS-2024 的完整安装说明。
+本页故意偏向**当前稳定可操作的主路径**，而不是把仓库里所有脚本都一并当成同等级入口。
 
----
+## 先选运行姿态
 
-## 系统要求
+| 姿态 | 适用场景 | 主要入口 |
+| --- | --- | --- |
+| Python CLI | 本地开发、可控环境 | `micos` 或 `python -m micos.cli` |
+| Shell 包装层 | 兼容旧用法 | `scripts/run_full_analysis.sh`, `scripts/run_module.sh` |
+| 工作流与容器 | 集成部署、可重现环境 | `steps/`, `deploy/`, `containers/` |
 
-### 最低要求
+## 最短可信路径
 
-| 组件 | 最低配置 | 推荐配置 |
-|:---|:---|:---|
-| 操作系统 | Linux (Ubuntu 18.04+) / macOS 11+ | Linux (Ubuntu 20.04+) |
-| CPU | 4 核 | 16+ 核 |
-| 内存 (RAM) | 16 GB | 32+ GB |
-| 存储 | 100 GB HDD | 500+ GB SSD |
-| 网络 | 安装的互联网连接 | 数据库下载的互联网连接 |
-
-### 软件前提条件
-
-| 软件 | 版本 | 用于 |
-|:---|:---:|:---|
-| Python | 3.9+ | 核心平台 |
-| Docker | 20.10+ | 容器化部署 |
-| Conda/Mamba | 4.10+ | 包管理 |
-
-### 数据库存储要求
-
-| 数据库 | 大小 | 用途 |
-|:---|:---:|:---|
-| Kraken2 标准库 | ~70 GB | 物种分类 |
-| Kraken2 MiniKraken | ~8 GB | 快速测试 |
-| KneadData 人类基因组 | ~4 GB | 宿主 DNA 去除 |
-| HUMAnN ChocoPhlAn | ~10 GB | 功能注释 |
-| HUMAnN UniRef90 | ~20 GB | 蛋白质家族 |
-
----
-
-## 安装方法
-
-### 方式 1：Docker 安装（推荐）
-
-Docker 提供最可重现的环境，所有依赖项均已预安装。
-
-#### 步骤 1：安装 Docker
-
-```bash
-# Linux (Ubuntu/Debian)
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-newgrp docker
-
-# 验证安装
-docker --version
-docker compose version
-```
-
-#### 步骤 2：克隆仓库
+### 1. 克隆并安装
 
 ```bash
 git clone https://github.com/BGI-MICOS/MICOS-2024.git
 cd MICOS-2024
+pip install -e ".[dev]"
 ```
 
-#### 步骤 3：使用 Docker Compose 部署
+如果你更偏好 Conda / Mamba，可以直接使用仓库中的 `environment.yml`。
+
+### 2. 复制配置模板
 
 ```bash
-# 启动所有服务
-docker compose -f deploy/docker-compose.example.yml up -d
-
-# 验证服务运行
-docker compose -f deploy/docker-compose.example.yml ps
-
-# 查看日志
-docker compose -f deploy/docker-compose.example.yml logs -f
+cp config/analysis.yaml.template config/analysis.yaml
+cp config/databases.yaml.template config/databases.yaml
+cp config/samples.tsv.template config/samples.tsv
 ```
 
-::: tip 优点
-- 完整的环境隔离
-- 无依赖冲突
-- 跨系统易于重现
-:::
+然后把数据库路径改成你本地真实可用的位置。
 
----
-
-### 方式 2：Conda 安装
-
-Conda/Mamba 提供灵活的安装，性能良好。
-
-#### 步骤 1：安装 Miniforge（推荐）
+### 3. 先做配置验证
 
 ```bash
-# 下载 Miniforge 安装程序
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-
-# 运行安装程序
-bash Miniforge3-Linux-x86_64.sh -b -p $HOME/miniforge
-
-# 初始化 shell
-$HOME/miniforge/bin/conda init bash
-source ~/.bashrc
+python -m micos.cli validate-config --config config/analysis.yaml
 ```
 
-#### 步骤 2：创建环境
+这一步最省时间，能提前发现路径和模板残留问题。
+
+### 4. 运行稳定全流程入口
 
 ```bash
-# 克隆仓库
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
-cd MICOS-2024
-
-# 使用 mamba 创建环境（更快）
-mamba env create -f environment.yml
-
-# 激活环境
-conda activate micos-2024
-```
-
-#### 步骤 3：安装 MICOS 包
-
-```bash
-# 以可编辑模式安装（开发用）
-pip install -e .
-
-# 或正常安装
-pip install .
-```
-
-::: tip 优点
-- 原生性能
-- 易于定制
-- 适合开发
-:::
-
----
-
-### 方式 3：源码安装
-
-适合想要修改代码的开发者。
-
-#### 步骤 1：系统依赖
-
-```bash
-# Ubuntu/Debian
-sudo apt-get update
-sudo apt-get install -y \
-    build-essential \
-    python3-dev \
-    python3-pip \
-    git \
-    wget \
-    curl
-```
-
-#### 步骤 2：Python 环境
-
-```bash
-# 创建虚拟环境
-python3 -m venv micos-env
-source micos-env/bin/activate
-
-# 安装 Python 依赖
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # 开发用
-```
-
-#### 步骤 3：安装 MICOS
-
-```bash
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
-cd MICOS-2024
-pip install -e .
-```
-
----
-
-## 数据库设置
-
-### 自动化数据库下载
-
-```bash
-# 运行数据库下载脚本
-python scripts/download_databases.py \
-  --output-dir /path/to/databases \
-  --databases kraken2,kneaddata,humann
-```
-
-### 手动数据库设置
-
-#### Kraken2 数据库
-
-```bash
-# 创建数据库目录
-mkdir -p /path/to/kraken2_db
-
-# 下载并构建标准数据库（需要 ~70GB）
-kraken2-build --download-taxonomy --db /path/to/kraken2_db
-kraken2-build --download-library bacteria --db /path/to/kraken2_db
-kraken2-build --download-library archaea --db /path/to/kraken2_db
-kraken2-build --build --db /path/to/kraken2_db --threads 16
-
-# 或下载预构建的 MiniKraken（快速开始，~8GB）
-wget https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v2_8GB_201904_UPDATE.tgz
-tar -xzf minikraken2_v2_8GB_201904_UPDATE.tgz
-```
-
-#### KneadData 数据库
-
-```bash
-# 下载人类基因组参考
-kneaddata_database --download human_genome bowtie2 /path/to/kneaddata_db
-```
-
-#### HUMAnN 数据库
-
-```bash
-# 下载功能数据库
-humann_databases --download chocophlan full /path/to/humann_db
-humann_databases --download uniref uniref90_diamond /path/to/humann_db
-```
-
----
-
-## 验证
-
-### 步骤 1：安装验证
-
-```bash
-# 运行验证脚本
-./scripts/verify_installation.sh
-```
-
-### 步骤 2：测试运行
-
-```bash
-# 下载测试数据
-python scripts/download_test_data.py --output-dir test_data
-
-# 运行快速测试
 python -m micos.cli full-run \
-  --input-dir test_data \
-  --results-dir test_results \
-  --threads 4 \
+  --input-dir data/raw_input \
+  --results-dir results \
+  --threads 16 \
   --kneaddata-db /path/to/kneaddata_db \
-  --kraken2-db /path/to/kraken2_minikraken
+  --kraken2-db /path/to/kraken2_db
 ```
 
----
+## 如果你更想用包装脚本
 
-## 故障排除
-
-### 问题：Docker 权限被拒绝
+包装脚本目前是薄包装层：
 
 ```bash
-# 将用户添加到 docker 组
-sudo usermod -aG docker $USER
-newgrp docker
-
-# 验证
-docker run hello-world
+./scripts/run_full_analysis.sh \
+  --config config/analysis.yaml \
+  --input-dir data/raw_input \
+  --results-dir results
 ```
 
-### 问题：Conda 环境创建失败
+在新项目、自动化或排错场景中，仍建议优先使用主 CLI。
+
+## 如果你更想用容器
+
+仓库提供了 Docker Compose 示例：
 
 ```bash
-# 清除 conda 缓存
-conda clean --all
-
-# 更新 conda
-conda update -n base conda
-
-# 尝试使用 mamba
-conda install mamba -c conda-forge -n base
-mamba env create -f environment.yml --force
+docker compose -f deploy/docker-compose.example.yml config
+docker compose -f deploy/docker-compose.example.yml up -d
 ```
 
-### 问题：数据库下载失败
+需要注意，这个 compose 文件更接近环境示例和就绪脚手架，而不是对全流程的“一键全自动承诺”。
 
-```bash
-# 使用镜像站点
-# 对于中国用户：
-export KRAKEN2_DB_MIRROR="https://mirrors.tuna.tsinghua.edu.cn/"
-```
+## 第一次运行之后看什么
 
----
+- `results/quality_control/`
+- `results/taxonomic_profiling/`
+- `results/diversity_analysis/`
+- `results/functional_annotation/`
 
-## 相关文档
-
-- [配置指南](../configuration.md) - 自定义您的分析
-- [常见问题](../faq.md) - 常见问题解答
-- [故障排除](../troubleshooting.md) - 常见问题与解决方案
+如果这些目录内容合理，平台的其他部分就更容易建立信任。
