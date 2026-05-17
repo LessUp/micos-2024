@@ -2,276 +2,45 @@
 title: Troubleshooting
 ---
 
-# Troubleshooting Guide
+# Troubleshooting
 
-Comprehensive solutions for common MICOS-2024 issues.
+## `validate-config` fails immediately
 
----
+Most often this means one of the following:
 
-## Diagnostic Quick Reference
+- template placeholders were not replaced,
+- `config/databases.yaml` points to nonexistent paths,
+- `config/analysis.yaml` and database config disagree.
 
-### Quick Diagnostic Commands
-
-```bash
-# System resources
-free -h                              # Memory
-df -h                                # Disk space
-nproc                                # CPU cores
-ulimit -a                            # Resource limits
-
-# Environment
-which python
-python --version
-conda list | grep -E "kraken2|humann|qiime"
-
-# Installation check
-./scripts/verify_installation.sh
-
-# Database check
-ls -la /path/to/kraken2_db/*.k2d
-ls -la /path/to/kneaddata_db/*.bt2
-
-# Log analysis
-tail -f logs/analysis.log
-grep -i "error\|fatal\|exception" logs/*.log
-```
-
----
-
-## Installation Issues
-
-### Issue: Conda Environment Creation Fails
-
-**Symptoms**:
-```
-CondaEnvException: Pip failed
-ResolvePackageNotFound
-```
-
-**Causes & Solutions**:
-
-| Cause | Solution |
-|:---|:---|
-| Outdated conda | `conda update -n base conda` |
-| Corrupted cache | `conda clean --all` |
-| Channel conflicts | Use mamba: `mamba env create -f environment.yml` |
-
-**Step-by-Step Fix**:
-```bash
-# 1. Update conda
-conda update -n base -c conda-forge conda
-
-# 2. Clean cache
-conda clean --all -y
-
-# 3. Install mamba (faster solver)
-conda install -n base -c conda-forge mamba
-
-# 4. Create environment with mamba
-mamba env create -f environment.yml
-```
-
-### Issue: Docker Permission Denied
-
-**Symptoms**:
-```
-permission denied while trying to connect to Docker daemon
-```
-
-**Solution**:
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify
-docker run hello-world
-```
-
----
-
-## Configuration Issues
-
-### Issue: Database Path Not Found
-
-**Symptoms**:
-```
-FileNotFoundError: [Errno 2] No such file or directory: '/path/to/kraken2_db'
-```
-
-**Diagnosis**:
-```bash
-# Check database files
-ls -la /path/to/kraken2_db/
-
-# Verify required files exist
-ls hash.k2d opts.k2d taxo.k2d  # For Kraken2
-ls *.bt2  # For KneadData/Bowtie2
-```
-
-### Issue: YAML Syntax Error
-
-**Common Causes**:
-
-| Error | Example | Fix |
-|:---|:---|:---|
-| Missing space after colon | `key:value` | `key: value` |
-| Tab indentation | `\tkey: value` | `  key: value` |
-
-**Validation**:
-```bash
-# Check YAML syntax
-python -c "import yaml; yaml.safe_load(open('config/analysis.yaml'))"
-```
-
----
-
-## Runtime Errors
-
-### Issue: Kraken2 Classification Fails
-
-**Symptoms**:
-```
-kraken2: unable to open database
-Error reading in hash table
-```
-
-**Solutions**:
-```bash
-# 1. Check database integrity
-ls -lh /path/to/kraken2_db/
-
-# 2. Verify memory
-free -h
-
-# 3. Re-download if corrupted
-kraken2-build --download-taxonomy --db /new/path
-```
-
-### Issue: HUMAnN Running Very Slow
-
-**Symptoms**: Analysis taking >10x expected time
-
-**Solutions**:
-```yaml
-functional_annotation:
-  humann:
-    diamond_options: "--fast"
-    threads: 8
-    protein_database: "/db/uniref50"
-```
-
----
-
-## Performance Issues
-
-### Issue: Analysis Is Too Slow
-
-| Strategy | Command/Config | Expected Speedup |
-|:---|:---|:---:|
-| Increase threads | `--threads 32` | 2-4x |
-| Use SSD for temp | `temp_dir: /ssd/tmp` | 2-3x |
-| Use MiniKraken (testing) | `--kraken2-db /db/minikraken` | 5-10x |
-
-### Issue: Running Out of Disk Space
+Run:
 
 ```bash
-# 1. Clean intermediate files
-rm -rf results/*/intermediate/
-
-# 2. Compress outputs
-gzip results/*/*.fastq
-
-# 3. Enable auto-cleanup in config
-quality_control:
-  kneaddata:
-    remove_intermediate: true
+python -m micos.cli validate-config --config config/analysis.yaml
 ```
 
-### Issue: High Memory Usage
+## `full-run` complains about missing database paths
 
-```yaml
-# Reduce parallel jobs
-resources:
-  max_threads: 8
-  max_memory: "16GB"
+The current stable CLI expects explicit database resolution for:
 
-# Disable memory mapping for Kraken2
-taxonomic_profiling:
-  kraken2:
-    memory_mapping: false
-```
+- KneadData
+- Kraken2
 
----
+Provide them through config defaults or direct flags:
 
-## Data Quality Issues
-
-### Issue: Low Classification Rate
-
-| Classification Rate | Assessment |
-|:---:|:---|
-| > 70% | Good |
-| 50-70% | Normal for some environments |
-| 30-50% | Check quality and database |
-| < 30% | Problematic |
-
-**Solutions**:
-```yaml
-taxonomic_profiling:
-  kraken2:
-    confidence: 0.05
-databases:
-  kraken2: "/db/kraken2_pluspf"
-```
-
----
-
-## Error Code Reference
-
-| Exit Code | Meaning | Common Cause |
-|:---:|:---|:---|
-| 1 | General error | Check logs for details |
-| 2 | Misuse of command | Wrong arguments |
-| 126 | Command not executable | Permission denied |
-| 127 | Command not found | PATH issue, not installed |
-| 137 | SIGKILL (9) | Out of memory |
-| 139 | Segmentation fault | Invalid memory access |
-
----
-
-## Getting Help
-
-### Reporting Issues
-
-When reporting issues, include:
-
-**Environment**
-- OS: [e.g., Ubuntu 20.04]
-- Python: [e.g., 3.9.12]
-- MICOS version: [e.g., 1.0.0]
-- Installation method: [Docker/Conda/Source]
-
-**Command**
 ```bash
-# The exact command you ran
+python -m micos.cli full-run \
+  --kneaddata-db /db/kneaddata/human_genome \
+  --kraken2-db /db/kraken2/standard
 ```
 
-**Error message**
-```
-Full error message or relevant log excerpt
-```
+## Wrapper script behavior differs from what I expected
 
-### Support Channels
+Re-check the wrapper intent. The wrapper scripts are thin compatibility layers now. If something looks surprising, inspect the CLI command they delegate to before debugging the shell script itself.
 
-| Channel | Best For | Response Time |
-|:---|:---|:---:|
-| [GitHub Issues](https://github.com/BGI-MICOS/MICOS-2024/issues) | Bug reports, feature requests | 1-3 days |
-| [Discussions](https://github.com/BGI-MICOS/MICOS-2024/discussions) | Questions, best practices | 1-7 days |
-| Documentation | Quick reference | Immediate |
+## Container setup looks healthy, but the run still fails
 
----
+That usually means environment readiness and pipeline correctness are being conflated. The Compose example helps prepare services and mounts, but it does not replace configuration validation or command-level verification.
 
-## See Also
+## The docs mention advanced analyses I cannot find in the main CLI
 
-- [FAQ](./faq.md) - Frequently asked questions
-- [Getting Started](./guides/getting-started.md) - Installation guide
+Those capabilities may live in `scripts/` instead of the stable CLI surface. Use the **Project Structure** and **CLI Reference** pages together to determine which layer a feature belongs to.

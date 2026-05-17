@@ -1,410 +1,102 @@
 ---
-title: Installation
+title: Getting Started
 ---
 
-# Installation Guide
+# Getting Started
 
-Complete installation instructions for MICOS-2024.
+This guide is intentionally biased toward the **current stable operational path** of the repository. It does not pretend every script or template is equally mature.
 
----
+## Choose an execution posture
 
-## System Requirements
+| Posture | Best for | What you use |
+| --- | --- | --- |
+| Python CLI | local development, controlled environments | `micos` or `python -m micos.cli` |
+| Shell wrappers | compatibility with earlier habits | `scripts/run_full_analysis.sh`, `scripts/run_module.sh` |
+| Workflow and containers | reproducible environments, integration work | `steps/`, `deploy/`, `containers/` |
 
-### Minimum Requirements
+## Fastest credible path
 
-| Component | Minimum | Recommended |
-|:---|:---|:---|
-| Operating System | Linux (Ubuntu 18.04+) / macOS 11+ | Linux (Ubuntu 20.04+) |
-| CPU | 4 cores | 16+ cores |
-| Memory (RAM) | 16 GB | 32+ GB |
-| Storage | 100 GB HDD | 500+ GB SSD |
-| Network | Internet for installation | Internet for database downloads |
-
-### Software Prerequisites
-
-| Software | Version | Required For |
-|:---|:---:|:---|
-| Python | 3.9+ | Core platform |
-| Docker | 20.10+ | Containerized deployment |
-| Conda/Mamba | 4.10+ | Package management |
-
-### Database Storage Requirements
-
-| Database | Size | Purpose |
-|:---|:---:|:---|
-| Kraken2 Standard | ~70 GB | Species classification |
-| Kraken2 MiniKraken | ~8 GB | Quick testing |
-| KneadData Human Genome | ~4 GB | Host DNA removal |
-| HUMAnN ChocoPhlAn | ~10 GB | Functional annotation |
-| HUMAnN UniRef90 | ~20 GB | Protein families |
-
----
-
-## Installation Methods
-
-### Method 1: Docker Installation (Recommended)
-
-Docker provides the most reproducible environment with all dependencies pre-installed.
-
-#### Step 1: Install Docker
-
-```bash
-# Linux (Ubuntu/Debian)
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify installation
-docker --version
-docker compose version
-```
-
-#### Step 2: Clone Repository
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/BGI-MICOS/MICOS-2024.git
 cd MICOS-2024
+pip install -e ".[dev]"
 ```
 
-#### Step 3: Deploy with Docker Compose
+If you prefer Conda or Mamba, the repository already provides `environment.yml`.
+
+### 2. Prepare configuration
 
 ```bash
-# Start all services
-docker compose -f deploy/docker-compose.example.yml up -d
-
-# Verify services are running
-docker compose -f deploy/docker-compose.example.yml ps
-
-# View logs
-docker compose -f deploy/docker-compose.example.yml logs -f
+cp config/analysis.yaml.template config/analysis.yaml
+cp config/databases.yaml.template config/databases.yaml
+cp config/samples.tsv.template config/samples.tsv
 ```
 
-#### Step 4: Access Container
+Edit the copied files so that database paths point to real local resources.
+
+### 3. Validate before running
 
 ```bash
-# Enter the main analysis container
-docker compose -f deploy/docker-compose.example.yml exec micos bash
-
-# Run analysis
-python -m micos.cli --help
+python -m micos.cli validate-config --config config/analysis.yaml
 ```
 
-::: tip Advantages
-- Complete environment isolation
-- No dependency conflicts
-- Easy to reproduce across systems
-:::
+This is the cheapest way to detect broken paths before a long run.
 
----
-
-### Method 2: Conda Installation
-
-Conda/Mamba provides flexible installation with good performance.
-
-#### Step 1: Install Miniforge (Recommended)
+### 4. Run the stable full pipeline entrypoint
 
 ```bash
-# Download Miniforge installer
-wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-
-# Run installer
-bash Miniforge3-Linux-x86_64.sh -b -p $HOME/miniforge
-
-# Initialize shell
-$HOME/miniforge/bin/conda init bash
-source ~/.bashrc
-```
-
-#### Step 2: Create Environment
-
-```bash
-# Clone repository
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
-cd MICOS-2024
-
-# Create environment with mamba (faster)
-mamba env create -f environment.yml
-
-# Activate environment
-conda activate micos-2024
-```
-
-#### Step 3: Install MICOS Package
-
-```bash
-# Install in editable mode for development
-pip install -e .
-
-# Or install normally
-pip install .
-```
-
-#### Step 4: Verify Tools
-
-```bash
-# Check core dependencies
-kraken2 --version
-humann --version
-qiime --version
-kneaddata --version
-```
-
-::: tip Advantages
-- Native performance
-- Easy customization
-- Good for development
-:::
-
----
-
-### Method 3: Source Installation
-
-For developers who want to modify the code.
-
-#### Step 1: System Dependencies
-
-```bash
-# Ubuntu/Debian
-sudo apt-get update
-sudo apt-get install -y \
-    build-essential \
-    python3-dev \
-    python3-pip \
-    git \
-    wget \
-    curl
-```
-
-#### Step 2: Python Environment
-
-```bash
-# Create virtual environment
-python3 -m venv micos-env
-source micos-env/bin/activate
-
-# Install Python dependencies
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # For development
-```
-
-#### Step 3: Install MICOS
-
-```bash
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
-cd MICOS-2024
-pip install -e .
-```
-
-::: tip Advantages
-- Full control over installation
-- Easy to modify source code
-- Minimal overhead
-:::
-
----
-
-## Database Setup
-
-### Automated Database Download
-
-```bash
-# Run database download script
-python scripts/download_databases.py \
-  --output-dir /path/to/databases \
-  --databases kraken2,kneaddata,humann
-```
-
-### Manual Database Setup
-
-#### Kraken2 Database
-
-```bash
-# Create database directory
-mkdir -p /path/to/kraken2_db
-
-# Download and build standard database (requires ~70GB)
-kraken2-build --download-taxonomy --db /path/to/kraken2_db
-kraken2-build --download-library bacteria --db /path/to/kraken2_db
-kraken2-build --download-library archaea --db /path/to/kraken2_db
-kraken2-build --build --db /path/to/kraken2_db --threads 16
-
-# Or download pre-built MiniKraken (quick start, ~8GB)
-wget https://genome-idx.s3.amazonaws.com/kraken/minikraken2_v2_8GB_201904_UPDATE.tgz
-tar -xzf minikraken2_v2_8GB_201904_UPDATE.tgz
-```
-
-#### KneadData Database
-
-```bash
-# Download human genome reference
-kneaddata_database --download human_genome bowtie2 /path/to/kneaddata_db
-```
-
-#### HUMAnN Database
-
-```bash
-# Download functional databases
-humann_databases --download chocophlan full /path/to/humann_db
-humann_databases --download uniref uniref90_diamond /path/to/humann_db
-```
-
-### Database Configuration
-
-Create `config/databases.yaml`:
-
-```yaml
-database_root: "/path/to/databases"
-
-quality_control:
-  kneaddata:
-    human_genome: "${database_root}/kneaddata/human_genome"
-
-taxonomy:
-  kraken2:
-    standard: "${database_root}/kraken2/standard"
-    minikraken: "${database_root}/kraken2/minikraken"
-
-functional:
-  humann:
-    chocophlan: "${database_root}/humann/chocophlan"
-    uniref90: "${database_root}/humann/uniref90"
-```
-
----
-
-## Verification
-
-### Step 1: Installation Verification
-
-```bash
-# Run verification script
-./scripts/verify_installation.sh
-```
-
-Expected output:
-```
-✓ Python 3.9+ found
-✓ Kraken2 installed
-✓ HUMAnN installed
-✓ QIIME2 installed
-✓ Kneaddata installed
-✓ All dependencies satisfied
-```
-
-### Step 2: Test Run
-
-```bash
-# Download test data
-python scripts/download_test_data.py --output-dir test_data
-
-# Run quick test
 python -m micos.cli full-run \
-  --input-dir test_data \
-  --results-dir test_results \
-  --threads 4 \
+  --input-dir data/raw_input \
+  --results-dir results \
+  --threads 16 \
   --kneaddata-db /path/to/kneaddata_db \
-  --kraken2-db /path/to/kraken2_minikraken
+  --kraken2-db /path/to/kraken2_db
 ```
 
-### Step 3: Check Output
+## If you want wrappers instead
+
+The wrapper scripts are intentionally thin:
 
 ```bash
-# Verify outputs exist
-ls test_results/
-# Should show: quality_control/, taxonomic_profiling/, functional_annotation/, report.html
+./scripts/run_full_analysis.sh \
+  --config config/analysis.yaml \
+  --input-dir data/raw_input \
+  --results-dir results
 ```
 
----
+Use wrappers when they fit existing automation, but prefer the CLI when documenting or debugging behavior.
 
-## Offline Installation
+## If you want containers instead
 
-For systems without internet access:
-
-### Step 1: Prepare on Online System
+The repository includes a Docker Compose example:
 
 ```bash
-# Download packages
-pip download \
-  -r requirements.txt \
-  -d ./offline_packages \
-  --platform manylinux2014_x86_64
-
-# Export conda environment
-conda env export --no-builds > environment-offline.yml
+docker compose -f deploy/docker-compose.example.yml config
+docker compose -f deploy/docker-compose.example.yml up -d
 ```
 
-### Step 2: Transfer to Offline System
+Important nuance: this compose file is an environment example and readiness scaffold, not a magical all-in-one replacement for understanding the pipeline.
 
-Transfer these directories to the offline system:
-- `offline_packages/`
-- `MICOS-2024/` (source code)
-- Database files
+## First-run checklist
 
-### Step 3: Install Offline
+1. config files copied from templates
+2. database paths resolved
+3. `validate-config` succeeds
+4. input directory exists
+5. output directory is writable
 
-```bash
-# Install from local packages
-pip install --no-index --find-links=./offline_packages -r requirements.txt
+## What to inspect after the first run
 
-# Install MICOS
-pip install -e MICOS-2024/
-```
+- `results/quality_control/`
+- `results/taxonomic_profiling/`
+- `results/diversity_analysis/`
+- `results/functional_annotation/`
 
----
+If those folders make sense, the rest of the platform becomes much easier to trust.
 
-## Troubleshooting
+## Where to go next
 
-### Issue: Docker Permission Denied
-
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-newgrp docker
-
-# Verify
-docker run hello-world
-```
-
-### Issue: Conda Environment Creation Fails
-
-```bash
-# Clear conda cache
-conda clean --all
-
-# Update conda
-conda update -n base conda
-
-# Try with mamba
-conda install mamba -c conda-forge -n base
-mamba env create -f environment.yml --force
-```
-
-### Issue: Database Download Fails
-
-```bash
-# Use mirror sites
-# For China users:
-export KRAKEN2_DB_MIRROR="https://mirrors.tuna.tsinghua.edu.cn/"
-
-# Or download manually from:
-# https://benlangmead.github.io/aws-indexes/k2
-```
-
-### Issue: Memory Error During Database Build
-
-```bash
-# Reduce threads during build
-kraken2-build --build --db /path/to/db --threads 4
-
-# Or use pre-built databases
-wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20231009.tar.gz
-```
-
----
-
-## See Also
-
-- [Configuration Guide](../configuration.md) - Customize your analysis
-- [FAQ](../faq.md) - Common questions
-- [Troubleshooting](../troubleshooting.md) - Common issues and solutions
+- Read **Configuration System** to understand template structure and precedence.
+- Read **Runtime Topology** if you need to integrate MICOS into a larger platform.

@@ -4,260 +4,91 @@ title: CLI 参考
 
 # CLI 参考
 
-MICOS-2024 命令行接口完整参考。
+本页严格对齐 **`micos/cli.py` 里当前真实实现的 Click 命令**。
 
----
-
-## 概述
-
-MICOS-2024 提供统一的命令行接口 (CLI) 用于宏基因组分析。所有命令遵循以下模式：
+## 调用模式
 
 ```bash
 python -m micos.cli [全局选项] <命令> [命令选项]
 ```
 
-### 获取帮助
+如果通过 `pyproject.toml` 安装成功，也可以直接使用：
 
 ```bash
-# 通用帮助
-python -m micos.cli --help
-
-# 命令特定帮助
-python -m micos.cli full-run --help
-python -m micos.cli run quality-control --help
+micos [全局选项] <命令> [命令选项]
 ```
-
----
 
 ## 全局选项
 
-| 选项 | 简写 | 描述 | 默认值 |
-|:---|:---:|:---|:---|
-| `--config` | `-c` | 配置文件路径 | `config/analysis.yaml` |
-| `--verbose` | `-v` | 启用详细输出 | `false` |
-| `--log-file` | `-l` | 日志文件路径 | `logs/micos.log` |
-| `--threads` | `-t` | 并行线程数 | `16` |
-| `--dry-run` | `-n` | 显示将执行的操作 | `false` |
-| `--version` | `-V` | 显示版本信息 | - |
+| 选项 | 说明 |
+| --- | --- |
+| `--config` | 指定分析配置文件路径 |
+| `--log-file` | 指定日志输出文件 |
+| `--verbose` | 打开调试级日志 |
+| `--dry-run` | 只打印计划，不真正执行 |
+| `--version` | 输出版本信息 |
 
-### 示例
+## 稳定命令
+
+### `validate-config`
+
+运行前验证配置：
 
 ```bash
-# 使用自定义配置
-python -m micos.cli --config my_config.yaml full-run --input-dir data/
-
-# 详细输出与自定义日志
-python -m micos.cli --verbose --log-file analysis.log full-run ...
-
-# 试运行（仅预览）
-python -m micos.cli --dry-run full-run --input-dir data/
+python -m micos.cli validate-config --config config/analysis.yaml
 ```
 
----
+### `full-run`
 
-## 命令
-
-### full-run
-
-从原始 reads 到最终报告执行完整分析流程。
-
-#### 语法
+运行稳定全流程主入口：
 
 ```bash
-python -m micos.cli full-run [选项]
-```
-
-#### 必需参数
-
-| 参数 | 描述 | 示例 |
-|:---|:---|:---|
-| `--input-dir` | 原始 FASTQ 文件目录 | `--input-dir data/raw` |
-| `--results-dir` | 输出文件目录 | `--results-dir results` |
-
-#### 数据库参数
-
-| 参数 | 描述 | 示例 |
-|:---|:---|:---|
-| `--kneaddata-db` | KneadData 数据库路径 | `--kneaddata-db /db/human_genome` |
-| `--kraken2-db` | Kraken2 数据库路径 | `--kraken2-db /db/kraken2_standard` |
-
-#### 可选参数
-
-| 参数 | 描述 | 默认值 |
-|:---|:---|:---|
-| `--threads` | 最大并行线程 | `16` |
-| `--samples` | 逗号分隔样本列表 | 所有样本 |
-| `--skip-qc` | 跳过质量控制 | `false` |
-| `--skip-taxonomy` | 跳过物种分类 | `false` |
-| `--skip-functional` | 跳过功能注释 | `false` |
-| `--skip-diversity` | 跳过多样性分析 | `false` |
-
-#### 示例
-
-```bash
-# 基本用法
 python -m micos.cli full-run \
   --input-dir data/raw_input \
   --results-dir results \
   --threads 16 \
-  --kneaddata-db /db/human_genome \
-  --kraken2-db /db/kraken2_standard
-
-# 仅分析特定样本
-python -m micos.cli full-run \
-  --input-dir data/raw_input \
-  --results-dir results \
-  --samples SampleA,SampleB,SampleC
-
-# 跳过功能分析（仅分类）
-python -m micos.cli full-run \
-  --input-dir data/raw_input \
-  --results-dir results \
-  --skip-functional
+  --kneaddata-db /db/kneaddata/human_genome \
+  --kraken2-db /db/kraken2/standard
 ```
 
-#### 输出结构
+关键跳过参数：
 
-```
-results/
-├── quality_control/
-│   ├── fastqc_reports/
-│   └── kneaddata/
-├── taxonomic_profiling/
-│   ├── *.kraken
-│   ├── *.report
-│   ├── *.krona.html
-│   └── feature-table.biom
-├── functional_annotation/
-│   ├── *_genefamilies.tsv
-│   └── *_pathabundance.tsv
-├── diversity_analysis/
-│   ├── alpha_diversity/
-│   └── beta_diversity/
-└── report.html
-```
+- `--skip-qc`
+- `--skip-taxonomy`
+- `--skip-functional`
+- `--skip-diversity`
 
----
+### `run quality-control`
 
-### run
-
-执行单独的分析模块。
-
-#### 语法
-
-```bash
-python -m micos.cli run <模块> [选项]
-```
-
-#### 可用模块
-
-| 模块 | 描述 |
-|:---|:---|
-| `quality-control` | FastQC 和 KneadData 处理 |
-| `taxonomic-profiling` | Kraken2 分类 |
-| `diversity-analysis` | QIIME2 多样性指标 |
-| `functional-annotation` | HUMAnN 功能注释 |
-| `summarize-results` | 生成 HTML 报告 |
-
----
-
-#### quality-control
-
-```bash
-python -m micos.cli run quality-control [选项]
-```
-
-**参数**:
-
-| 参数 | 必需 | 描述 |
-|:---|:---:|:---|
-| `--input-dir` | ✓ | 原始 FASTQ 目录 |
-| `--output-dir` | ✓ | QC 结果目录 |
-| `--kneaddata-db` | ✓ | 宿主基因组数据库 |
-| `--threads` | | 并行线程 |
-
-**示例**:
 ```bash
 python -m micos.cli run quality-control \
   --input-dir data/raw_input \
   --output-dir results/quality_control \
-  --kneaddata-db /db/human_genome \
-  --threads 8
+  --threads 8 \
+  --kneaddata-db /db/kneaddata/human_genome
 ```
 
----
+### `run taxonomic-profiling`
 
-#### taxonomic-profiling
-
-```bash
-python -m micos.cli run taxonomic-profiling [选项]
-```
-
-**参数**:
-
-| 参数 | 必需 | 描述 |
-|:---|:---:|:---|
-| `--input-dir` | ✓ | 清洗后 FASTQ 目录 (QC 输出) |
-| `--output-dir` | ✓ | 分类结果目录 |
-| `--kraken2-db` | ✓ | Kraken2 数据库路径 |
-| `--confidence` | | 分类置信度阈值 |
-| `--threads` | | 并行线程 |
-
-**示例**:
 ```bash
 python -m micos.cli run taxonomic-profiling \
   --input-dir results/quality_control/kneaddata \
   --output-dir results/taxonomic_profiling \
-  --kraken2-db /db/kraken2_standard \
-  --confidence 0.1 \
-  --threads 16
+  --threads 16 \
+  --kraken2-db /db/kraken2/standard \
+  --confidence 0.1
 ```
 
----
+### `run diversity-analysis`
 
-#### diversity-analysis
-
-```bash
-python -m micos.cli run diversity-analysis [选项]
-```
-
-**参数**:
-
-| 参数 | 必需 | 描述 |
-|:---|:---:|:---|
-| `--input-biom` | ✓ | BIOM 特征表路径 |
-| `--output-dir` | ✓ | 多样性结果目录 |
-| `--metadata` | | 样本元数据文件 |
-| `--sampling-depth` | | 稀释深度 |
-
-**示例**:
 ```bash
 python -m micos.cli run diversity-analysis \
   --input-biom results/taxonomic_profiling/feature-table.biom \
-  --output-dir results/diversity_analysis \
-  --metadata metadata.tsv \
-  --sampling-depth 10000
+  --output-dir results/diversity_analysis
 ```
 
----
+### `run functional-annotation`
 
-#### functional-annotation
-
-```bash
-python -m micos.cli run functional-annotation [选项]
-```
-
-**参数**:
-
-| 参数 | 必需 | 描述 |
-|:---|:---:|:---|
-| `--input-dir` | ✓ | 清洗后 FASTQ 目录 |
-| `--output-dir` | ✓ | 功能结果目录 |
-| `--threads` | | 并行线程 |
-| `--nucleotide-db` | | ChocoPhlAN 数据库 |
-| `--protein-db` | | UniRef 数据库 |
-
-**示例**:
 ```bash
 python -m micos.cli run functional-annotation \
   --input-dir results/quality_control/kneaddata \
@@ -265,169 +96,40 @@ python -m micos.cli run functional-annotation \
   --threads 8
 ```
 
----
+### `run summarize-results`
 
-#### summarize-results
-
-```bash
-python -m micos.cli run summarize-results [选项]
-```
-
-**参数**:
-
-| 参数 | 必需 | 描述 |
-|:---|:---:|:---|
-| `--results-dir` | ✓ | 主结果目录 |
-| `--output-file` | ✓ | 输出 HTML 报告路径 |
-| `--format` | | 输出格式 (html, pdf) |
-
-**示例**:
 ```bash
 python -m micos.cli run summarize-results \
   --results-dir results \
-  --output-file results/final_report.html
+  --output-file results/micos_summary_report.html
 ```
 
----
+## Shell 包装脚本
 
-### validate-config
+仓库里两个包装脚本仍然重要：
 
-运行分析前验证配置文件。
+| 包装脚本 | 角色 |
+| --- | --- |
+| `scripts/run_full_analysis.sh` | `micos full-run` 的兼容薄包装层 |
+| `scripts/run_module.sh` | 把模块执行委托给稳定 CLI |
 
-#### 语法
-
-```bash
-python -m micos.cli validate-config [选项]
-```
-
-**参数**:
-
-| 参数 | 必需 | 描述 |
-|:---|:---:|:---|
-| `--config` | | 配置文件路径 |
-
-**示例**:
-```bash
-# 验证默认配置
-python -m micos.cli validate-config
-
-# 验证自定义配置
-python -m micos.cli validate-config --config my_config.yaml
-```
-
-**输出**:
-```
-✓ 配置文件语法有效
-✓ 必需字段存在
-✓ 数据库路径存在
-✓ 参数值在有效范围内
-⚠ 警告: 未指定稀释深度 (将自动检测)
-配置验证完成！
-```
-
----
-
-## 配置文件参考
-
-### 位置
-
-默认配置搜索顺序：
-1. `--config` 指定的路径
-2. `./config/analysis.yaml`
-3. `~/.config/micos/analysis.yaml`
-
-### 结构
-
-```yaml
-# config/analysis.yaml
-
-project:
-  name: "My_Study"
-  description: "肠道样本宏基因组分析"
-
-paths:
-  input_dir: "data/raw"
-  output_dir: "results"
-
-resources:
-  max_threads: 16
-  max_memory: "32GB"
-
-quality_control:
-  kneaddata:
-    min_quality: 20
-    min_length: 50
-
-taxonomic_profiling:
-  kraken2:
-    confidence: 0.1
-    threads: 16
-
-diversity_analysis:
-  qiime2:
-    sampling_depth: 10000
-
-functional_annotation:
-  humann:
-    threads: 8
-```
-
----
+关键点在于：这些脚本是**委托层**，不是第二套独立流程实现。
 
 ## 返回码
 
+`micos/cli.py` 中定义了显式退出码：
+
 | 码 | 含义 |
-|:---:|:---|
-| 0 | 成功 |
-| 1 | 一般错误 |
-| 2 | 无效参数 |
-| 3 | 配置错误 |
-| 4 | 缺少依赖 |
-| 5 | 数据库错误 |
-| 6 | I/O 错误 |
-| 130 | 用户中断 |
+| --- | --- |
+| `0` | 成功 |
+| `1` | 一般错误 |
+| `2` | 参数无效 |
+| `3` | 配置错误 |
+| `4` | 缺少依赖 |
+| `5` | 数据库错误 |
+| `6` | I/O 错误 |
+| `130` | 用户中断 |
 
----
+## 实用提醒
 
-## 环境变量
-
-| 变量 | 描述 | 示例 |
-|:---|:---|:---|
-| `MICOS_CONFIG` | 默认配置文件路径 | `/path/to/config.yaml` |
-| `MICOS_THREADS` | 默认线程数 | `16` |
-| `MICOS_LOG_LEVEL` | 日志级别 | `INFO`, `DEBUG` |
-| `KRAKEN2_DB_PATH` | 默认 Kraken2 数据库 | `/db/kraken2` |
-
----
-
-## 批量处理
-
-### 运行多样本
-
-```bash
-# 处理多个数据集
-for dataset in dataset1 dataset2 dataset3; do
-  python -m micos.cli full-run \
-    --input-dir "data/${dataset}" \
-    --results-dir "results/${dataset}" \
-    --config "config/${dataset}.yaml"
-done
-```
-
-### 并行样本处理
-
-```bash
-# 使用 GNU parallel 并行处理样本
-ls data/*/ | parallel -j 4 \
-  'python -m micos.cli run taxonomic-profiling \
-    --input-dir data/{} \
-    --output-dir results/{}/taxonomy'
-```
-
----
-
-## 相关文档
-
-- [配置指南](../configuration.md) - 详细配置选项
-- [安装指南](../guides/getting-started.md) - 安装说明
-- [故障排除](../troubleshooting.md) - 常见问题与解决方案
+如果你在旧文档或脚本说明里看到更大的命令面，请以本页为准。本页对应的是当前实现，而不是历史漂移出来的描述。

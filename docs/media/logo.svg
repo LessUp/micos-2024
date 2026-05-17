@@ -1,22 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <linearGradient id="micosGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#22c55e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <!-- DNA Double Helix Abstract -->
-  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#micosGradient)" stroke-width="3"/>
-  <!-- Left strand -->
-  <path d="M35 20 Q25 35 35 50 Q45 65 35 80" fill="none" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
-  <!-- Right strand -->
-  <path d="M65 20 Q75 35 65 50 Q55 65 65 80" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/>
-  <!-- Base pairs -->
-  <line x1="38" y1="28" x2="62" y2="28" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
-  <line x1="30" y1="42" x2="70" y2="42" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
-  <line x1="38" y1="58" x2="62" y2="58" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
-  <line x1="30" y1="72" x2="70" y2="72" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
-  <!-- Central node -->
-  <circle cx="50" cy="50" r="6" fill="url(#micosGradient)"/>
+  <rect x="8" y="8" width="84" height="84" rx="28" fill="#0f766e"/>
+  <path d="M36 24c-8 8-8 44 0 52m28-52c8 8 8 44 0 52" fill="none" stroke="#eef7f5" stroke-linecap="round" stroke-width="6"/>
+  <path d="M40 38h20m-26 12h32m-26 12h20" fill="none" stroke="#dff3ef" stroke-linecap="round" stroke-width="4"/>
 </svg>

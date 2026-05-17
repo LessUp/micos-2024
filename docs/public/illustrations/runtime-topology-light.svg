@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480">
+  <rect width="920" height="480" rx="28" fill="#f6fbfb"/>
+  <g font-family="Inter, Arial, sans-serif">
+    <text x="56" y="58" font-size="18" font-weight="700" fill="#103038">Runtime topology</text>
+    <text x="56" y="82" font-size="13" fill="#4e6871">The repository blends Python orchestration, shell wrappers, WDL stages, and container assets.</text>
+  </g>
+  <rect x="56" y="118" width="232" height="120" rx="20" fill="#ffffff" stroke="#cadadd"/>
+  <text x="84" y="154" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing=".12em" fill="#0f766e">ENTRY LAYER</text>
+  <text x="84" y="186" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#11232b">micos CLI</text>
+  <text x="84" y="216" font-family="Inter, Arial, sans-serif" font-size="14" fill="#4f6971">Click-based commands, validation, dry-run, and module entrypoints.</text>
+  <rect x="344" y="118" width="232" height="120" rx="20" fill="#ffffff" stroke="#cadadd"/>
+  <text x="372" y="154" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing=".12em" fill="#0f766e">ORCHESTRATION</text>
+  <text x="372" y="186" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#11232b">Python modules</text>
+  <text x="372" y="216" font-family="Inter, Arial, sans-serif" font-size="14" fill="#4f6971">Full pipeline, quality control, taxonomy, diversity, functional analysis, reporting.</text>
+  <rect x="632" y="118" width="232" height="120" rx="20" fill="#ffffff" stroke="#cadadd"/>
+  <text x="660" y="154" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing=".12em" fill="#0f766e">WORKFLOW ASSETS</text>
+  <text x="660" y="186" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#11232b">steps/ + containers/</text>
+  <text x="660" y="216" font-family="Inter, Arial, sans-serif" font-size="14" fill="#4f6971">WDL stages, Singularity definitions, Docker Compose example services.</text>
+  <rect x="140" y="298" width="232" height="116" rx="20" fill="#ffffff" stroke="#cadadd"/>
+  <text x="168" y="334" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing=".12em" fill="#0f766e">CONFIG SURFACE</text>
+  <text x="168" y="366" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#11232b">config/*.template</text>
+  <text x="168" y="396" font-family="Inter, Arial, sans-serif" font-size="14" fill="#4f6971">Project, database, and sample metadata templates.</text>
+  <rect x="548" y="298" width="232" height="116" rx="20" fill="#ffffff" stroke="#cadadd"/>
+  <text x="576" y="334" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing=".12em" fill="#0f766e">POWER USER SURFACE</text>
+  <text x="576" y="366" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="#11232b">scripts/</text>
+  <text x="576" y="396" font-family="Inter, Arial, sans-serif" font-size="14" fill="#4f6971">Thin wrappers plus experimental analyses outside the stable CLI core.</text>
+  <g fill="none" stroke="#0f766e" stroke-linecap="round" stroke-width="4">
+    <path d="M288 178h56"/>
+    <path d="M576 178h56"/>
+    <path d="M460 238v48"/>
+    <path d="M256 298v-48h204"/>
+    <path d="M664 298v-48H460"/>
+  </g>
+  <g fill="#0f766e">
+    <path d="M336 169l16 9-16 9z"/>
+    <path d="M624 169l16 9-16 9z"/>
+    <path d="M451 278l9 16 9-16z"/>
+  </g>
+</svg>
