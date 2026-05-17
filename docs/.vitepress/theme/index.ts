@@ -2,6 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import { watch } from 'vue'
 import { useData } from 'vitepress'
+import { saveLangPreference } from '../utils/lang'
 
 import FlowStageGrid from './components/FlowStageGrid.vue'
 import MetricGrid from './components/MetricGrid.vue'
@@ -24,19 +25,16 @@ const theme: Theme = {
   setup() {
     DefaultTheme.setup?.()
 
-    if (typeof window === 'undefined') {
-      return
-    }
-
     const { lang } = useData()
 
+    // 只负责持久化语言偏好
     watch(
       lang,
       (newLang) => {
         if (newLang === 'zh-CN') {
-          localStorage.setItem('micos-lang-preference', 'zh')
+          saveLangPreference('zh')
         } else if (newLang === 'en-US') {
-          localStorage.setItem('micos-lang-preference', 'en')
+          saveLangPreference('en')
         }
       },
       { immediate: true },
