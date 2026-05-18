@@ -1,78 +1,113 @@
+/* ============================================
+   MICOS-2024 Visual Design System
+   靛蓝科技感 + 学术严谨 + 极客美学
+   ============================================ */
+
+/* ----------------------------------------
+   1. 色彩系统 - 靛蓝系 (oklch 色彩空间)
+   ---------------------------------------- */
+
 :root {
-  --vp-font-family-base: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --vp-c-brand-1: oklch(0.57 0.12 196);
-  --vp-c-brand-2: oklch(0.63 0.11 196);
-  --vp-c-brand-3: oklch(0.7 0.08 196);
-  --vp-c-brand-soft: color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent);
+  /* 品牌色 - 靛蓝系 */
+  --vp-c-brand-1: oklch(0.55 0.14 250);
+  --vp-c-brand-2: oklch(0.62 0.12 250);
+  --vp-c-brand-3: oklch(0.70 0.10 250);
+  --vp-c-brand-soft: color-mix(in srgb, var(--vp-c-brand-1) 14%, transparent);
 
-  --vp-c-bg: oklch(0.985 0.004 210);
-  --vp-c-bg-alt: oklch(0.965 0.006 210);
-  --vp-c-bg-elv: oklch(0.995 0.003 210);
-  --vp-c-bg-soft: oklch(0.95 0.008 205);
+  /* 强调色 - 翡翠绿 */
+  --vp-c-accent: oklch(0.65 0.18 160);
+  --vp-c-accent-soft: color-mix(in srgb, var(--vp-c-accent) 14%, transparent);
 
-  --vp-c-text-1: oklch(0.22 0.014 224);
-  --vp-c-text-2: oklch(0.42 0.014 220);
-  --vp-c-text-3: oklch(0.58 0.012 220);
+  /* 背景色 - 冷静专业 */
+  --vp-c-bg: oklch(0.98 0.006 255);
+  --vp-c-bg-alt: oklch(0.96 0.008 255);
+  --vp-c-bg-elv: oklch(0.99 0.004 255);
+  --vp-c-bg-soft: oklch(0.94 0.010 250);
 
-  --vp-c-divider: oklch(0.89 0.008 215);
-  --vp-c-border: oklch(0.88 0.009 214);
-  --vp-c-gutter: oklch(0.91 0.007 214);
+  /* 文字色 */
+  --vp-c-text-1: oklch(0.18 0.018 255);
+  --vp-c-text-2: oklch(0.40 0.016 250);
+  --vp-c-text-3: oklch(0.58 0.014 250);
 
+  /* 边框和分割线 */
+  --vp-c-divider: oklch(0.88 0.010 255);
+  --vp-c-border: oklch(0.86 0.012 255);
+  --vp-c-gutter: oklch(0.90 0.010 255);
+
+  /* Hero 区域 */
   --vp-home-hero-name-color: var(--vp-c-text-1);
   --vp-home-hero-name-background: none;
   --vp-home-hero-image-background-image: none;
   --vp-home-hero-image-filter: none;
 
-  --micos-surface-1: oklch(0.992 0.003 210);
-  --micos-surface-2: oklch(0.968 0.006 210);
-  --micos-surface-3: oklch(0.945 0.008 210);
-  --micos-ink-strong: oklch(0.18 0.016 224);
-  --micos-ink-soft: oklch(0.42 0.014 220);
-  --micos-grid-line: color-mix(in srgb, var(--vp-c-border) 72%, transparent);
-  --micos-glow: color-mix(in srgb, var(--vp-c-brand-1) 16%, transparent);
-  --micos-success: oklch(0.66 0.12 158);
-  --micos-warning: oklch(0.78 0.14 80);
-  --micos-accent-2: oklch(0.63 0.11 256);
-  --micos-shadow-soft: 0 20px 48px rgba(15, 23, 42, 0.07);
-  --micos-shadow-card: 0 14px 36px rgba(15, 23, 42, 0.05);
+  /* MICOS 自定义变量 */
+  --micos-surface-1: oklch(0.99 0.004 255);
+  --micos-surface-2: oklch(0.96 0.008 255);
+  --micos-surface-3: oklch(0.93 0.012 255);
+  --micos-ink-strong: oklch(0.14 0.020 255);
+  --micos-ink-soft: oklch(0.40 0.016 250);
+  --micos-grid-line: color-mix(in srgb, var(--vp-c-border) 65%, transparent);
+  --micos-glow: color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent);
+  --micos-success: oklch(0.68 0.14 160);
+  --micos-warning: oklch(0.78 0.16 80);
+  --micos-error: oklch(0.62 0.20 25);
+  --micos-shadow-soft: 0 24px 64px rgba(15, 23, 42, 0.06);
+  --micos-shadow-card: 0 16px 40px rgba(15, 23, 42, 0.04);
   --micos-radius-sm: 12px;
   --micos-radius-md: 18px;
   --micos-radius-lg: 28px;
   --micos-content-width: 1180px;
 }
 
+/* ----------------------------------------
+   2. 深色模式 - 沉浸极客
+   ---------------------------------------- */
+
 .dark {
-  --vp-c-brand-1: oklch(0.71 0.11 191);
-  --vp-c-brand-2: oklch(0.78 0.09 191);
-  --vp-c-brand-3: oklch(0.83 0.06 191);
-  --vp-c-brand-soft: color-mix(in srgb, var(--vp-c-brand-1) 16%, transparent);
+  /* 品牌色 - 深色模式 */
+  --vp-c-brand-1: oklch(0.72 0.13 250);
+  --vp-c-brand-2: oklch(0.78 0.11 250);
+  --vp-c-brand-3: oklch(0.84 0.08 250);
+  --vp-c-brand-soft: color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent);
 
-  --vp-c-bg: oklch(0.17 0.012 225);
-  --vp-c-bg-alt: oklch(0.2 0.012 225);
-  --vp-c-bg-elv: oklch(0.24 0.012 225);
-  --vp-c-bg-soft: oklch(0.28 0.012 225);
+  /* 强调色 */
+  --vp-c-accent: oklch(0.75 0.14 160);
+  --vp-c-accent-soft: color-mix(in srgb, var(--vp-c-accent) 16%, transparent);
 
-  --vp-c-text-1: oklch(0.94 0.007 220);
-  --vp-c-text-2: oklch(0.8 0.009 220);
-  --vp-c-text-3: oklch(0.66 0.011 220);
+  /* 背景色 - 深空黑 */
+  --vp-c-bg: oklch(0.14 0.015 255);
+  --vp-c-bg-alt: oklch(0.17 0.014 255);
+  --vp-c-bg-elv: oklch(0.21 0.014 255);
+  --vp-c-bg-soft: oklch(0.25 0.014 255);
 
-  --vp-c-divider: oklch(0.32 0.012 225);
-  --vp-c-border: oklch(0.34 0.011 225);
-  --vp-c-gutter: oklch(0.3 0.011 225);
+  /* 文字色 */
+  --vp-c-text-1: oklch(0.95 0.006 250);
+  --vp-c-text-2: oklch(0.80 0.008 250);
+  --vp-c-text-3: oklch(0.64 0.010 250);
 
-  --micos-surface-1: oklch(0.19 0.012 225);
-  --micos-surface-2: oklch(0.23 0.012 225);
-  --micos-surface-3: oklch(0.27 0.012 225);
-  --micos-ink-strong: oklch(0.96 0.007 220);
-  --micos-ink-soft: oklch(0.79 0.009 220);
-  --micos-grid-line: color-mix(in srgb, var(--vp-c-border) 78%, transparent);
-  --micos-glow: color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent);
-  --micos-success: oklch(0.78 0.12 160);
-  --micos-warning: oklch(0.84 0.14 82);
-  --micos-accent-2: oklch(0.75 0.09 256);
-  --micos-shadow-soft: 0 24px 60px rgba(2, 8, 23, 0.34);
-  --micos-shadow-card: 0 18px 42px rgba(2, 8, 23, 0.22);
+  /* 边框和分割线 */
+  --vp-c-divider: oklch(0.30 0.012 255);
+  --vp-c-border: oklch(0.32 0.012 255);
+  --vp-c-gutter: oklch(0.28 0.012 255);
+
+  /* MICOS 自定义变量 - 深色 */
+  --micos-surface-1: oklch(0.16 0.014 255);
+  --micos-surface-2: oklch(0.20 0.014 255);
+  --micos-surface-3: oklch(0.24 0.014 255);
+  --micos-ink-strong: oklch(0.96 0.006 250);
+  --micos-ink-soft: oklch(0.78 0.008 250);
+  --micos-grid-line: color-mix(in srgb, var(--vp-c-border) 75%, transparent);
+  --micos-glow: color-mix(in srgb, var(--vp-c-brand-1) 20%, transparent);
+  --micos-success: oklch(0.78 0.14 162);
+  --micos-warning: oklch(0.84 0.16 82);
+  --micos-error: oklch(0.70 0.20 25);
+  --micos-shadow-soft: 0 28px 72px rgba(2, 8, 23, 0.38);
+  --micos-shadow-card: 0 20px 48px rgba(2, 8, 23, 0.26);
 }
+
+/* ----------------------------------------
+   3. 排版系统
+   ---------------------------------------- */
 
 html {
   scroll-behavior: smooth;
@@ -80,12 +115,13 @@ html {
 
 body {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--micos-glow) 28%, transparent), transparent 22%),
+    linear-gradient(180deg, color-mix(in srgb, var(--micos-glow) 24%, transparent), transparent 20%),
     linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), var(--micos-grid-line) calc(100% - 1px)),
     linear-gradient(transparent 0, transparent calc(100% - 1px), var(--micos-grid-line) calc(100% - 1px)),
     var(--vp-c-bg);
   background-size: auto, 32px 32px, 32px 32px, auto;
   color: var(--vp-c-text-1);
+  font-family: var(--vp-font-family-base);
 }
 
 .Layout,
@@ -95,8 +131,8 @@ body {
 }
 
 .VPNav {
-  backdrop-filter: blur(18px);
-  background: color-mix(in srgb, var(--vp-c-bg) 88%, transparent);
+  backdrop-filter: blur(20px);
+  background: color-mix(in srgb, var(--vp-c-bg) 85%, transparent);
   border-bottom: 1px solid var(--vp-c-border);
 }
 
@@ -111,6 +147,10 @@ body {
   color: var(--vp-c-brand-1);
 }
 
+/* ----------------------------------------
+   4. 文档页面样式
+   ---------------------------------------- */
+
 .VPHome {
   padding-bottom: 72px;
 }
@@ -122,7 +162,7 @@ body {
 }
 
 .VPDoc .content {
-  max-width: 780px;
+  max-width: 800px;
 }
 
 .VPDoc h1,
@@ -166,12 +206,14 @@ body {
 
 .VPDoc a {
   font-weight: 500;
-}
-
-.VPDoc a:hover {
   color: var(--vp-c-brand-1);
 }
 
+.VPDoc a:hover {
+  color: var(--vp-c-brand-2);
+}
+
+/* 表格样式 */
 .VPDoc table {
   display: table;
   width: 100%;
@@ -179,7 +221,7 @@ body {
   border-collapse: collapse;
   overflow: hidden;
   border-radius: var(--micos-radius-sm);
-  background: color-mix(in srgb, var(--micos-surface-1) 88%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-1) 90%, transparent);
   box-shadow: var(--micos-shadow-card);
 }
 
@@ -190,16 +232,18 @@ body {
 }
 
 .VPDoc th {
-  background: color-mix(in srgb, var(--micos-surface-2) 92%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-2) 94%, transparent);
   color: var(--micos-ink-strong);
+  font-weight: 600;
 }
 
+/* 自定义块样式 */
 .VPDoc .custom-block {
   margin: 1.75rem 0;
   border: 1px solid var(--vp-c-border);
   border-radius: var(--micos-radius-sm);
   padding: 1rem 1.1rem;
-  background: color-mix(in srgb, var(--micos-surface-2) 86%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-2) 88%, transparent);
   box-shadow: var(--micos-shadow-card);
 }
 
@@ -207,25 +251,30 @@ body {
 .VPDoc .custom-block.tip,
 .VPDoc .custom-block.warning,
 .VPDoc .custom-block.danger {
-  border-left: 1px solid var(--vp-c-border);
+  border-left: 3px solid var(--vp-c-brand-1);
 }
 
 .VPDoc .custom-block.tip {
-  background: color-mix(in srgb, var(--vp-c-brand-soft) 62%, var(--micos-surface-2));
+  background: color-mix(in srgb, var(--vp-c-brand-soft) 58%, var(--micos-surface-2));
+  border-left-color: var(--vp-c-brand-1);
 }
 
 .VPDoc .custom-block.warning {
-  background: color-mix(in srgb, var(--micos-warning) 14%, var(--micos-surface-2));
+  background: color-mix(in srgb, var(--micos-warning) 12%, var(--micos-surface-2));
+  border-left-color: var(--micos-warning);
 }
 
 .VPDoc .custom-block.danger {
-  background: color-mix(in srgb, oklch(0.62 0.17 25) 14%, var(--micos-surface-2));
+  background: color-mix(in srgb, var(--micos-error) 12%, var(--micos-surface-2));
+  border-left-color: var(--micos-error);
 }
 
+/* 代码块样式 */
 .VPDoc code {
-  border-radius: 9px;
+  border-radius: 8px;
   padding: 0.18rem 0.4rem;
-  background: color-mix(in srgb, var(--micos-surface-2) 92%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-2) 94%, transparent);
+  font-family: var(--vp-font-family-mono);
 }
 
 .VPDoc pre,
@@ -234,6 +283,10 @@ body {
   border-radius: var(--micos-radius-sm);
   box-shadow: var(--micos-shadow-card);
 }
+
+/* ----------------------------------------
+   5. 首页组件样式
+   ---------------------------------------- */
 
 .micos-home {
   display: grid;
@@ -247,8 +300,8 @@ body {
   border: 1px solid var(--vp-c-border);
   border-radius: var(--micos-radius-lg);
   background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--micos-glow) 55%, transparent), transparent 42%),
-    linear-gradient(180deg, color-mix(in srgb, var(--micos-surface-2) 70%, transparent), color-mix(in srgb, var(--micos-surface-1) 92%, transparent));
+    radial-gradient(circle at top right, color-mix(in srgb, var(--micos-glow) 52%, transparent), transparent 40%),
+    linear-gradient(180deg, color-mix(in srgb, var(--micos-surface-2) 68%, transparent), color-mix(in srgb, var(--micos-surface-1) 94%, transparent));
   box-shadow: var(--micos-shadow-soft);
 }
 
@@ -260,7 +313,7 @@ body {
     linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), var(--micos-grid-line) calc(100% - 1px)),
     linear-gradient(transparent 0, transparent calc(100% - 1px), var(--micos-grid-line) calc(100% - 1px));
   background-size: 28px 28px;
-  opacity: 0.5;
+  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -319,7 +372,7 @@ body {
   border: 1px solid var(--vp-c-border);
   border-radius: 999px;
   padding: 0.45rem 0.75rem;
-  background: color-mix(in srgb, var(--micos-surface-1) 72%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-1) 70%, transparent);
   color: var(--micos-ink-strong);
   font-size: 0.92rem;
 }
@@ -331,33 +384,40 @@ body {
   margin-top: 1.5rem;
 }
 
+/* 按钮样式 */
 .micos-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 0.72rem 1rem;
+  min-height: 44px;
+  padding: 0.75rem 1.1rem;
   border: 1px solid var(--vp-c-border);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--micos-surface-1) 92%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-1) 94%, transparent);
   color: var(--micos-ink-strong);
   text-decoration: none;
-  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  font-weight: 500;
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .micos-button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   border-color: var(--vp-c-brand-1);
+  box-shadow: 0 8px 24px rgba(79, 110, 247, 0.15);
 }
 
 .micos-button.is-brand {
   background: var(--vp-c-brand-1);
-  color: oklch(0.98 0.004 210);
+  color: oklch(0.98 0.004 255);
   border-color: transparent;
 }
 
+.micos-button.is-brand:hover {
+  background: var(--vp-c-brand-2);
+}
+
 .micos-button.is-alt {
-  background: color-mix(in srgb, var(--micos-glow) 46%, var(--micos-surface-2));
+  background: color-mix(in srgb, var(--micos-glow) 44%, var(--micos-surface-2));
 }
 
 .micos-hero__aside {
@@ -366,6 +426,7 @@ body {
   align-content: start;
 }
 
+/* 卡片样式 */
 .micos-rail-card,
 .micos-panel,
 .micos-theme-asset,
@@ -374,7 +435,7 @@ body {
 .micos-reference {
   border: 1px solid var(--vp-c-border);
   border-radius: var(--micos-radius-md);
-  background: color-mix(in srgb, var(--micos-surface-1) 92%, transparent);
+  background: color-mix(in srgb, var(--micos-surface-1) 94%, transparent);
   box-shadow: var(--micos-shadow-card);
 }
 
@@ -397,6 +458,7 @@ body {
   margin: 0;
 }
 
+/* 网格布局 */
 .micos-grid,
 .micos-section,
 .micos-metric-grid,
@@ -436,6 +498,7 @@ body {
   color: var(--micos-ink-strong);
 }
 
+/* 指标卡片 */
 .micos-metric {
   padding: 1.1rem 1.15rem;
 }
@@ -459,6 +522,7 @@ body {
   line-height: 1.7;
 }
 
+/* 阶段卡片 */
 .micos-stage {
   padding: 1.15rem 1.2rem;
 }
@@ -485,12 +549,14 @@ body {
   color: var(--vp-c-text-2);
 }
 
+/* 主题资源样式 */
 .micos-theme-asset {
   margin: 0;
   padding: 1rem;
 }
 
-.micos-theme-asset img {
+.micos-theme-asset img,
+.micos-theme-asset svg {
   display: block;
   width: 100%;
   height: auto;
@@ -503,6 +569,7 @@ body {
   font-size: 0.92rem;
 }
 
+/* 引用列表 */
 .micos-references {
   display: grid;
   gap: 0.95rem;
@@ -536,6 +603,7 @@ body {
   margin-top: 0.6rem;
 }
 
+/* 面板列表 */
 .micos-panel-list {
   display: grid;
   gap: 0.8rem;
@@ -564,6 +632,7 @@ body {
   font-size: 1.03rem;
 }
 
+/* 提示框样式 */
 .micos-callout {
   padding: 1rem 1.1rem;
   border: 1px solid var(--vp-c-border);
@@ -577,17 +646,23 @@ body {
 }
 
 .micos-callout.success {
-  background: color-mix(in srgb, var(--micos-success) 12%, var(--micos-surface-2));
+  background: color-mix(in srgb, var(--micos-success) 10%, var(--micos-surface-2));
+  border-left: 3px solid var(--micos-success);
 }
 
 .micos-callout.warning {
-  background: color-mix(in srgb, var(--micos-warning) 12%, var(--micos-surface-2));
+  background: color-mix(in srgb, var(--micos-warning) 10%, var(--micos-surface-2));
+  border-left: 3px solid var(--micos-warning);
 }
 
 .micos-stack {
   display: grid;
   gap: 1rem;
 }
+
+/* ----------------------------------------
+   6. 响应式设计
+   ---------------------------------------- */
 
 @media (max-width: 1100px) {
   .micos-grid--3,
@@ -628,4 +703,53 @@ body {
   .micos-hero__actions {
     display: grid;
   }
+}
+
+/* ----------------------------------------
+   7. 动画和过渡
+   ---------------------------------------- */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micos-hero,
+.micos-metric,
+.micos-stage,
+.micos-reference,
+.micos-panel,
+.micos-rail-card {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* 交互式 SVG 悬停效果 */
+.pipeline-overview-svg .stage-card,
+.runtime-topology-svg .topology-node {
+  transition: all 0.25s ease;
+}
+
+.pipeline-overview-svg:hover .stage-card:hover,
+.runtime-topology-svg:hover .topology-node:hover {
+  filter: brightness(1.05);
+  transform: scale(1.01);
+}
+
+/* ----------------------------------------
+   8. Mermaid 图表主题适配
+   ---------------------------------------- */
+
+.mermaid {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.dark .mermaid {
+  filter: brightness(1.1);
 }

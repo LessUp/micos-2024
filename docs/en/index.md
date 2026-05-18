@@ -120,12 +120,10 @@ const references = [
     lede="MICOS-2024 is best understood as an analysis story with four checkpoints: input hygiene, taxonomic evidence, ecological interpretation, and report-facing outputs."
   >
     <div class="micos-grid micos-grid--2">
-      <ThemeAsset
-        light="/illustrations/pipeline-overview-light.svg"
-        dark="/illustrations/pipeline-overview-dark.svg"
-        alt="Pipeline overview illustration"
-        caption="Theme-aware illustration for the full data path, designed to stay readable in both light and dark modes."
-      />
+      <figure class="micos-theme-asset">
+        <PipelineOverview />
+        <figcaption>Vue SVG component for zero-delay theme switching, single-source maintenance.</figcaption>
+      </figure>
       <div class="micos-stack">
         <div class="micos-callout success">
           <strong>Reader signal</strong><br>
@@ -151,12 +149,10 @@ const references = [
     lede="A reviewer should be able to map the docs to the codebase: entry commands, Python modules, workflow definitions, configuration templates, containers, and validation surfaces."
   >
     <div class="micos-grid micos-grid--2">
-      <ThemeAsset
-        light="/illustrations/runtime-topology-light.svg"
-        dark="/illustrations/runtime-topology-dark.svg"
-        alt="Runtime topology illustration"
-        caption="The project operates across a CLI layer, Python orchestration modules, workflow assets, and power-user scripts."
-      />
+      <figure class="micos-theme-asset">
+        <RuntimeTopology />
+        <figcaption>The project operates across a CLI layer, Python orchestration modules, workflow assets, and power-user scripts.</figcaption>
+      </figure>
       <div class="micos-panel-list">
         <div class="micos-panel">
           <h3>Stable core</h3>
