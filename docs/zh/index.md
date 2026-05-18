@@ -140,7 +140,7 @@ const references = [
       </div>
     </div>
 
-    <FlowStageGrid :stages="stages" />
+  <FlowStageGrid :stages="stages" />
   </SiteSection>
 
   <SiteSection

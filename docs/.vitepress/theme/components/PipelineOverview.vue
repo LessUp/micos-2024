@@ -41,25 +41,29 @@ const stages = [
   {
     eyebrow: 'STAGE 01',
     title: 'QC',
-    description: 'FastQC, KneadData, trimming, host depletion.',
+    desc1: 'FastQC, KneadData,',
+    desc2: 'trimming, host depletion.',
     output: 'clean reads',
   },
   {
     eyebrow: 'STAGE 02',
     title: 'Taxonomy',
-    description: 'Kraken2, kraken-biom, Krona summaries.',
+    desc1: 'Kraken2, kraken-biom,',
+    desc2: 'Krona summaries.',
     output: 'reports, biom, krona',
   },
   {
     eyebrow: 'STAGE 03',
     title: 'Diversity',
-    description: 'QIIME2 metrics, alpha and beta views, metadata joins.',
+    desc1: 'QIIME2 metrics, alpha',
+    desc2: 'and beta views.',
     output: 'ordination and tables',
   },
   {
     eyebrow: 'STAGE 04',
     title: 'Report',
-    description: 'Functional outputs and final summary views.',
+    desc1: 'Functional outputs and',
+    desc2: 'final summary views.',
     output: '',
   },
 ]
@@ -112,11 +116,18 @@ const stages = [
       >{{ stage.title }}</text>
       <text
         :x="84 + index * 220"
-        y="222"
+        y="220"
         font-family="Inter, Arial, sans-serif"
-        font-size="14"
+        font-size="13"
         :fill="colors.bodyText"
-      >{{ stage.description }}</text>
+      >{{ stage.desc1 }}</text>
+      <text
+        :x="84 + index * 220"
+        y="237"
+        font-family="Inter, Arial, sans-serif"
+        font-size="13"
+        :fill="colors.bodyText"
+      >{{ stage.desc2 }}</text>
       <text
         v-if="stage.output"
         :x="84 + index * 220"

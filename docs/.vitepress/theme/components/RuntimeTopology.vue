@@ -38,37 +38,49 @@ const nodes = [
     x: 56, y: 118, width: 232, height: 120,
     eyebrow: 'ENTRY LAYER',
     title: 'micos CLI',
-    description: 'Click-based commands, validation, dry-run, and module entrypoints.',
+    desc1: 'Click-based commands,',
+    desc2: 'validation and dry-run.',
   },
   {
     x: 344, y: 118, width: 232, height: 120,
     eyebrow: 'ORCHESTRATION',
     title: 'Python modules',
-    description: 'Full pipeline, quality control, taxonomy, diversity, functional analysis, reporting.',
+    desc1: 'Full pipeline, quality control,',
+    desc2: 'taxonomy, diversity, reporting.',
   },
   {
     x: 632, y: 118, width: 232, height: 120,
     eyebrow: 'WORKFLOW ASSETS',
     title: 'steps/ + containers/',
-    description: 'WDL stages, Singularity definitions, Docker Compose example services.',
+    desc1: 'WDL stages, Singularity defs,',
+    desc2: 'Docker Compose services.',
   },
   {
     x: 140, y: 298, width: 232, height: 116,
     eyebrow: 'CONFIG SURFACE',
     title: 'config/*.template',
-    description: 'Project, database, and sample metadata templates.',
+    desc1: 'Project, database, and sample',
+    desc2: 'metadata templates.',
   },
   {
     x: 548, y: 298, width: 232, height: 116,
     eyebrow: 'POWER USER SURFACE',
     title: 'scripts/',
-    description: 'Thin wrappers plus experimental analyses outside the stable CLI core.',
+    desc1: 'Thin wrappers plus experimental',
+    desc2: 'analyses outside the CLI core.',
   },
 ]
 </script>
 
 <template>
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" class="runtime-topology-svg">
+    <!-- 裁剪路径：每个卡片内容区 -->
+    <defs>
+      <clipPath v-for="(node, index) in nodes" :key="'clip-' + index" :id="'topo-clip-' + index">
+        <rect :x="node.x + 12" :y="node.y + 12" :width="node.width - 24" :height="node.height - 16" rx="0"/>
+      </clipPath>
+    </defs>
+
     <!-- 背景 -->
     <rect width="920" height="480" rx="28" :fill="colors.bg"/>
 
@@ -90,29 +102,38 @@ const nodes = [
         :stroke="colors.cardBorder"
         class="topology-node"
       />
-      <text
-        :x="node.x + 28"
-        :y="node.y + 36"
-        font-family="Inter, Arial, sans-serif"
-        font-size="13"
-        letter-spacing=".12em"
-        :fill="colors.accentLabel"
-      >{{ node.eyebrow }}</text>
-      <text
-        :x="node.x + 28"
-        :y="node.y + 68"
-        font-family="Inter, Arial, sans-serif"
-        font-size="24"
-        font-weight="700"
-        :fill="colors.titleText"
-      >{{ node.title }}</text>
-      <text
-        :x="node.x + 28"
-        :y="node.y + 98"
-        font-family="Inter, Arial, sans-serif"
-        font-size="14"
-        :fill="colors.bodyText"
-      >{{ node.description }}</text>
+      <g :clip-path="`url(#topo-clip-${index})`">
+        <text
+          :x="node.x + 28"
+          :y="node.y + 36"
+          font-family="Inter, Arial, sans-serif"
+          font-size="13"
+          letter-spacing=".12em"
+          :fill="colors.accentLabel"
+        >{{ node.eyebrow }}</text>
+        <text
+          :x="node.x + 28"
+          :y="node.y + 68"
+          font-family="Inter, Arial, sans-serif"
+          font-size="24"
+          font-weight="700"
+          :fill="colors.titleText"
+        >{{ node.title }}</text>
+        <text
+          :x="node.x + 28"
+          :y="node.y + 96"
+          font-family="Inter, Arial, sans-serif"
+          font-size="13"
+          :fill="colors.bodyText"
+        >{{ node.desc1 }}</text>
+        <text
+          :x="node.x + 28"
+          :y="node.y + 113"
+          font-family="Inter, Arial, sans-serif"
+          font-size="13"
+          :fill="colors.bodyText"
+        >{{ node.desc2 }}</text>
+      </g>
     </g>
 
     <!-- 连接线 -->
