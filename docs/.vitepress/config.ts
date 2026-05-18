@@ -29,6 +29,27 @@ export default withMermaid(defineConfig({
   cleanUrls: true,
   lastUpdated: true,
 
+  // Mermaid 主题适配配置
+  mermaid: {
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#4f6ef7',
+      primaryTextColor: '#1a1a2e',
+      primaryBorderColor: '#4f6ef7',
+      lineColor: '#5a6c7d',
+      secondaryColor: '#f0f4ff',
+      tertiaryColor: '#e8f0fe',
+      noteBkgColor: '#fff9e6',
+      noteTextColor: '#1a1a2e',
+      noteBorderColor: '#ffc107',
+      sequenceNumberColor: '#4f6ef7',
+      actorBkg: '#f0f4ff',
+      actorBorder: '#4f6ef7',
+      actorTextColor: '#1a1a2e',
+      actorLineColor: '#5a6c7d',
+    },
+  },
+
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}brand/favicon.svg` }],
     ['meta', { name: 'theme-color', content: '#0f766e' }],
@@ -52,6 +73,7 @@ export default withMermaid(defineConfig({
           { text: '导读', link: '/zh/' },
           { text: '学院', link: '/zh/academy/pipeline-foundations', activeMatch: '/zh/academy/' },
           { text: '架构', link: '/zh/architecture/system-overview', activeMatch: '/zh/architecture/' },
+          { text: '算法', link: '/zh/algorithms/quality-control', activeMatch: '/zh/algorithms/' },
           { text: '指南', link: '/zh/guides/getting-started', activeMatch: '/zh/guides/|/zh/configuration|/zh/faq|/zh/troubleshooting' },
           { text: '参考', link: '/zh/reference/cli', activeMatch: '/zh/reference/' },
           { text: '研究', link: '/zh/research/citations', activeMatch: '/zh/research/' },
@@ -63,6 +85,7 @@ export default withMermaid(defineConfig({
               items: [
                 { text: '流程基础', link: '/zh/academy/pipeline-foundations' },
                 { text: '数据产物与解释', link: '/zh/academy/data-products' },
+                { text: '算法深潜', link: '/zh/academy/algorithm-deep-dive' },
               ],
             },
             {
@@ -80,6 +103,19 @@ export default withMermaid(defineConfig({
               items: [
                 { text: '系统总览', link: '/zh/architecture/system-overview' },
                 { text: '运行时拓扑', link: '/zh/architecture/runtime-topology' },
+                { text: '模块设计原理', link: '/zh/architecture/module-design' },
+                { text: '测试策略', link: '/zh/architecture/testing-strategy' },
+              ],
+            },
+          ],
+          '/zh/algorithms/': [
+            {
+              text: '算法',
+              items: [
+                { text: '质量控制算法', link: '/zh/algorithms/quality-control' },
+                { text: '物种分类算法', link: '/zh/algorithms/taxonomic-classification' },
+                { text: '多样性度量', link: '/zh/algorithms/diversity-metrics' },
+                { text: '性能基准测试', link: '/zh/algorithms/performance-benchmarks' },
               ],
             },
           ],
@@ -148,6 +184,7 @@ export default withMermaid(defineConfig({
           { text: 'Overview', link: '/en/' },
           { text: 'Academy', link: '/en/academy/pipeline-foundations', activeMatch: '/en/academy/' },
           { text: 'Architecture', link: '/en/architecture/system-overview', activeMatch: '/en/architecture/' },
+          { text: 'Algorithms', link: '/en/algorithms/quality-control', activeMatch: '/en/algorithms/' },
           { text: 'Guides', link: '/en/guides/getting-started', activeMatch: '/en/guides/|/en/configuration|/en/faq|/en/troubleshooting' },
           { text: 'Reference', link: '/en/reference/cli', activeMatch: '/en/reference/' },
           { text: 'Research', link: '/en/research/citations', activeMatch: '/en/research/' },
@@ -176,6 +213,17 @@ export default withMermaid(defineConfig({
               items: [
                 { text: 'System Overview', link: '/en/architecture/system-overview' },
                 { text: 'Runtime Topology', link: '/en/architecture/runtime-topology' },
+              ],
+            },
+          ],
+          '/en/algorithms/': [
+            {
+              text: 'Algorithms',
+              items: [
+                { text: 'Quality Control', link: '/en/algorithms/quality-control' },
+                { text: 'Taxonomic Classification', link: '/en/algorithms/taxonomic-classification' },
+                { text: 'Diversity Metrics', link: '/en/algorithms/diversity-metrics' },
+                { text: 'Performance Benchmarks', link: '/en/algorithms/performance-benchmarks' },
               ],
             },
           ],

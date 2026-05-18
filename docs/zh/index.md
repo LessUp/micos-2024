@@ -120,12 +120,10 @@ const references = [
     lede="MICOS-2024 最适合被理解为一个四段式证据流程：输入清洁、分类学证据、多样性解释，以及面向报告的最终产物。"
   >
     <div class="micos-grid micos-grid--2">
-      <ThemeAsset
-        light="/illustrations/pipeline-overview-light.svg"
-        dark="/illustrations/pipeline-overview-dark.svg"
-        alt="流程总览示意图"
-        caption="使用双主题适配插图而非单一 SVG 着色，确保在浅色与深色模式下都保持清晰。"
-      />
+      <figure class="micos-theme-asset">
+        <PipelineOverview />
+        <figcaption>使用 Vue SVG 组件实现零延迟主题切换，单一源维护。</figcaption>
+      </figure>
       <div class="micos-stack">
         <div class="micos-callout success">
           <strong>阅读信号</strong><br>
@@ -151,12 +149,10 @@ const references = [
     lede="一个成熟的文档站应该让读者顺着页面直接定位到代码：入口命令、Python 模块、工作流定义、配置模板、容器资产以及验证面。"
   >
     <div class="micos-grid micos-grid--2">
-      <ThemeAsset
-        light="/illustrations/runtime-topology-light.svg"
-        dark="/illustrations/runtime-topology-dark.svg"
-        alt="运行时拓扑示意图"
-        caption="项目的真实执行面分布在 CLI、Python 编排、工作流定义与扩展脚本之间。"
-      />
+      <figure class="micos-theme-asset">
+        <RuntimeTopology />
+        <figcaption>项目的真实执行面分布在 CLI、Python 编排、工作流定义与扩展脚本之间。</figcaption>
+      </figure>
       <div class="micos-panel-list">
         <div class="micos-panel">
           <h3>稳定核心</h3>
