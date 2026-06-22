@@ -18,42 +18,27 @@ SECTION_PATTERNS = {
         "quality_control/fastqc_reports/*.zip",
         "quality_control/kneaddata/*_kneaddata*log*",
         "quality_control/kneaddata/*_paired_*.fastq",
-        "1_quality_control/fastqc_reports/*.html",
-        "1_quality_control/fastqc_reports/*.zip",
-        "1_quality_control/kneaddata/*_kneaddata*log*",
-        "1_quality_control/kneaddata/*_paired_*.fastq",
     ],
     "物种分类 (Kraken2)": [
         "taxonomic_profiling/*.kraken",
         "taxonomic_profiling/*.report",
-        "2_taxonomic_profiling/*.kraken",
-        "2_taxonomic_profiling/*.report",
     ],
     "分类可视化 (Krona)": [
         "taxonomic_profiling/*.krona.html",
-        "2_taxonomic_profiling/*.krona.html",
     ],
     "BIOM 表": [
         "taxonomic_profiling/feature-table.biom",
-        "2_taxonomic_profiling/feature-table.biom",
     ],
     "多样性分析 (QIIME2)": [
         "diversity_analysis/*.qza",
         "diversity_analysis/*.qzv",
         "diversity_analysis/*.txt",
-        "3_diversity_analysis/*.qza",
-        "3_diversity_analysis/*.qzv",
-        "3_diversity_analysis/*.txt",
     ],
     "功能注释 (HUMAnN)": [
         "functional_annotation/*genefamilies*.tsv*",
         "functional_annotation/*pathabundance*.tsv*",
         "functional_annotation/*pathcoverage*.tsv*",
         "functional_annotation/*.log",
-        "4_functional_annotation/*genefamilies*.tsv*",
-        "4_functional_annotation/*pathabundance*.tsv*",
-        "4_functional_annotation/*pathcoverage*.tsv*",
-        "4_functional_annotation/*.log",
     ],
 }
 

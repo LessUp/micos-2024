@@ -124,7 +124,7 @@ HTML 报告
 ### 接缝 (Seam)
 
 - **定义**: 接口存在的地方，行为可以在此被修改
-- **示例**: `ToolRunner` 接口 - 允许在生产 (`SubprocessToolRunner`) 和测试 (`MockToolRunner`) 之间切换
+- **示例**: `run_command_live()` - 命令执行的统一入口，测试可通过 monkeypatch 替换
 - **原则**: 一个 adapter = 假设的接缝；两个 adapter = 真正的接缝
 
 ---
@@ -139,7 +139,8 @@ HTML 报告
   - `paths.input_dir`: 输入目录
   - `paths.output_dir`: 输出目录
   - `resources.max_threads`: 最大线程数
-- **兼容性**: 同时支持旧格式 (`INPUT_DIR`) 和新格式 (`paths.input_dir`)
+  - `paths.databases.kneaddata`: KneadData 数据库路径（可选）
+  - `paths.databases.kraken2`: Kraken2 数据库路径（可选）
 
 ### 数据库配置 (DatabasesConfig)
 

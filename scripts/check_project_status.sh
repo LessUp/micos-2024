@@ -176,7 +176,6 @@ check_scripts() {
         "scripts/run_module.sh"
         "scripts/verify_installation.sh"
         "scripts/run_test_data.sh"
-        "scripts/enhanced_qc.py"
         "scripts/amplicon_analysis.py"
         "scripts/differential_abundance_analysis.R"
         "scripts/functional_annotation.py"

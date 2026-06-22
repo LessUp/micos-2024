@@ -180,7 +180,6 @@ conda activate micos-2024
 │   ├── run_full_analysis.sh    # 一键运行完整分析
 │   ├── run_module.sh           # 按模块运行分析
 │   ├── verify_installation.sh  # 验证安装环境
-│   ├── enhanced_qc.py          # 增强质控
 │   ├── functional_annotation.py
 │   ├── network_analysis.py
 │   └── ...
@@ -268,7 +267,6 @@ firefox results/reports/analysis_report.html
 ```bash
 # 基础分析模块
 ./scripts/run_module.sh quality_control
-./scripts/run_module.sh enhanced_qc
 ./scripts/run_module.sh taxonomic_profiling
 ./scripts/run_module.sh diversity_analysis
 
@@ -306,7 +304,6 @@ java -jar cromwell.jar run \
 |:---:|:---:|:---|
 | **分析报告** | `results/reports/` | HTML格式的交互式报告 |
 | **质量控制** | `results/quality_control/` | FastQC和MultiQC报告 |
-| **增强质量控制** | `results/enhanced_qc/` | 高级质量评估和可视化报告 |
 | **物种分类** | `results/taxonomic_profiling/` | Kraken2分类结果和Krona图表 |
 | **多样性分析** | `results/diversity_analysis/` | Alpha/Beta多样性指标和图表 |
 | **差异丰度分析** | `results/differential_abundance/` | DESeq2/ALDEx2/ANCOM-BC结果 |

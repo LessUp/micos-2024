@@ -9,7 +9,6 @@
 注意：
 - 主要配置模型位于 `micos.config` 模块，基于 Pydantic 提供类型安全。
 - 这里保留对旧脚本和测试仍然需要的轻量兼容接口。
-- 对于需要返回结果或可测试的命令执行，请使用 `micos.tool_runner` 模块。
 """
 
 import logging
@@ -47,7 +46,6 @@ def run_command_live(command: Sequence[str]) -> None:
     """运行命令并实时打印输出（失败抛出异常）。
 
     这是一个简化的命令执行函数，适用于需要实时查看输出的场景。
-    对于需要返回结果或可测试的场景，请使用 `micos.tool_runner` 模块。
 
     Args:
         command: 要执行的命令（字符串列表）
@@ -124,7 +122,3 @@ def get_full_run_defaults(config_path: Optional[str] = None) -> dict[str, Any]:
         'kraken2_db': merged_db_paths.get('kraken2_db', ''),
     }
     return defaults
-
-
-# 向后兼容别名
-run_command = run_command_live

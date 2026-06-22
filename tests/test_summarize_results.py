@@ -29,24 +29,19 @@ def test_generate_summary_report_supports_named_layout(tmp_path):
     assert 'functional_annotation/sample_pathabundance.tsv' in html_text
 
 
-def test_generate_summary_report_supports_legacy_numbered_layout(tmp_path):
-    """兼容旧的编号目录结构。"""
+def test_generate_summary_report_ignores_numbered_layout(tmp_path):
+    """不再支持旧的编号目录结构（1_quality_control 等）。"""
     results_dir = tmp_path / 'results'
     (results_dir / '1_quality_control' / 'fastqc_reports').mkdir(parents=True)
     (results_dir / '2_taxonomic_profiling').mkdir(parents=True)
-    (results_dir / '3_diversity_analysis').mkdir(parents=True)
-    (results_dir / '4_functional_annotation').mkdir(parents=True)
 
     (results_dir / '1_quality_control' / 'fastqc_reports' / 'sample_fastqc.html').write_text('ok', encoding='utf-8')
     (results_dir / '2_taxonomic_profiling' / 'feature-table.biom').write_text('biom', encoding='utf-8')
-    (results_dir / '3_diversity_analysis' / 'alpha.qza').write_text('qza', encoding='utf-8')
-    (results_dir / '4_functional_annotation' / 'sample_pathcoverage.tsv').write_text('path', encoding='utf-8')
 
     output_file = tmp_path / 'summary.html'
     generate_summary_report(results_dir, output_file)
 
     html_text = output_file.read_text(encoding='utf-8')
-    assert '1_quality_control/fastqc_reports/sample_fastqc.html' in html_text
-    assert '2_taxonomic_profiling/feature-table.biom' in html_text
-    assert '3_diversity_analysis/alpha.qza' in html_text
-    assert '4_functional_annotation/sample_pathcoverage.tsv' in html_text
+    # 旧编号目录下的文件不被收录
+    assert '1_quality_control/' not in html_text
+    assert '2_taxonomic_profiling/' not in html_text

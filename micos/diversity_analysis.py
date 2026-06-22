@@ -11,12 +11,8 @@ from __future__ import annotations
 import logging
 import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from micos.utils import run_command_live
-
-if TYPE_CHECKING:
-    from micos.tool_runner import ToolRunner
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +20,6 @@ logger = logging.getLogger(__name__)
 def run_diversity_analysis(
     input_biom: str | Path,
     output_dir: str | Path,
-    runner: ToolRunner | None = None,
 ) -> None:
     """执行多样性分析 (QIIME2).
 
@@ -34,7 +29,6 @@ def run_diversity_analysis(
     Args:
         input_biom: 输入的 BIOM 表文件
         output_dir: 输出目录
-        runner: 工具执行器（可选，用于测试注入）
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出

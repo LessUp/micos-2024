@@ -294,40 +294,6 @@ network_analysis:
     node_size_by: "degree"
     edge_color_by: "correlation"
 
-# 增强质量控制参数
-enhanced_qc:
-  enabled: true
-
-  # 质量阈值
-  quality_thresholds:
-    min_quality: 20
-    min_length: 50
-    max_n_content: 0.1
-    min_gc_content: 0.2
-    max_gc_content: 0.8
-
-  # FastQC参数
-  fastqc:
-    threads: 4
-    memory: "2G"
-
-  # MultiQC参数
-  multiqc:
-    enabled: true
-    config_file: null
-
-  # 高级指标
-  advanced_metrics:
-    calculate_complexity: true
-    detect_adapters: true
-    estimate_insert_size: true
-
-  # 可视化
-  visualization:
-    plot_format: ["png", "svg"]
-    dpi: 300
-    interactive_plots: true
-
 # 高级选项
 advanced:
   # 容器配置

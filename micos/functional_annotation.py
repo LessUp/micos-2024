@@ -13,13 +13,9 @@ import logging
 import shutil
 import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from micos.sample import Sample
 from micos.utils import run_command_live
-
-if TYPE_CHECKING:
-    from micos.tool_runner import ToolRunner
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +24,6 @@ def run_functional_annotation(
     input_dir: str | Path,
     output_dir: str | Path,
     threads: int,
-    runner: ToolRunner | None = None,
 ) -> None:
     """执行功能注释 (HUMAnN).
 
@@ -39,7 +34,6 @@ def run_functional_annotation(
         input_dir: 输入目录（KneadData 清理后的 FASTQ 文件）
         output_dir: 输出目录
         threads: 线程数
-        runner: 工具执行器（可选，用于测试注入）
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出

@@ -6,7 +6,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-import yaml
 
 from micos.config import (
     AnalysisConfig,
@@ -76,12 +75,16 @@ class TestAnalysisConfig:
         assert config.results_dir is None
         assert config.threads == 16
 
-    def test_new_format_properties(self) -> None:
-        """新格式属性访问。"""
+    def test_properties(self) -> None:
+        """属性访问。"""
         config = AnalysisConfig(
             paths=PathsConfig(
                 input_dir=Path("/data/input"),
                 output_dir=Path("/data/results"),
+                databases={
+                    "kneaddata": "/db/kneaddata",
+                    "kraken2": "/db/kraken2",
+                },
             ),
             resources=ResourcesConfig(max_threads=24),
         )
@@ -89,27 +92,8 @@ class TestAnalysisConfig:
         assert config.input_dir == Path("/data/input")
         assert config.results_dir == Path("/data/results")
         assert config.threads == 24
-
-    def test_legacy_format_properties(self) -> None:
-        """旧格式属性访问。"""
-        config = AnalysisConfig(
-            INPUT_DIR="/data/input",
-            OUTPUT_DIR="/data/results",
-            THREADS=32,
-        )
-
-        assert config.input_dir == Path("/data/input")
-        assert config.results_dir == Path("/data/results")
-        assert config.threads == 32
-
-    def test_new_format_takes_precedence(self) -> None:
-        """新格式优先于旧格式。"""
-        config = AnalysisConfig(
-            paths=PathsConfig(input_dir=Path("/new/input")),
-            INPUT_DIR="/old/input",
-        )
-
-        assert config.input_dir == Path("/new/input")
+        assert config.kneaddata_db == Path("/db/kneaddata")
+        assert config.kraken2_db == Path("/db/kraken2")
 
     def test_from_dict(self) -> None:
         """从字典创建。"""
@@ -151,22 +135,6 @@ resources:
         with pytest.raises(FileNotFoundError):
             AnalysisConfig.from_yaml(tmp_path / "nonexistent.yaml")
 
-    def test_databases_property(self) -> None:
-        """数据库路径属性。"""
-        config = AnalysisConfig(
-            KNEADDATA_DB="/db/kneaddata",
-            KRAKEN2_DB="/db/kraken2",
-        )
-
-        assert config.kneaddata_db == Path("/db/kneaddata")
-        assert config.kraken2_db == Path("/db/kraken2")
-
-    def test_results_dir_accepts_results_dir_alias(self) -> None:
-        """RESULTS_DIR 别名。"""
-        config = AnalysisConfig(RESULTS_DIR="/data/results")
-
-        assert config.results_dir == Path("/data/results")
-
 
 class TestDatabasesConfig:
     """测试 DatabasesConfig 类。"""
@@ -196,11 +164,15 @@ class TestDatabasesConfig:
 class TestMergeDatabasesConfig:
     """测试 merge_databases_config 函数。"""
 
-    def test_uses_analysis_config_first(self) -> None:
-        """优先使用 analysis_config 中的路径。"""
+    def test_uses_analysis_config_paths_first(self) -> None:
+        """优先使用 analysis_config.paths.databases 中的路径。"""
         analysis = AnalysisConfig(
-            KNEADDATA_DB="/analysis/kneaddata",
-            KRAKEN2_DB="/analysis/kraken2",
+            paths=PathsConfig(
+                databases={
+                    "kneaddata": "/analysis/kneaddata",
+                    "kraken2": "/analysis/kraken2",
+                },
+            ),
         )
         databases = DatabasesConfig(
             quality_control={"kneaddata": {"human_genome": "/db/kneaddata"}},

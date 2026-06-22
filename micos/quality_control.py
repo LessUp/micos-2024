@@ -11,13 +11,9 @@ from __future__ import annotations
 import logging
 import subprocess
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from micos.sample import Sample
 from micos.utils import run_command_live
-
-if TYPE_CHECKING:
-    from micos.tool_runner import ToolRunner
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +23,6 @@ def run_qc(
     output_dir: str | Path,
     threads: int,
     kneaddata_db: str | Path,
-    runner: ToolRunner | None = None,
 ) -> None:
     """执行质量控制 (FastQC + KneadData).
 
@@ -39,7 +34,6 @@ def run_qc(
         output_dir: 输出目录
         threads: 线程数
         kneaddata_db: KneadData 数据库路径
-        runner: 工具执行器（可选，用于测试注入）
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出

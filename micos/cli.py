@@ -81,7 +81,6 @@ def main(ctx, config_path, log_file, verbose, dry_run):
 def validate_config(ctx, config_path):
     """验证配置文件的有效性."""
     logger = logging.getLogger(__name__)
-    errors = []
     warnings = []
 
     # 确定配置文件路径
@@ -139,13 +138,8 @@ def validate_config(ctx, config_path):
         for warning in warnings:
             click.secho(f"⚠ 警告: {warning}", fg="yellow")
 
-    if not errors:
-        click.secho("\n✓ 配置验证完成!", fg="green")
-        sys.exit(EXIT_SUCCESS)
-    else:
-        for error in errors:
-            click.secho(f"✗ 错误: {error}", fg="red")
-        sys.exit(EXIT_CONFIG_ERROR)
+    click.secho("\n✓ 配置验证完成!", fg="green")
+    sys.exit(EXIT_SUCCESS)
 
 
 @main.command('full-run')

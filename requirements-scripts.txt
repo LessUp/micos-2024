@@ -1,0 +1,23 @@
+# MICOS-2024 scripts/ 独立分析脚本依赖
+# 这些脚本不在 micos 主链路中，按需安装：
+#   pip install -r requirements-scripts.txt
+#
+# 包含：amplicon_analysis / metatranscriptome_analysis /
+#       network_analysis / phylogenetic_analysis
+
+# 先安装核心依赖
+-r requirements.txt
+
+# 科学计算
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+
+# 可视化
+matplotlib>=3.4.0
+seaborn>=0.11.0
+
+# 生物信息学
+biopython>=1.79
+scikit-learn>=1.0.0
+networkx>=2.6.0

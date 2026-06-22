@@ -18,7 +18,7 @@ class PathsConfig(BaseModel):
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     input_dir: Path | None = None
-    output_dir: Path | None = None  # 别名，兼容旧格式
+    output_dir: Path | None = None
     databases: dict[str, str] = Field(default_factory=dict)
 
     @property
@@ -76,7 +76,6 @@ class AnalysisConfig(BaseModel):
     这是一个**深层模块**，隐藏了配置加载和验证的复杂性：
     - 调用者只需通过属性访问配置值
     - 多层配置合并、默认值处理等逻辑被隐藏
-    - 兼容旧格式（INPUT_DIR）和新格式（paths.input_dir）
 
     Example:
         >>> config = AnalysisConfig.from_yaml("config/analysis.yaml")
@@ -86,53 +85,27 @@ class AnalysisConfig(BaseModel):
 
     model_config = ConfigDict(extra="allow", populate_by_name=True)
 
-    # 新格式：嵌套配置
     paths: PathsConfig = Field(default_factory=PathsConfig)
     resources: ResourcesConfig = Field(default_factory=ResourcesConfig)
 
-    # 旧格式：顶层字段（兼容性）
-    INPUT_DIR: str | None = None
-    OUTPUT_DIR: str | None = None
-    RESULTS_DIR: str | None = None
-    THREADS: int | None = None
-    KNEADDATA_DB: str | None = None
-    KRAKEN2_DB: str | None = None
-
     @property
     def input_dir(self) -> Path | None:
-        """获取输入目录（合并新旧格式）。"""
-        if self.paths.input_dir:
-            return self.paths.input_dir
-        if self.INPUT_DIR:
-            return Path(self.INPUT_DIR)
-        return None
+        """获取输入目录。"""
+        return self.paths.input_dir
 
     @property
     def results_dir(self) -> Path | None:
-        """获取结果目录（合并新旧格式）。"""
-        if self.paths.results_dir:
-            return self.paths.results_dir
-        if self.RESULTS_DIR:
-            return Path(self.RESULTS_DIR)
-        if self.OUTPUT_DIR:
-            return Path(self.OUTPUT_DIR)
-        return None
+        """获取结果目录。"""
+        return self.paths.results_dir
 
     @property
     def threads(self) -> int:
-        """获取线程数（合并新旧格式）。"""
-        if self.resources.max_threads != 16:  # 非默认值
-            return self.resources.max_threads
-        if self.THREADS:
-            return self.THREADS
-        return 16
+        """获取线程数。"""
+        return self.resources.max_threads
 
     @property
     def kneaddata_db(self) -> Path | None:
         """获取 KneadData 数据库路径。"""
-        # 优先级：旧格式 > 新格式嵌套路径 > 数据库配置
-        if self.KNEADDATA_DB:
-            return Path(self.KNEADDATA_DB)
         if self.paths.databases.get("kneaddata"):
             return Path(self.paths.databases["kneaddata"])
         return None
@@ -140,8 +113,6 @@ class AnalysisConfig(BaseModel):
     @property
     def kraken2_db(self) -> Path | None:
         """获取 Kraken2 数据库路径。"""
-        if self.KRAKEN2_DB:
-            return Path(self.KRAKEN2_DB)
         if self.paths.databases.get("kraken2"):
             return Path(self.paths.databases["kraken2"])
         return None
