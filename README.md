@@ -3,8 +3,6 @@
 
 <div align="center">
 
-![MICOS Logo](docs/public/brand/logo-light.svg)
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://hub.docker.com/)
 [![WDL](https://img.shields.io/badge/WDL-Workflow-green.svg)](https://openwdl.org/)
