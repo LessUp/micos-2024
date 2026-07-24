@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """完整分析流程的编排模块."""
 
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 

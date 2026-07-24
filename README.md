@@ -3,7 +3,7 @@
 
 <div align="center">
 
-![MICOS Logo](docs/images/img.png)
+![MICOS Logo](docs/public/brand/logo-light.svg)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://hub.docker.com/)
@@ -97,20 +97,16 @@ graph LR
 
 ### 主要组件
 
-| 功能模块 | 工具 | 版本 | 描述 |
-|:---:|:---:|:---:|:---|
-| **质量控制** | KneadData/FastQC | v0.12.0 | 宿主DNA去除和序列质量过滤 |
-| **增强质量控制** | 自定义Python模块 | v1.0.0 | 高级质量评估和可视化 |
-| **物种分类** | Kraken2 | v2.1.3 | 基于k-mer的快速分类学分类 |
-| **多样性分析** | QIIME2 | 2024.5 | Alpha/Beta多样性计算和统计检验 |
-| **差异丰度分析** | DESeq2/ALDEx2/ANCOM-BC | - | 多种差异分析方法 |
-| **功能注释** | KEGG/COG/Pfam | - | 功能基因注释和通路分析 |
-| **系统发育分析** | FastTree/MUSCLE | - | 系统发育树构建和分析 |
-| **16S rRNA分析** | DADA2/QIIME2 | - | 扩增子序列分析流程 |
-| **宏转录组分析** | Salmon/DESeq2 | - | RNA-seq数据分析和功能注释 |
-| **网络分析** | NetworkX/igraph | - | 微生物共现网络构建和分析 |
-| **可视化** | Krona/Plotly | v2.8.1 | 交互式分类学组成图表 |
-| **统计分析** | R/Phyloseq | - | 高级统计分析和可视化 |
+| 功能模块 | 工具 | 描述 |
+|:---:|:---:|:---|
+| **质量控制** | KneadData / FastQC | 宿主 DNA 去除和序列质量过滤 |
+| **物种分类** | Kraken2 + kraken-biom + Krona | 基于 k-mer 的快速分类学分类与可视化 |
+| **多样性分析** | QIIME2 | Alpha / Beta 多样性计算 |
+| **功能注释** | HUMAnN | 功能基因注释和通路分析 |
+| **结果汇总** | Python | HTML 报告生成 |
+
+> 以下功能以独立脚本形式提供于 `scripts/` 目录，**尚未集成到核心 CLI 流程**：
+> 差异丰度分析 (R/DESeq2)、系统发育分析、16S rRNA 分析、宏转录组分析、网络分析。
 
 ### 技术特性
 
@@ -176,23 +172,20 @@ conda activate micos-2024
 ```
 .
 ├── micos/                  # 核心 Python 包（质控、物种分类、多样性分析、功能注释等）
-├── scripts/                # 运行脚本与分析模块（Shell / Python / R）
+├── scripts/                # 运行脚本与独立分析模块（Shell / Python / R）
 │   ├── run_full_analysis.sh    # 一键运行完整分析
 │   ├── run_module.sh           # 按模块运行分析
 │   ├── verify_installation.sh  # 验证安装环境
-│   ├── functional_annotation.py
-│   ├── network_analysis.py
 │   └── ...
-├── steps/                  # 分步骤分析教程（01-09，从质控到统计分析）
+├── steps/                  # 分步骤 WDL 任务定义（01-09）
 ├── workflows/              # WDL 工作流定义
 │   └── wdl_scripts/            # 各版本 WDL 脚本和配置
 ├── config/                 # 配置模板（分析参数、数据库路径、样本元数据）
 ├── containers/singularity/ # Singularity 容器定义文件
 ├── deploy/                 # Docker Compose 部署配置
 ├── data/raw_input/         # 原始测序数据输入目录
-├── docs/                   # 用户手册、配置指南、故障排除
+├── docs/                   # VitePress 文档站（中英双语）
 ├── tests/                  # 单元测试和集成测试
-├── changelog/              # 版本更新日志
 ├── .github/                # GitHub Actions CI 和 Issue 模板
 ├── CITATION.md             # 引用信息
 ├── pyproject.toml          # Python 项目配置
@@ -203,7 +196,7 @@ conda activate micos-2024
 
 ## 安装指南
 
-详细的安装说明请参考：[📖 完整安装指南](docs/user_manual.md#详细安装指南)
+详细的安装说明请参考：[📖 快速开始](docs/en/guides/getting-started.md)
 
 ### 数据库准备
 
@@ -213,7 +206,7 @@ MICOS-2024 需要以下参考数据库：
 - KneadData 数据库（用于宿主 DNA 去除）
 - QIIME2 分类器（用于分类学注释）
 
-请参考 `docs/configuration.md` 获取下载与准备指南，并根据 `config/databases.yaml.template` 填写本地路径。
+请参考 `docs/en/configuration.md` 获取下载与准备指南，并根据 `config/databases.yaml.template` 填写本地路径。
 
 ## 配置
 
@@ -240,7 +233,7 @@ nano config/databases.yaml
 nano config/samples.tsv
 ```
 
-详细配置说明请参考：[⚙️ 配置指南](docs/configuration.md)
+详细配置说明请参考：[⚙️ 配置指南](docs/en/configuration.md)
 
 ## 使用指南
 
@@ -259,30 +252,20 @@ cp config/analysis.yaml.template config/analysis.yaml
 ./scripts/run_full_analysis.sh
 
 # 4. 查看结果
-firefox results/reports/analysis_report.html
+firefox results/micos_summary_report.html
 ```
 
 ### 模块化运行
 
 ```bash
-# 基础分析模块
+# 核心分析模块（通过 micos CLI）
 ./scripts/run_module.sh quality_control
 ./scripts/run_module.sh taxonomic_profiling
 ./scripts/run_module.sh diversity_analysis
-
-# 高级分析模块
-./scripts/run_module.sh differential_abundance
 ./scripts/run_module.sh functional_annotation
-./scripts/run_module.sh phylogenetic_analysis
-./scripts/run_module.sh network_analysis
 
-# 专业分析模块
-./scripts/run_module.sh amplicon_analysis      # 16S rRNA分析
-./scripts/run_module.sh metatranscriptome      # 宏转录组分析
-
-# 可视化和报告
-./scripts/run_module.sh visualization
-./scripts/run_module.sh report_generation
+# 结果汇总与报告
+./scripts/run_module.sh summarize_results
 ```
 
 ### 工作流运行
@@ -294,7 +277,7 @@ java -jar cromwell.jar run \
   --inputs config/analysis.json
 ```
 
-详细使用说明请参考：[📖 用户手册](docs/user_manual.md)
+详细使用说明请参考：[📖 快速开始](docs/en/guides/getting-started.md)
 
 ## 输出结果
 
@@ -302,38 +285,27 @@ java -jar cromwell.jar run \
 
 | 类型 | 位置 | 描述 |
 |:---:|:---:|:---|
-| **分析报告** | `results/reports/` | HTML格式的交互式报告 |
-| **质量控制** | `results/quality_control/` | FastQC和MultiQC报告 |
-| **物种分类** | `results/taxonomic_profiling/` | Kraken2分类结果和Krona图表 |
-| **多样性分析** | `results/diversity_analysis/` | Alpha/Beta多样性指标和图表 |
-| **差异丰度分析** | `results/differential_abundance/` | DESeq2/ALDEx2/ANCOM-BC结果 |
-| **功能注释** | `results/functional_annotation/` | KEGG/COG/Pfam注释结果 |
-| **系统发育分析** | `results/phylogenetic_analysis/` | 系统发育树和进化分析 |
-| **16S rRNA分析** | `results/amplicon_analysis/` | 扩增子序列分析结果 |
-| **宏转录组分析** | `results/metatranscriptome/` | RNA-seq分析和功能注释 |
-| **网络分析** | `results/network_analysis/` | 微生物共现网络和拓扑分析 |
-| **统计表格** | `results/tables/` | CSV/TSV格式的数据表 |
+| **分析报告** | `results/micos_summary_report.html` | HTML 格式的汇总报告 |
+| **质量控制** | `results/quality_control/` | FastQC 和 KneadData 结果 |
+| **物种分类** | `results/taxonomic_profiling/` | Kraken2 分类结果、BIOM 表和 Krona 图表 |
+| **多样性分析** | `results/diversity_analysis/` | Alpha / Beta 多样性指标 |
+| **功能注释** | `results/functional_annotation/` | HUMAnN 功能注释结果 |
 
 ### 可视化输出
 
-- **Krona交互式图表**: 分类学组成的层次结构展示
-- **多样性分析图**: Alpha/Beta多样性箱线图和PCoA图
-- **丰度热图**: 样本间物种丰度比较
-- **差异分析图**: 火山图、MA图和差异物种热图
-- **功能注释图**: KEGG通路图和GO富集分析
-- **系统发育树**: 交互式系统发育树可视化
-- **网络图**: 微生物共现网络和模块分析
-- **质量控制图**: 序列质量、GC含量和复杂度分析
-- **统计检验结果**: 差异分析和生物标志物发现
+- **Krona 交互式图表**: 分类学组成的层次结构展示
+- **多样性分析图**: Alpha / Beta 多样性指标
+- **HTML 汇总报告**: 全流程结果整合
 
 ## 文档
 
 | 文档 | 描述 |
 |:---|:---|
-| [用户手册](docs/user_manual.md) | 完整的安装和使用指南 |
-| [配置指南](docs/configuration.md) | 详细的配置参数说明 |
-| [故障排除](docs/troubleshooting.md) | 常见问题和解决方案 |
-| [分类学分析](docs/taxonomic-profiling.md) | 物种分类分析流程 |
+| [快速开始](docs/en/guides/getting-started.md) | 安装和使用入门 |
+| [配置指南](docs/en/configuration.md) | 配置参数说明 |
+| [故障排除](docs/en/troubleshooting.md) | 常见问题和解决方案 |
+| [分类学分析](docs/en/analysis/taxonomic-profiling.md) | 物种分类分析流程 |
+| [CLI 参考](docs/en/reference/cli.md) | 命令行接口完整参考 |
 
 ## 贡献
 
@@ -347,7 +319,7 @@ java -jar cromwell.jar run \
 
 - **GitHub Issues**: [报告问题](https://github.com/BGI-MICOS/MICOS-2024/issues)
 - **GitHub Discussions**: [参与讨论](https://github.com/BGI-MICOS/MICOS-2024/discussions)
-- **故障排除**: [查看常见问题](docs/troubleshooting.md)
+- **故障排除**: [查看常见问题](docs/en/troubleshooting.md)
 - **安全策略**: 查看 `SECURITY.md`
 
 ## 许可证

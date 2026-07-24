@@ -24,6 +24,8 @@ micos/
 ├── __init__.py              # 包初始化
 ├── _version.py              # 版本号 (自动生成)
 ├── cli.py                   # Click CLI 入口
+├── config.py                # Pydantic 配置模型
+├── sample.py                # 样本数据模型
 ├── full_run.py              # 完整流程编排器
 ├── quality_control.py       # 质量控制模块
 ├── taxonomic_profiling.py   # 物种分类模块
@@ -81,6 +83,8 @@ micos/
 | `steps/05_taxonomic_visualization_krona/` | 可视化 | Krona |
 | `steps/06_qiime2_analysis/` | 多样性分析 | QIIME2 |
 | `steps/07_phyloseq_analysis/` | 统计分析 | Phyloseq (R) |
+| `steps/08_megan_analysis/` | 可视化 (未集成) | MEGAN |
+| `steps/09_qiime2_whole_analysis/` | 全流程 (未集成) | QIIME2 |
 
 ---
 
@@ -141,32 +145,25 @@ chore(deps): bump pandas to 2.0.0
 
 ## 关键依赖
 
-### Python 核心
+### Python 核心 (micos/)
 
 | 包 | 版本 | 用途 |
 |---|------|------|
-| numpy | ≥1.21.0 | 数值计算 |
-| pandas | ≥1.3.0 | 数据处理 |
-| scipy | ≥1.7.0 | 科学计算 |
-| scikit-learn | ≥1.0.0 | 机器学习 |
 | click | ≥8.0.0 | CLI 框架 |
 | pyyaml | ≥6.0 | 配置解析 |
+| pydantic | ≥2.0.0 | 配置验证 |
 
-### 生物信息学
-
-| 包 | 用途 |
-|---|------|
-| biopython | 序列处理 |
-| scikit-bio | 生物信息学工具 |
-| biom-format | BIOM 数据格式 |
-
-### 可视化
+### Python 扩展 (scripts/，通过 `pip install -e ".[scripts]"` 安装)
 
 | 包 | 用途 |
 |---|------|
+| numpy | 数值计算 |
+| pandas | 数据处理 |
+| scipy | 科学计算 |
+| scikit-learn | 机器学习 (network_analysis.py) |
+| biopython | 序列处理 (phylogenetic_analysis.py) |
 | matplotlib | 静态图表 |
 | seaborn | 统计可视化 |
-| plotly | 交互式图表 |
 
 ### R 包 (scripts/)
 

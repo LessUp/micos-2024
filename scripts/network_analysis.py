@@ -22,9 +22,8 @@ import logging
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import subprocess
 import yaml
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple
 import warnings
 # 仅抑制特定的 DeprecationWarning
 warnings.filterwarnings('ignore', category=DeprecationWarning)

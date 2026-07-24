@@ -16,13 +16,11 @@
 
 | 脚本 | 功能 | CLI 集成状态 |
 |------|------|-------------|
-| `enhanced_qc.py` | 增强质量控制分析 | 独立工具 |
 | `network_analysis.py` | 微生物共现网络分析 | 独立工具 |
 | `phylogenetic_analysis.py` | 系统发育分析 | 独立工具 |
 | `amplicon_analysis.py` | 16S rRNA 扩增子分析 | 独立工具 |
 | `metatranscriptome_analysis.py` | 宏转录组分析 | 独立工具 |
-| `functional_annotation.py` | 功能注释（增强版） | 独立工具 |
-| `summarize_results.py` | 结果汇总（增强版） | 独立工具 |
+| `differential_abundance_analysis.R` | 差异丰度分析 | 独立工具 |
 
 ### 工作流包装
 
@@ -46,12 +44,6 @@
 
 # 指定数据库目录
 MICOS_DB_ROOT=/data/dbs ./scripts/download_databases.sh kraken2-standard
-```
-
-### 增强质量控制
-
-```bash
-python scripts/enhanced_qc.py input/*.fastq.gz -o results/enhanced_qc/
 ```
 
 ### 网络分析

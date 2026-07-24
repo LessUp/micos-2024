@@ -11,11 +11,13 @@
 - 这里保留对旧脚本和测试仍然需要的轻量兼容接口。
 """
 
+from __future__ import annotations
+
 import logging
 from pathlib import Path
 import subprocess
 import sys
-from typing import Any, Optional, Sequence
+from typing import Any, Sequence
 
 import click
 import yaml
@@ -23,7 +25,7 @@ import yaml
 from micos.config import AnalysisConfig, load_databases_config_from_yaml, merge_databases_config
 
 
-def setup_logging(level: int = logging.INFO, log_file: Optional[str] = None) -> None:
+def setup_logging(level: int = logging.INFO, log_file: str | None = None) -> None:
     """配置日志记录。
 
     Args:
@@ -61,7 +63,6 @@ def run_command_live(command: Sequence[str]) -> None:
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
-        universal_newlines=True,
     )
     if process.stdout:
         for line in iter(process.stdout.readline, ''):
@@ -74,7 +75,7 @@ def run_command_live(command: Sequence[str]) -> None:
         raise subprocess.CalledProcessError(return_code, command)
 
 
-def load_config(config_path: Optional[str] = None) -> dict[str, Any]:
+def load_config(config_path: str | None = None) -> dict[str, Any]:
     """加载 YAML 配置，并兼容旧版 `config.yaml` 位置。
 
     Args:
@@ -100,7 +101,7 @@ def load_config(config_path: Optional[str] = None) -> dict[str, Any]:
     raise FileNotFoundError('未找到可用配置文件，预期位置: config/analysis.yaml 或 config.yaml')
 
 
-def get_full_run_defaults(config_path: Optional[str] = None) -> dict[str, Any]:
+def get_full_run_defaults(config_path: str | None = None) -> dict[str, Any]:
     """提取 full-run 命令需要的默认参数。
 
     Args:

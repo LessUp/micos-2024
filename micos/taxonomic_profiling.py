@@ -9,7 +9,6 @@
 from __future__ import annotations
 
 import logging
-import subprocess
 from pathlib import Path
 
 from micos.sample import Sample
@@ -23,17 +22,16 @@ def run_taxonomic_profiling(
     output_dir: str | Path,
     threads: int,
     kraken2_db: str | Path,
+    confidence: float = 0.0,
 ) -> None:
     """执行物种分类 (Kraken2 + Krona).
-
-    这是一个深层模块的接口，调用者只需提供必要的配置，
-    样本发现、工具调用、结果聚合等细节被隐藏。
 
     Args:
         input_dir: 输入目录（KneadData 清理后的 FASTQ 文件）
         output_dir: 输出目录
         threads: 线程数
         kraken2_db: Kraken2 数据库路径
+        confidence: Kraken2 分类置信度阈值 (0.0-1.0)
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出
@@ -68,7 +66,8 @@ def run_taxonomic_profiling(
             "--paired", str(sample.r1_path), str(sample.r2_path),
             "--output", str(kraken2_output),
             "--report", str(kraken2_report),
-            "--threads", str(threads)
+            "--confidence", str(confidence),
+            "--threads", str(threads),
         ]
         run_command_live(kraken2_cmd)
 

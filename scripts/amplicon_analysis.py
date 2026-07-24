@@ -13,16 +13,10 @@ MICOS-2024 16S rRNA扩增子分析模块
 - 系统发育分析
 """
 
-import os
-import sys
 import argparse
 import logging
 from pathlib import Path
-import pandas as pd
-import numpy as np
 import subprocess
-import tempfile
-import shutil
 
 # 设置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

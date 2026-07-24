@@ -44,7 +44,6 @@ def test_full_run_uses_config_defaults(tmp_path, monkeypatch):
         threads,
         kneaddata_db_arg,
         kraken2_db_arg,
-        samples=None,
         skip_qc=False,
         skip_taxonomy=False,
         skip_functional=False,

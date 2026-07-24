@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """MICOS-2024 命令行界面."""
 
+from __future__ import annotations
+
 import logging
 import sys
 from pathlib import Path
@@ -70,9 +72,8 @@ def main(ctx, config_path, log_file, verbose, dry_run):
                 'kneaddata_db': db_paths.get('kneaddata_db'),
                 'kraken2_db': db_paths.get('kraken2_db'),
             })
-        except Exception:
-            # 配置加载失败时使用空默认值
-            pass
+        except Exception as e:
+            logging.getLogger(__name__).warning("配置文件加载失败，使用默认值: %s", e)
 
 
 @main.command('validate-config')
@@ -238,7 +239,7 @@ def taxonomic_profiling(ctx, input_dir, output_dir, threads, kraken2_db, confide
         return
 
     try:
-        run_taxonomic_profiling(input_dir, output_dir, threads, kraken2_db)
+        run_taxonomic_profiling(input_dir, output_dir, threads, kraken2_db, confidence)
     except Exception as exc:
         click.secho(f"物种分类模块执行失败: {exc}", fg="red")
         raise
@@ -247,17 +248,13 @@ def taxonomic_profiling(ctx, input_dir, output_dir, threads, kraken2_db, confide
 @run.command('diversity-analysis')
 @click.option('--input-biom', required=True, type=click.Path(exists=True, dir_okay=False), help='输入的 BIOM 表文件.')
 @click.option('--output-dir', required=True, type=click.Path(file_okay=False), help='存放多样性分析结果的输出目录.')
-@click.option('--metadata', type=click.Path(exists=True, dir_okay=False), help='样本元数据文件.')
-@click.option('--sampling-depth', type=int, help='稀疏采样深度.')
 @click.pass_context
-def diversity_analysis(ctx, input_biom, output_dir, metadata, sampling_depth):
+def diversity_analysis(ctx, input_biom, output_dir):
     """运行多样性分析 (QIIME2)."""
     if ctx.obj.get('dry_run'):
         click.secho("=== Dry Run: Diversity Analysis ===", fg="cyan")
         click.echo(f"输入 BIOM 文件: {input_biom}")
         click.echo(f"输出目录: {output_dir}")
-        click.echo(f"元数据文件: {metadata}")
-        click.echo(f"采样深度: {sampling_depth}")
         return
 
     try:

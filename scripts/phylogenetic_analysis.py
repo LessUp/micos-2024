@@ -12,7 +12,8 @@ MICOS-2024 系统发育分析模块
 - UniFrac距离计算
 """
 
-import os
+# ⚠️ 警告: 本脚本包含模拟数据 (mock sequences, mock branch lengths)，运行结果无科学意义。
+
 import sys
 import argparse
 import logging
@@ -26,10 +27,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Seq import Seq
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.cluster.hierarchy import dendrogram, linkage
-from scipy.spatial.distance import squareform
 import subprocess
-import tempfile
 
 # 设置日志
 logging.basicConfig(

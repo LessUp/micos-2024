@@ -73,7 +73,7 @@ git checkout -b feature/your-feature-name
 Fixes #123
 ```
 
-提交类型：`Add`、`Fix`、`Update`、`Remove`、`Docs`、`Style`、`Refactor`、`Test`
+提交类型 (Conventional Commits)：`feat`、`fix`、`docs`、`style`、`refactor`、`test`、`chore`
 
 ## 代码规范
 
@@ -86,7 +86,7 @@ Fixes #123
 
 - **GitHub Issues**：问题报告和功能讨论
 - **GitHub Discussions**：一般讨论和问答
-- **文档**：查看[故障排除指南](docs/troubleshooting.md)
+- **文档**：查看[故障排除指南](docs/en/troubleshooting.md)
 
 ## 许可证
 

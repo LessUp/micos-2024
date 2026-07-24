@@ -16,11 +16,12 @@ Metatranscriptome Analysis Module
 许可证: MIT
 """
 
+# ⚠️ 警告: 本脚本的 KEGG/GO 注释功能生成模拟数据，运行结果无科学意义。
+
 import sys
 import argparse
 import logging
 import pandas as pd
-import numpy as np
 from pathlib import Path
 import subprocess
 import yaml

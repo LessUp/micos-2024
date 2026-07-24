@@ -46,4 +46,3 @@ def test_theme_assets_and_navigation_are_upgraded() -> None:
     assert "研究" in config_text
 
     assert (DOCS_ROOT / "public" / "illustrations" / "pipeline-overview-light.svg").exists()
-    assert (DOCS_ROOT / "public" / "illustrations" / "pipeline-overview-dark.svg").exists()

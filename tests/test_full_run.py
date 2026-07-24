@@ -10,14 +10,14 @@ def test_run_full_pipeline_uses_named_output_layout(tmp_path, monkeypatch):
     """full-run 应输出到新的命名目录。"""
     calls = []
 
-    def fake_run_qc(input_dir, output_dir, threads, kneaddata_db, samples=None):
+    def fake_run_qc(input_dir, output_dir, threads, kneaddata_db):
         calls.append(('qc', input_dir, output_dir, threads, kneaddata_db))
         kneaddata_dir = Path(output_dir) / 'kneaddata'
         kneaddata_dir.mkdir(parents=True, exist_ok=True)
         (kneaddata_dir / 'sample_paired_1.fastq').write_text('r1', encoding='utf-8')
         (kneaddata_dir / 'sample_paired_2.fastq').write_text('r2', encoding='utf-8')
 
-    def fake_run_taxonomic_profiling(input_dir, output_dir, threads, kraken2_db, samples=None):
+    def fake_run_taxonomic_profiling(input_dir, output_dir, threads, kraken2_db):
         calls.append(('tax', input_dir, output_dir, threads, kraken2_db))
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
@@ -26,7 +26,7 @@ def test_run_full_pipeline_uses_named_output_layout(tmp_path, monkeypatch):
     def fake_run_diversity_analysis(input_biom, output_dir):
         calls.append(('div', input_biom, output_dir))
 
-    def fake_run_functional_annotation(input_dir, output_dir, threads, samples=None):
+    def fake_run_functional_annotation(input_dir, output_dir, threads):
         calls.append(('func', input_dir, output_dir, threads))
 
     def fake_run_summarize(results_dir, output_file):

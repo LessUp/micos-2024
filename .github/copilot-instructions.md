@@ -19,7 +19,7 @@ MICOS-2024 (Metagenomic Intelligence and Comprehensive Omics Suite) 是一个端
 - **语言**: Python 3.9+ (主要), R 4.3.0 (统计分析)
 - **工作流**: WDL + Cromwell
 - **容器**: Docker / Singularity
-- **文档**: MkDocs Material
+- **文档**: VitePress (中英双语)
 
 ## 代码规范
 
@@ -169,7 +169,7 @@ pytest tests/ -v
 pytest tests/ --cov=micos --cov-report=html
 
 # 运行单个测试文件
-pytest tests/test_quality_control.py -v
+pytest tests/test_config.py -v
 ```
 
 ## Git 提交规范
@@ -254,5 +254,4 @@ resources:
 ## 相关文档
 
 - [AGENTS.md](../AGENTS.md) - 项目架构详解
-- [openspec/](../openspec/) - 技术规范
 - [docs/](../docs/) - 用户文档

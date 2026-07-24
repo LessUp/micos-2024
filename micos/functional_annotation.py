@@ -75,7 +75,8 @@ def run_functional_annotation(
 
         with gzip.open(concatenated_file, 'wb') as f_out:
             for f_in_path in files_to_concat:
-                with open(f_in_path, 'rb') as f_in:
+                opener = gzip.open if f_in_path.suffix == '.gz' else open
+                with opener(f_in_path, 'rb') as f_in:
                     shutil.copyfileobj(f_in, f_out)
 
         # 运行 HUMAnN

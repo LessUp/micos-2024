@@ -20,7 +20,7 @@ This release represents a major milestone in documentation quality and user expe
 
 #### English Documentation
 - **Complete restructuring** with task-oriented organization
-- **Five new comprehensive guides**: Installation, Configuration, Troubleshooting, FAQ, and API Reference
+- **Five new comprehensive guides**: Getting Started, Configuration, Troubleshooting, FAQ, and CLI Reference
 - **Bilingual support** with full English and Chinese versions
 - **Improved navigation** with cross-referenced documents
 - **Real-world examples** with actual parameters
@@ -62,14 +62,14 @@ This release represents a major milestone in documentation quality and user expe
 | English | 中文 | Description |
 |:---|:---|:---|
 | `docs/en/index.md` | `docs/zh/index.md` | Documentation portal |
-| `docs/en/installation.md` | `docs/zh/installation.md` | Complete installation guide |
+| `docs/en/guides/getting-started.md` | `docs/zh/guides/getting-started.md` | Getting started guide |
 | `docs/en/configuration.md` | `docs/zh/configuration.md` | Configuration reference |
-| `docs/en/taxonomic-profiling.md` | - | Taxonomic profiling details |
-| `docs/en/functional-profiling.md` | - | Functional annotation guide |
-| `docs/en/diversity-analysis.md` | - | Diversity analysis guide |
+| `docs/en/analysis/taxonomic-profiling.md` | `docs/zh/analysis/taxonomic-profiling.md` | Taxonomic profiling details |
+| `docs/en/analysis/functional-profiling.md` | `docs/zh/analysis/functional-profiling.md` | Functional annotation guide |
+| `docs/en/analysis/diversity-analysis.md` | `docs/zh/analysis/diversity-analysis.md` | Diversity analysis guide |
 | `docs/en/troubleshooting.md` | `docs/zh/troubleshooting.md` | Comprehensive troubleshooting |
 | `docs/en/faq.md` | `docs/zh/faq.md` | Frequently asked questions |
-| `docs/en/api-reference.md` | - | CLI API reference |
+| `docs/en/reference/cli.md` | `docs/zh/reference/cli.md` | CLI reference |
 
 ---
 
@@ -125,7 +125,7 @@ No changes from v1.0.0:
 
 ### For New Users / 新用户须知
 - Start with the [Quick Start Guide](docs/en/index.md) / [快速入门指南](docs/zh/index.md)
-- Follow the [Installation Guide](docs/en/installation.md) / [安装指南](docs/zh/installation.md)
+- Follow the [Getting Started Guide](docs/en/guides/getting-started.md) / [入门指南](docs/zh/guides/getting-started.md)
 - Check [FAQ](docs/en/faq.md) / [常见问题](docs/zh/faq.md) for common questions
 
 ### For Existing Users / 现有用户须知
@@ -135,7 +135,7 @@ No changes from v1.0.0:
 
 ---
 
-**Full Changelog**: [CHANGELOG.md](CHANGELOG.md) | [CHANGELOG.zh.md](CHANGELOG.zh.md)
+**Full Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 

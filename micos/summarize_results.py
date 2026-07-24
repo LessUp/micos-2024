@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import argparse
 import datetime
 import html
 import logging
@@ -140,26 +139,3 @@ def run_summarize(results_dir: str, output_file: str) -> None:
     output_path = Path(output_file).resolve()
     generate_summary_report(results_path, output_path)
     logger.info(f"结果报告已生成: {output_path}")
-
-
-def main(argv: list[str] | None = None) -> int:
-    """命令行入口。"""
-    parser = argparse.ArgumentParser(description="生成 MICOS-2024 分析结果的简洁 HTML 汇总报告")
-    parser.add_argument("--results_dir", required=True, help="分析结果根目录")
-    parser.add_argument("--output_file", required=True, help="输出 HTML 文件路径")
-    args = parser.parse_args(argv)
-
-    try:
-        generate_summary_report(
-            Path(args.results_dir).resolve(),
-            Path(args.output_file).resolve(),
-        )
-    except FileNotFoundError as exc:
-        parser.exit(status=2, message=f"错误：{exc}\n")
-
-    print(f"报告已生成：{Path(args.output_file).resolve()}")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

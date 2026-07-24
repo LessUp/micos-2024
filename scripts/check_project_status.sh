@@ -64,6 +64,7 @@ check_required_files() {
         "CODE_OF_CONDUCT.md"
         "CITATION.md"
         "SECURITY.md"
+        "CHANGELOG.md"
         "requirements.txt"
         "environment.yml"
         "pyproject.toml"
@@ -104,7 +105,6 @@ check_directory_structure() {
         "workflows"
         "containers"
         "deploy"
-        "changelog"
         ".github/ISSUE_TEMPLATE"
         "tests"
     )
@@ -178,7 +178,6 @@ check_scripts() {
         "scripts/run_test_data.sh"
         "scripts/amplicon_analysis.py"
         "scripts/differential_abundance_analysis.R"
-        "scripts/functional_annotation.py"
         "scripts/metatranscriptome_analysis.py"
         "scripts/network_analysis.py"
         "scripts/phylogenetic_analysis.py"

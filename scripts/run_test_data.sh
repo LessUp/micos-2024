@@ -168,8 +168,8 @@ EOF
 # 清理函数
 cleanup() {
     log_info "清理临时文件..."
-    # 停止所有容器
-    docker stop $(docker ps -aq) 2>/dev/null || true
+    # 仅停止本项目启动的容器
+    $COMPOSE_CMD -f deploy/docker-compose.example.yml down 2>/dev/null || true
     log_success "清理完成"
 }
 

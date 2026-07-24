@@ -119,8 +119,7 @@ check_core_tools() {
     test_command "kraken-biom" "Kraken-BIOM"
     test_command "ktImportTaxonomy" "Krona"
     test_command "qiime" "QIIME2"
-    test_command "samtools" "SAMtools"
-    test_command "bedtools" "BEDtools"
+    test_command "humann" "HUMAnN"
     
     echo ""
 }
@@ -134,7 +133,6 @@ check_python_packages() {
     test_python_package "scipy" "SciPy"
     test_python_package "matplotlib" "Matplotlib"
     test_python_package "seaborn" "Seaborn"
-    test_python_package "plotly" "Plotly"
     test_python_package "sklearn" "Scikit-learn"
     test_python_package "Bio" "Biopython"
     
@@ -178,14 +176,16 @@ check_containers() {
     echo ""
 }
 
-# 工作流引擎检查
+# 工作流引擎检查（可选）
 check_workflow_engines() {
-    log_info "检查工作流引擎..."
-    
-    test_command "cromwell" "Cromwell"
-    test_command "nextflow" "Nextflow"
-    test_command "snakemake" "Snakemake"
-    
+    log_info "检查工作流引擎（可选）..."
+
+    if command -v cromwell &> /dev/null; then
+        log_success "Cromwell 已安装（WDL 工作流可选）"
+    else
+        log_warning "Cromwell 未安装（仅在运行 WDL 工作流时需要）"
+    fi
+
     echo ""
 }
 

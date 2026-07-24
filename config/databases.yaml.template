@@ -1,11 +1,12 @@
 # MICOS-2024 数据库配置文件模板
 # 复制此文件为 databases.yaml 并修改为实际的数据库路径
 #
-# 使用 scripts/download_databases.sh 可自动下载常用数据库
-# 下载后请更新下方的路径
+# ⚠️ 注意: YAML 不支持 ${VAR} 变量插值。
+# 请将下方所有 ${...} 占位符替换为实际的绝对路径。
+# 使用 scripts/download_databases.sh 可自动下载常用数据库。
 
-# 数据库根目录 - 修改为您的实际路径
-database_root: "${HOME}/micos_databases"
+# 数据库根目录 - 修改为您的实际路径 (例如: /home/user/micos_databases)
+database_root: "/path/to/micos_databases"
 
 # 质量控制数据库
 quality_control:

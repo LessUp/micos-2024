@@ -15,10 +15,9 @@ The taxonomic profiling module identifies and quantifies the microbial species p
 ### Key Features
 
 - **High-speed classification**: Kraken2 processes ~10M reads/minute
-- **Accurate abundance estimation**: Bracken improves species-level quantification
 - **Interactive visualization**: Krona charts for exploring taxonomic composition
 - **Diversity metrics**: Alpha and beta diversity via QIIME2
-- **Statistical analysis**: Differential abundance testing
+- **BIOM conversion**: kraken-biom for QIIME2-compatible output
 
 ---
 
@@ -41,13 +40,6 @@ K-mers: [ATCGATCGATCGATC], [TCGATCGATCGATCG], ...
 Database lookup → LCA assignment → Confidence score
 ```
 
-### Abundance Correction (Bracken)
-
-Bracken corrects for:
-- **Genome size bias**: Larger genomes contribute more reads
-- **Database coverage**: Incomplete reference databases
-- **Strain variation**: Multiple strains of same species
-
 ### Taxonomic Ranks
 
 | Rank | Code | Example |
@@ -68,18 +60,16 @@ Bracken corrects for:
 graph TD
     A[Raw FASTQ] --> B[Quality Control<br/>KneadData]
     B --> C[Taxonomic Classification<br/>Kraken2]
-    C --> D[Abundance Correction<br/>Bracken]
+    C --> D[BIOM Conversion<br/>kraken-biom]
     C --> E[Krona Visualization]
-    D --> F[BIOM Format Conversion]
-    F --> G[Diversity Analysis<br/>QIIME2]
-    G --> H[Statistical Analysis]
+    D --> F[Diversity Analysis<br/>QIIME2]
 ```
 
 ### Step-by-Step Process
 
 1. **Quality Control**: Remove host DNA and low-quality reads
 2. **Classification**: Assign reads to taxa using Kraken2
-3. **Correction**: Estimate true abundances with Bracken
+3. **BIOM Conversion**: Convert Kraken2 reports to BIOM format
 4. **Visualization**: Generate Krona interactive charts
 5. **Diversity Analysis**: Calculate alpha/beta diversity metrics
 
@@ -158,17 +148,10 @@ kraken2 --db /path/to/kraken2_db \
   --confidence 0.1 \
   --threads 16
 
-# Step 2: Run Bracken
-bracken -d /path/to/kraken2_db \
-  -i sample.report \
-  -o sample.bracken \
-  -r 150 \
-  -l S
-
-# Step 3: Convert to BIOM
+# Step 2: Convert to BIOM
 kraken-biom *.report --fmt hdf5 -o feature-table.biom
 
-# Step 4: Generate Krona
+# Step 3: Generate Krona
 ktImportTaxonomy -o sample.krona.html sample.report
 ```
 
@@ -207,24 +190,6 @@ taxonomic_profiling:
 | 0.3 | Moderate | High | Conservative analysis |
 | 0.5 | Low | Very High | High confidence only |
 
-### Bracken Parameters
-
-```yaml
-taxonomic_profiling:
-  bracken:
-    enabled: true
-
-    # Read length (matches your data)
-    read_length: 150
-
-    # Taxonomic level for abundance
-    # D, P, C, O, F, G, S
-    level: "S"
-
-    # Threshold for Bracken re-estimation
-    threshold: 10
-```
-
 ---
 
 ## Output Files
@@ -233,15 +198,10 @@ taxonomic_profiling:
 
 ```
 results/taxonomic_profiling/
-├── raw/
-│   ├── sample1.kraken      # Raw classification output
-│   └── sample1.report      # Taxonomic report
-├── bracken/
-│   └── sample1.bracken     # Corrected abundances
-├── krona/
-│   └── sample1.krona.html  # Interactive visualization
-└── biom/
-    └── feature-table.biom  # QIIME2-compatible table
+├── sample1.kraken          # Raw classification output
+├── sample1.report          # Taxonomic report
+├── sample1.krona.html      # Interactive visualization
+└── feature-table.biom      # QIIME2-compatible table
 ```
 
 ### Kraken2 Report Format
@@ -256,18 +216,6 @@ results/taxonomic_profiling/
 | 6 | Scientific name | Escherichia coli |
 
 **Rank codes**: D=Domain, P=Phylum, C=Class, O=Order, F=Family, G=Genus, S=Species
-
-### Bracken Output Format
-
-| Column | Description |
-|:---|:---|
-| name | Taxonomic name |
-| taxonomy_id | NCBI TaxID |
-| taxonomy_lvl | Taxonomic level |
-| kraken_assigned_reads | Raw Kraken2 counts |
-| added_reads | Estimated additional reads |
-| new_est_reads | Total estimated reads |
-| fraction_total | Proportion of total |
 
 ---
 

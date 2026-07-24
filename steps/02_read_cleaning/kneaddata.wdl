@@ -1,5 +1,5 @@
 
-version development
+version 1.0
 
 workflow kneaddata_workflow {
   input {
