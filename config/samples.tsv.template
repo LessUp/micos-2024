@@ -1,3 +1,12 @@
+# ⚠️ samples.tsv 使用说明：
+#   - micos/ 主链路：通过 `micos full-run --metadata config/samples.tsv` 加载，
+#     按 sample-id 列与 FASTQ 文件名提取的样本名 join，填充 Sample.metadata，
+#     并传递给 QC/物种分类/功能注释各模块。
+#   - scripts/ 独立 R 脚本（differential_abundance_analysis.R）：必需，作为
+#     metadata_file 参数输入，并提供 group_column 用于分组比较。
+#   使用时请删除以 # 开头的行。
+#	列说明：sample-id 唯一标识符 | group 分组 | treatment 处理 | time-point 时间点 |
+#	        subject-id 受试者 | body-site 部位 | age/sex/bmi 协变量 | description 备注
 sample-id	group	treatment	time-point	subject-id	body-site	age	sex	bmi	description
 Sample001	Control	None	T0	Subject01	Gut	25	Female	22.5	健康对照组，基线样本
 Sample002	Control	None	T0	Subject02	Gut	28	Male	24.1	健康对照组，基线样本

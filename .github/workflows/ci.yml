@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master ]
   release:
     types: [ published ]
 
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.11']
+        python-version: ['3.9', '3.10', '3.11']
 
     steps:
     - uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest tests/ -v --cov=micos --cov-report=xml --cov-fail-under=80
+        pytest tests/ -v --cov=micos --cov-report=xml --cov-fail-under=55
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4

@@ -10,6 +10,5 @@ exclude =
     *.egg-info,
     .venv,
     venv,
-    legacy,
     .tox,
     .mypy_cache

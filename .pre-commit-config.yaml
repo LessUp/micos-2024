@@ -4,13 +4,14 @@
 repos:
   # Python代码格式化
   - repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 26.5.1
     hooks:
       - id: black
         language_version: python3
         args: [--line-length=88]
 
   # Python导入排序
+  # 注: isort 9.x 为 beta，保持 5.13.2 稳定末版
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
@@ -18,13 +19,15 @@ repos:
         args: [--profile=black, --line-length=88]
 
   # Python代码质量检查
+  # 注: E501 忽略策略与 .flake8 保持一致
   - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.3.0
     hooks:
       - id: flake8
-        args: [--max-line-length=88, --extend-ignore=E203,W503]
+        args: [--max-line-length=88, --extend-ignore=E203,W503,E501]
 
   # Python类型检查
+  # 注: mypy 2.x 不支持 python_version=3.9，保持 v1.8.0 以兼容项目声明
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
@@ -34,7 +37,7 @@ repos:
 
   # 通用文件检查
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -51,31 +54,29 @@ repos:
 
   # Shell脚本检查
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.9.0.6
+    rev: v0.11.0.1
     hooks:
       - id: shellcheck
         args: [--severity=warning]
 
   # Markdown格式检查
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.38.0
+    rev: v0.49.1
     hooks:
       - id: markdownlint
         args: [--fix]
 
   # YAML格式化
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        types: [yaml]
+  # 注: mirrors-prettier 最新 tag 为 alpha (v4.0.0-alpha.8)，已移除。
+  #     YAML 语法正确性由 pre-commit-hooks.check-yaml 保证。
 
   # 安全性检查
+  # 注: 仅检查不输出报告文件，避免污染工作区。CI 中有独立 bandit 步骤输出报告。
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
+    rev: 1.9.4
     hooks:
       - id: bandit
-        args: [-r, ., -f, json, -o, bandit-report.json]
+        args: [-r, micos/]
         exclude: ^tests/
 
   # 文档字符串检查
@@ -111,7 +112,6 @@ exclude: |
     .*\.log|
     .*\.tmp|
     .*\.temp|
-    legacy_scripts/
   )$
 
 # 安装说明:

@@ -74,7 +74,6 @@ ipython_config.py
 results/
 output/
 logs/
-legacy/
 temp/
 tmp/
 *.log
@@ -158,8 +157,11 @@ config/secrets.yaml
 config/private.conf
 .secrets/
 
-# OMC (oh-my-claudecode) local config
-.omc/
+# Security scan reports (bandit etc.)
+bandit-report.json
+.cache/
+
+# Python version manager (pyenv)
 .python-version
 
 # Large reference databases (add specific patterns as needed)
