@@ -6,12 +6,13 @@
 
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from typing import Self
+    from typing_extensions import Self
 
 
 @dataclass
@@ -34,12 +35,62 @@ class Sample:
     r2_path: Path | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
 
+    @staticmethod
+    def load_metadata(
+        metadata_path: Path,
+        sample_id_column: str = "sample-id",
+    ) -> dict[str, dict[str, Any]]:
+        """加载样本元数据 TSV 文件。
+
+        支持 `config/samples.tsv.template` 格式：首行为表头，以 `#` 开头的行
+        视为注释跳过。返回 {sample_id: {column: value}} 映射。
+
+        Args:
+            metadata_path: TSV 元数据文件路径
+            sample_id_column: 样本 ID 列名（默认 "sample-id"）
+
+        Returns:
+            样本 ID 到元数据字典的映射；文件不存在时返回空字典
+
+        Raises:
+            ValueError: 表头缺少 sample_id_column 列
+        """
+        if not metadata_path.exists():
+            return {}
+
+        rows: list[dict[str, str]] = []
+        with metadata_path.open("r", encoding="utf-8", newline="") as handle:
+            # 跳过以 # 开头的注释行
+            filtered = (line for line in handle if not line.lstrip().startswith("#"))
+            reader = csv.DictReader(filtered, delimiter="\t")
+            if reader.fieldnames is None:
+                return {}
+            if sample_id_column not in reader.fieldnames:
+                raise ValueError(
+                    f"元数据文件缺少样本 ID 列 '{sample_id_column}'，"
+                    f"实际列: {reader.fieldnames}"
+                )
+            for row in reader:
+                rows.append(row)
+
+        metadata: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            sample_id = (row.get(sample_id_column) or "").strip()
+            if not sample_id:
+                continue
+            metadata[sample_id] = {
+                k: v for k, v in row.items() if k != sample_id_column
+            }
+        return metadata
+
     @classmethod
     def discover_paired(
         cls,
         input_dir: Path,
         r1_pattern: str = "*_R1.fastq.gz",
         r2_suffix: str = "_R2.fastq.gz",
+        metadata_path: Path | None = None,
+        sample_id_column: str = "sample-id",
     ) -> list[Self]:
         """发现配对的 FASTQ 样本。
 
@@ -47,32 +98,64 @@ class Sample:
             input_dir: 输入目录
             r1_pattern: R1 文件的 glob 模式
             r2_suffix: R2 文件的后缀（从 R1 文件名推导）
+            metadata_path: 可选的元数据 TSV 文件路径，提供后按 sample-id
+                列与发现的样本名 join，填充 Sample.metadata
+            sample_id_column: 元数据文件中样本 ID 列名
 
         Returns:
             发现的样本列表
 
         Example:
-            >>> samples = Sample.discover_paired(Path("data/"))
+            >>> samples = Sample.discover_paired(
+            ...     Path("data/"),
+            ...     metadata_path=Path("config/samples.tsv"),
+            ... )
             >>> for sample in samples:
-            ...     print(f"{sample.name}: {sample.r1_path.name}")
+            ...     print(f"{sample.name}: {sample.r1_path.name}, group={sample.metadata.get('group')}")
         """
+        metadata_map = (
+            cls.load_metadata(metadata_path, sample_id_column)
+            if metadata_path is not None
+            else {}
+        )
+
         samples: list[Self] = []
+
+        # 从 r1_pattern 推导 R1 后缀（如 "*_R1.fastq.gz" → "_R1.fastq.gz"）
+        r1_suffix = r1_pattern.lstrip("*")
 
         for r1_file in sorted(input_dir.glob(r1_pattern)):
             # 提取样本名
             name = cls._extract_sample_name(r1_file.name, r1_pattern)
 
-            # 推导 R2 文件路径
+            # 推导 R2 文件路径：将 R1 后缀替换为 R2 后缀
             r1_name = r1_file.name
-            # 将 _R1 替换为 _R2
-            r2_name = r1_name.replace("_R1", "_R2")
+            if r1_suffix and r1_name.endswith(r1_suffix):
+                r2_name = r1_name[: -len(r1_suffix)] + r2_suffix
+            else:
+                # 回退：将首个 _R1 替换为 _R2
+                r2_name = r1_name.replace("_R1", "_R2", 1)
             r2_file = r1_file.parent / r2_name
 
             if r2_file.exists():
-                samples.append(cls(name=name, r1_path=r1_file, r2_path=r2_file))
+                samples.append(
+                    cls(
+                        name=name,
+                        r1_path=r1_file,
+                        r2_path=r2_file,
+                        metadata=metadata_map.get(name, {}),
+                    )
+                )
             else:
                 # R2 不存在，创建单端样本
-                samples.append(cls(name=name, r1_path=r1_file, r2_path=None))
+                samples.append(
+                    cls(
+                        name=name,
+                        r1_path=r1_file,
+                        r2_path=None,
+                        metadata=metadata_map.get(name, {}),
+                    )
+                )
 
         return samples
 
@@ -81,16 +164,27 @@ class Sample:
         cls,
         input_dir: Path,
         pattern: str = "*_paired_1.fastq",
+        metadata_path: Path | None = None,
+        sample_id_column: str = "sample-id",
     ) -> list[Self]:
         """发现清洗后的配对样本（KneadData 输出）。
 
         Args:
             input_dir: 输入目录（通常是 kneaddata 输出目录）
             pattern: _paired_1 文件的 glob 模式
+            metadata_path: 可选的元数据 TSV 文件路径，提供后按 sample-id
+                列与发现的样本名 join，填充 Sample.metadata
+            sample_id_column: 元数据文件中样本 ID 列名
 
         Returns:
             发现的样本列表
         """
+        metadata_map = (
+            cls.load_metadata(metadata_path, sample_id_column)
+            if metadata_path is not None
+            else {}
+        )
+
         samples: list[Self] = []
 
         for r1_file in sorted(input_dir.glob(pattern)):
@@ -102,9 +196,23 @@ class Sample:
             r2_file = r1_file.parent / r2_name
 
             if r2_file.exists():
-                samples.append(cls(name=name, r1_path=r1_file, r2_path=r2_file))
+                samples.append(
+                    cls(
+                        name=name,
+                        r1_path=r1_file,
+                        r2_path=r2_file,
+                        metadata=metadata_map.get(name, {}),
+                    )
+                )
             else:
-                samples.append(cls(name=name, r1_path=r1_file, r2_path=None))
+                samples.append(
+                    cls(
+                        name=name,
+                        r1_path=r1_file,
+                        r2_path=None,
+                        metadata=metadata_map.get(name, {}),
+                    )
+                )
 
         return samples
 
@@ -130,8 +238,11 @@ class Sample:
                 name = name[: -len(ext)]
                 break
 
-        # 移除 _R1 或 _R2 后缀
-        name = name.replace("_R1", "").replace("_R2", "")
+        # 移除 _R1 或 _R2 后缀（仅移除末尾一次，避免误删样本名中的 _R1 子串）
+        for suffix in ("_R1", "_R2"):
+            if name.endswith(suffix):
+                name = name[: -len(suffix)]
+                break
 
         return name
 
@@ -183,8 +294,10 @@ class Sample:
 
     def __str__(self) -> str:
         """返回样本的字符串表示。"""
-        if self.is_paired:
-            return f"Sample({self.name}, paired: {self.r1_path.name}, {self.r2_path.name})"
+        if self.is_paired and self.r2_path is not None:
+            return (
+                f"Sample({self.name}, paired: {self.r1_path.name}, {self.r2_path.name})"
+            )
         return f"Sample({self.name}, single: {self.r1_path.name})"
 
     def __repr__(self) -> str:

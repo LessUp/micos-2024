@@ -22,7 +22,8 @@ def run_taxonomic_profiling(
     output_dir: str | Path,
     threads: int,
     kraken2_db: str | Path,
-    confidence: float = 0.0,
+    confidence: float = 0.1,
+    metadata_path: str | Path | None = None,
 ) -> None:
     """执行物种分类 (Kraken2 + Krona).
 
@@ -32,6 +33,8 @@ def run_taxonomic_profiling(
         threads: 线程数
         kraken2_db: Kraken2 数据库路径
         confidence: Kraken2 分类置信度阈值 (0.0-1.0)
+        metadata_path: 可选的样本元数据 TSV 路径，按 sample-id 列
+            与发现的样本名 join 填充 Sample.metadata
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出
@@ -44,7 +47,8 @@ def run_taxonomic_profiling(
     output_path.mkdir(parents=True, exist_ok=True)
 
     # 1. 使用 Sample 类发现清洗后的样本
-    samples = Sample.discover_cleaned(input_path)
+    metadata_arg = Path(metadata_path) if metadata_path else None
+    samples = Sample.discover_cleaned(input_path, metadata_path=metadata_arg)
     if not samples:
         logger.warning("在输入目录中未找到清洗后的配对样本文件，跳过 Kraken2。")
         return
@@ -62,12 +66,19 @@ def run_taxonomic_profiling(
 
         kraken2_cmd = [
             "kraken2",
-            "--db", str(kraken2_db),
-            "--paired", str(sample.r1_path), str(sample.r2_path),
-            "--output", str(kraken2_output),
-            "--report", str(kraken2_report),
-            "--confidence", str(confidence),
-            "--threads", str(threads),
+            "--db",
+            str(kraken2_db),
+            "--paired",
+            str(sample.r1_path),
+            str(sample.r2_path),
+            "--output",
+            str(kraken2_output),
+            "--report",
+            str(kraken2_report),
+            "--confidence",
+            str(confidence),
+            "--threads",
+            str(threads),
         ]
         run_command_live(kraken2_cmd)
 
@@ -79,7 +90,8 @@ def run_taxonomic_profiling(
         kraken_biom_cmd = [
             "kraken-biom",
             *[str(f) for f in report_files],
-            "-o", str(biom_output)
+            "-o",
+            str(biom_output),
         ]
         run_command_live(kraken_biom_cmd)
     else:
@@ -93,10 +105,13 @@ def run_taxonomic_profiling(
             krona_output = output_path / f"{base}.krona.html"
             ktimport_cmd = [
                 "ktImportTaxonomy",
-                "-q", "2",
-                "-t", "3",
+                "-q",
+                "2",
+                "-t",
+                "3",
                 str(report_file),
-                "-o", str(krona_output)
+                "-o",
+                str(krona_output),
             ]
             run_command_live(ktimport_cmd)
     else:

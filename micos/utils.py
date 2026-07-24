@@ -14,15 +14,19 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any, Sequence
 
 import click
 import yaml
 
-from micos.config import AnalysisConfig, load_databases_config_from_yaml, merge_databases_config
+from micos.config import (
+    AnalysisConfig,
+    load_databases_config_from_yaml,
+    merge_databases_config,
+)
 
 
 def setup_logging(level: int = logging.INFO, log_file: str | None = None) -> None:
@@ -32,14 +36,14 @@ def setup_logging(level: int = logging.INFO, log_file: str | None = None) -> Non
         level: 日志级别
         log_file: 日志文件路径（可选）
     """
-    handlers = [logging.StreamHandler(sys.stdout)]
+    handlers: list[logging.Handler] = [logging.StreamHandler(sys.stdout)]
     if log_file:
         handlers.append(logging.FileHandler(log_file))
 
     logging.basicConfig(
         level=level,
-        format='[%(asctime)s] [%(levelname)s] - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S',
+        format="[%(asctime)s] [%(levelname)s] - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
         handlers=handlers,
     )
 
@@ -65,7 +69,7 @@ def run_command_live(command: Sequence[str]) -> None:
         bufsize=1,
     )
     if process.stdout:
-        for line in iter(process.stdout.readline, ''):
+        for line in iter(process.stdout.readline, ""):
             click.echo(line, nl=False)
         process.stdout.close()
 
@@ -91,14 +95,16 @@ def load_config(config_path: str | None = None) -> dict[str, Any]:
     if config_path:
         candidate_paths.append(Path(config_path))
     else:
-        candidate_paths.extend([Path('config/analysis.yaml'), Path('config.yaml')])
+        candidate_paths.extend([Path("config/analysis.yaml"), Path("config.yaml")])
 
     for candidate in candidate_paths:
         if candidate.exists():
-            with candidate.open('r', encoding='utf-8') as handle:
+            with candidate.open("r", encoding="utf-8") as handle:
                 return yaml.safe_load(handle) or {}
 
-    raise FileNotFoundError('未找到可用配置文件，预期位置: config/analysis.yaml 或 config.yaml')
+    raise FileNotFoundError(
+        "未找到可用配置文件，预期位置: config/analysis.yaml 或 config.yaml"
+    )
 
 
 def get_full_run_defaults(config_path: str | None = None) -> dict[str, Any]:
@@ -110,16 +116,22 @@ def get_full_run_defaults(config_path: str | None = None) -> dict[str, Any]:
     Returns:
         包含输入目录、结果目录、线程数和数据库路径的字典。
     """
-    analysis_path = Path(config_path) if config_path else Path('config/analysis.yaml')
+    analysis_path = Path(config_path) if config_path else Path("config/analysis.yaml")
     analysis_config = AnalysisConfig.from_yaml(analysis_path)
-    databases_config = load_databases_config_from_yaml(analysis_path.parent / 'databases.yaml')
+    databases_config = load_databases_config_from_yaml(
+        analysis_path.parent / "databases.yaml"
+    )
     merged_db_paths = merge_databases_config(analysis_config, databases_config)
 
     defaults: dict[str, Any] = {
-        'input_dir': str(analysis_config.input_dir) if analysis_config.input_dir else '',
-        'results_dir': str(analysis_config.results_dir) if analysis_config.results_dir else '',
-        'threads': analysis_config.threads,
-        'kneaddata_db': merged_db_paths.get('kneaddata_db', ''),
-        'kraken2_db': merged_db_paths.get('kraken2_db', ''),
+        "input_dir": (
+            str(analysis_config.input_dir) if analysis_config.input_dir else ""
+        ),
+        "results_dir": (
+            str(analysis_config.results_dir) if analysis_config.results_dir else ""
+        ),
+        "threads": analysis_config.threads,
+        "kneaddata_db": merged_db_paths.get("kneaddata_db", ""),
+        "kraken2_db": merged_db_paths.get("kraken2_db", ""),
     }
     return defaults

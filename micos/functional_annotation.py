@@ -24,6 +24,7 @@ def run_functional_annotation(
     input_dir: str | Path,
     output_dir: str | Path,
     threads: int,
+    metadata_path: str | Path | None = None,
 ) -> None:
     """执行功能注释 (HUMAnN).
 
@@ -34,6 +35,8 @@ def run_functional_annotation(
         input_dir: 输入目录（KneadData 清理后的 FASTQ 文件）
         output_dir: 输出目录
         threads: 线程数
+        metadata_path: 可选的样本元数据 TSV 路径，按 sample-id 列
+            与发现的样本名 join 填充 Sample.metadata
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出
@@ -48,7 +51,8 @@ def run_functional_annotation(
     output_path.mkdir(parents=True, exist_ok=True)
 
     # 1. 使用 Sample 类发现清洗后的样本
-    samples = Sample.discover_cleaned(input_path)
+    metadata_arg = Path(metadata_path) if metadata_path else None
+    samples = Sample.discover_cleaned(input_path, metadata_path=metadata_arg)
     if not samples:
         logger.warning("警告: 在输入目录中未找到清洗后的配对样本文件，跳过 HUMAnN。")
         return
@@ -66,27 +70,31 @@ def run_functional_annotation(
 
         # 合并所有 reads
         files_to_concat: list[Path] = [sample.r1_path]
-        if sample.is_paired:
+        if sample.is_paired and sample.r2_path is not None:
             files_to_concat.append(sample.r2_path)
         if unmatched1_file.exists():
             files_to_concat.append(unmatched1_file)
         if unmatched2_file.exists():
             files_to_concat.append(unmatched2_file)
 
-        with gzip.open(concatenated_file, 'wb') as f_out:
+        with gzip.open(concatenated_file, "wb") as f_out:
             for f_in_path in files_to_concat:
-                opener = gzip.open if f_in_path.suffix == '.gz' else open
-                with opener(f_in_path, 'rb') as f_in:
+                opener = gzip.open if f_in_path.suffix == ".gz" else open
+                with opener(f_in_path, "rb") as f_in:
                     shutil.copyfileobj(f_in, f_out)
 
         # 运行 HUMAnN
         logger.info(f"--> 正在为样本 {sample.name} 运行 HUMAnN...")
         humann_cmd = [
             "humann",
-            "--input", str(concatenated_file),
-            "--output", str(output_path),
-            "--threads", str(threads),
-            "--output-basename", sample.name
+            "--input",
+            str(concatenated_file),
+            "--output",
+            str(output_path),
+            "--threads",
+            str(threads),
+            "--output-basename",
+            sample.name,
         ]
         try:
             run_command_live(humann_cmd)

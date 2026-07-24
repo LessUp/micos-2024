@@ -48,6 +48,7 @@ def test_full_run_uses_config_defaults(tmp_path, monkeypatch):
         skip_taxonomy=False,
         skip_functional=False,
         skip_diversity=False,
+        metadata_path=None,
     ):
         captured.update(
             {
@@ -56,6 +57,7 @@ def test_full_run_uses_config_defaults(tmp_path, monkeypatch):
                 'threads': threads,
                 'kneaddata_db': kneaddata_db_arg,
                 'kraken2_db': kraken2_db_arg,
+                'metadata_path': metadata_path,
             }
         )
 
@@ -72,4 +74,56 @@ def test_full_run_uses_config_defaults(tmp_path, monkeypatch):
         'threads': 6,
         'kneaddata_db': str(kneaddata_db),
         'kraken2_db': str(kraken2_db),
+        'metadata_path': None,
     }
+
+
+def test_full_run_passes_metadata_option(tmp_path, monkeypatch):
+    """full-run --metadata 应传递 metadata_path 到 pipeline。"""
+    config_dir = tmp_path / 'config'
+    config_dir.mkdir()
+    input_dir = tmp_path / 'data' / 'raw_input'
+    input_dir.mkdir(parents=True)
+    results_dir = tmp_path / 'results'
+    kneaddata_db = tmp_path / 'db' / 'kneaddata'
+    kraken2_db = tmp_path / 'db' / 'kraken2'
+    kneaddata_db.mkdir(parents=True)
+    kraken2_db.mkdir(parents=True)
+    metadata_file = tmp_path / 'samples.tsv'
+    metadata_file.write_text(
+        'sample-id\tgroup\nS001\tControl\n', encoding='utf-8'
+    )
+
+    analysis_config = {
+        'paths': {
+            'input_dir': str(input_dir),
+            'output_dir': str(results_dir),
+        },
+        'resources': {'max_threads': 4},
+    }
+    databases_config = {
+        'quality_control': {'kneaddata': {'human_genome': str(kneaddata_db)}},
+        'taxonomy': {'kraken2': {'standard': str(kraken2_db)}},
+    }
+
+    (config_dir / 'analysis.yaml').write_text(yaml.safe_dump(analysis_config), encoding='utf-8')
+    (config_dir / 'databases.yaml').write_text(yaml.safe_dump(databases_config), encoding='utf-8')
+
+    captured = {}
+
+    def fake_run_full_pipeline(
+        input_dir_arg, results_dir_arg, threads,
+        kneaddata_db_arg, kraken2_db_arg,
+        skip_qc=False, skip_taxonomy=False, skip_functional=False,
+        skip_diversity=False, metadata_path=None,
+    ):
+        captured['metadata_path'] = metadata_path
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr('micos.cli.run_full_pipeline', fake_run_full_pipeline)
+
+    runner = CliRunner()
+    result = runner.invoke(main, ['full-run', '--metadata', str(metadata_file)])
+
+    assert result.exit_code == 0, result.output
+    assert captured['metadata_path'] == str(metadata_file)

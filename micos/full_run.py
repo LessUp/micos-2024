@@ -25,12 +25,13 @@ def run_full_pipeline(
     input_dir: str,
     results_dir: str,
     threads: int,
-    kneaddata_db: str,
-    kraken2_db: str,
+    kneaddata_db: str | None,
+    kraken2_db: str | None,
     skip_qc: bool = False,
     skip_taxonomy: bool = False,
     skip_functional: bool = False,
     skip_diversity: bool = False,
+    metadata_path: str | None = None,
 ) -> None:
     """按顺序执行完整的分析流程.
 
@@ -44,8 +45,12 @@ def run_full_pipeline(
         skip_taxonomy: 跳过物种分类步骤
         skip_functional: 跳过功能注释步骤
         skip_diversity: 跳过多样性分析步骤
+        metadata_path: 可选的样本元数据 TSV 路径，传递给各模块用于
+            按 sample-id 列 join 填充 Sample.metadata
     """
     logger.info("MICOS 完整分析流程开始...")
+    if metadata_path:
+        logger.info(f"使用样本元数据: {metadata_path}")
 
     results_root = Path(results_dir)
     qc_output_dir = results_root / QUALITY_CONTROL_DIR
@@ -57,12 +62,15 @@ def run_full_pipeline(
 
     # 步骤1: 质量控制
     if not skip_qc:
+        if not kneaddata_db:
+            raise ValueError("kneaddata_db 不能为 None（skip_qc=False 时必须提供）")
         try:
             run_qc(
                 input_dir=input_dir,
                 output_dir=str(qc_output_dir),
                 threads=threads,
                 kneaddata_db=kneaddata_db,
+                metadata_path=metadata_path,
             )
         except Exception as exc:
             logger.error(f"质量控制步骤失败: {exc}", exc_info=True)
@@ -72,12 +80,15 @@ def run_full_pipeline(
 
     # 步骤2: 物种分类
     if not skip_taxonomy:
+        if not kraken2_db:
+            raise ValueError("kraken2_db 不能为 None（skip_taxonomy=False 时必须提供）")
         try:
             run_taxonomic_profiling(
                 input_dir=str(kneaddata_output),
                 output_dir=str(tax_output_dir),
                 threads=threads,
                 kraken2_db=kraken2_db,
+                metadata_path=metadata_path,
             )
         except Exception as exc:
             logger.error(f"物种分类步骤失败: {exc}", exc_info=True)
@@ -110,6 +121,7 @@ def run_full_pipeline(
                 input_dir=str(kneaddata_output),
                 output_dir=str(func_output_dir),
                 threads=threads,
+                metadata_path=metadata_path,
             )
         except Exception as exc:
             logger.error(f"功能注释步骤失败: {exc}", exc_info=True)

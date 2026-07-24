@@ -23,6 +23,7 @@ def run_qc(
     output_dir: str | Path,
     threads: int,
     kneaddata_db: str | Path,
+    metadata_path: str | Path | None = None,
 ) -> None:
     """执行质量控制 (FastQC + KneadData).
 
@@ -34,6 +35,8 @@ def run_qc(
         output_dir: 输出目录
         threads: 线程数
         kneaddata_db: KneadData 数据库路径
+        metadata_path: 可选的样本元数据 TSV 路径，按 sample-id 列
+            与发现的样本名 join 填充 Sample.metadata
 
     Raises:
         subprocess.CalledProcessError: 工具执行失败时抛出
@@ -51,10 +54,17 @@ def run_qc(
     kneaddata_output_dir.mkdir(parents=True, exist_ok=True)
 
     # 2. 使用 Sample 类发现样本
-    samples = Sample.discover_paired(input_path)
+    metadata_arg = Path(metadata_path) if metadata_path else None
+    samples = Sample.discover_paired(input_path, metadata_path=metadata_arg)
     if not samples:
         logger.warning("在输入目录中未找到配对的 FASTQ 文件。")
         return
+
+    if metadata_arg:
+        matched = sum(1 for s in samples if s.metadata)
+        logger.info(
+            f"已加载 {matched}/{len(samples)} 个样本的元数据 (来源: {metadata_arg})"
+        )
 
     # 3. 运行 FastQC
     logger.info("--> 正在运行 FastQC...")
@@ -65,8 +75,10 @@ def run_qc(
     fastqc_cmd = [
         "fastqc",
         *all_fastq_files,
-        "-o", str(fastqc_output_dir),
-        "-t", str(threads)
+        "-o",
+        str(fastqc_output_dir),
+        "-t",
+        str(threads),
     ]
     try:
         run_command_live(fastqc_cmd)
@@ -87,18 +99,26 @@ def run_qc(
 
         kneaddata_cmd = [
             "kneaddata",
-            "--input", str(sample.r1_path),
-            "--input", str(sample.r2_path),
-            "--output", str(kneaddata_output_dir),
-            "--reference-db", str(kneaddata_db),
-            "--threads", str(threads),
-            "--output-prefix", sample.name
+            "--input",
+            str(sample.r1_path),
+            "--input",
+            str(sample.r2_path),
+            "--output",
+            str(kneaddata_output_dir),
+            "--reference-db",
+            str(kneaddata_db),
+            "--threads",
+            str(threads),
+            "--output-prefix",
+            sample.name,
         ]
         try:
             run_command_live(kneaddata_cmd)
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             logger.error(f"KneadData 运行失败 (样本: {sample.name}): {e}")
-            logger.error("请确保 kneaddata 已安装并位于系统的 PATH 中，并且数据库路径正确。")
+            logger.error(
+                "请确保 kneaddata 已安装并位于系统的 PATH 中，并且数据库路径正确。"
+            )
             raise
 
     logger.info("质量控制分析完成。")
