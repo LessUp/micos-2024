@@ -68,20 +68,7 @@ graph LR
 | 存储 | 100 GB 可用空间 | — |
 | CPU | 多核处理器 | 16 核+ |
 
-### 方式一：Docker（推荐）
-
-```bash
-git clone https://github.com/LessUp/micos-2024.git
-cd MICOS-2024
-
-# 启动核心分析服务
-docker compose -f deploy/docker-compose.example.yml up -d
-
-# 运行测试数据验证
-./scripts/run_test_data.sh
-```
-
-### 方式二：Conda
+### Conda
 
 ```bash
 # 安装 Miniforge（如尚未安装）
@@ -187,7 +174,6 @@ MICOS-2024 依赖以下参考数据库：
 ├── workflows/              # WDL 工作流定义
 ├── config/                 # 配置模板（分析参数、数据库路径、样本元数据）
 ├── containers/singularity/ # Singularity 容器定义
-├── deploy/                 # Docker Compose 部署配置
 ├── data/raw_input/         # 原始测序数据输入目录
 ├── docs/                   # VitePress 文档站（中英双语）
 ├── tests/                  # 单元测试与集成测试
@@ -257,7 +243,6 @@ MICOS-2024 是参加 2024 届"猛犸杯"大赛的参赛作品，聚焦**宏基�
 - **报告问题 / 功能建议**：[GitHub Issues](https://github.com/LessUp/micos-2024/issues)
 - **参与讨论**：[GitHub Discussions](https://github.com/LessUp/micos-2024/discussions)
 - **故障排除**：[常见问题](docs/zh/troubleshooting.md)
-- **安全策略**：[SECURITY.md](SECURITY.md)
 
 ## 许可证
 

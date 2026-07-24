@@ -40,7 +40,7 @@ micos full-run --input-dir data/raw_input --results-dir results
 
 ### 容器路径
 
-`deploy/docker-compose.example.yml` 与 `containers/singularity/*.def` 描述的是环境策略。对于生信平台来说，这一层非常关键，因为很多失败发生在环境边界，而不是算法边界。
+`containers/singularity/*.def` 描述的是环境策略。对于生信平台来说，这一层非常关键，因为很多失败发生在环境边界，而不是算法边界。
 
 ## 按职责划分
 
@@ -48,7 +48,7 @@ micos full-run --input-dir data/raw_input --results-dir results
 | --- | --- | --- |
 | 命令体验 | `micos/cli.py` | shell wrappers |
 | 流程编排 | `micos/full_run.py` | 其他 `micos/` 模块 |
-| 可重现环境 | `deploy/`, `containers/` | workflow assets |
+| 可重现环境 | `containers/` | workflow assets |
 | 配置模板 | `config/*.template` | CLI 配置加载 |
 | 扩展分析 | `scripts/` | 结果目录 |
 

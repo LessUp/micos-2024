@@ -7,6 +7,10 @@
 *.swo
 *~
 
+# AI assistant local data
+.devin/
+.claude/
+
 # Environment files
 .env
 .env.local

@@ -160,7 +160,7 @@ const references = [
         </div>
         <div class="micos-panel">
           <h3>工作流资产</h3>
-          <p><code>steps/</code>、<code>deploy/</code> 与 <code>containers/</code> 把项目扩展到可重现执行环境和步骤级编排模式。</p>
+          <p><code>steps/</code> 与 <code>containers/</code> 把项目扩展到可重现执行环境和步骤级编排模式。</p>
         </div>
         <div class="micos-panel">
           <h3>研究姿态</h3>
@@ -185,7 +185,6 @@ flowchart LR
     C --> F[results/]
     C --> G[config/*.template]
     H[steps/*.wdl] --> I[工作流执行环境]
-    J[deploy/docker-compose.example.yml] --> I
     K[containers/singularity/*.def] --> I
 ```
 

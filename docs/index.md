@@ -7,9 +7,6 @@ hero:
     - theme: brand
       text: 简体中文
       link: /zh/
-    - theme: alt
-      text: English
-      link: /en/
 ---
 
 <script setup>

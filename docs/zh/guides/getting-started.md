@@ -12,7 +12,7 @@ title: 快速开始
 | --- | --- | --- |
 | Python CLI | 本地开发、可控环境 | `micos` 或 `python -m micos.cli` |
 | Shell 包装层 | 兼容旧用法 | `scripts/run_full_analysis.sh`, `scripts/run_module.sh` |
-| 工作流与容器 | 集成部署、可重现环境 | `steps/`, `deploy/`, `containers/` |
+| 工作流与容器 | 集成部署、可重现环境 | `steps/`, `containers/` |
 
 ## 最短可信路径
 
@@ -70,14 +70,13 @@ python -m micos.cli full-run \
 
 ## 如果你更想用容器
 
-仓库提供了 Docker Compose 示例：
+仓库提供了 Singularity 定义文件，用于锁定执行环境：
 
 ```bash
-docker compose -f deploy/docker-compose.example.yml config
-docker compose -f deploy/docker-compose.example.yml up -d
+sudo singularity build kraken2.sif steps/03_taxonomic_profiling_kraken/kraken2.def
 ```
 
-需要注意，这个 compose 文件更接近环境示例和就绪脚手架，而不是对全流程的“一键全自动承诺”。
+需要注意，容器定义更接近环境锁定脚手架，而不是对全流程的”一键全自动承诺”。
 
 ## 第一次运行之后看什么
 

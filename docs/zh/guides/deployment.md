@@ -58,7 +58,6 @@ MICOS-2024 可以用多种方式部署，但这些方式并不等价。不同模
 
 相关资产：
 
-- `deploy/docker-compose.example.yml`
 - `containers/singularity/*.def`
 
 ## 实践建议

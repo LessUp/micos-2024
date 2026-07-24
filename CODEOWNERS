@@ -1,8 +1,0 @@
-# CODEOWNERS - MICOS-2024 项目代码所有权
-# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
-
-# 默认所有者
-* @LessUp
-
-# 全部模块由 LessUp 维护
-# micos/ steps/ workflows/ docs/ config/ tests/ scripts/ .github/

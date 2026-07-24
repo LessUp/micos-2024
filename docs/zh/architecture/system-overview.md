@@ -18,7 +18,7 @@ MICOS-2024 的架构有意思的地方，在于它不是单一实现风格的仓
 | Python 编排 | `micos/*.py` | 串联质控、分类、多样性、功能注释、汇总 | 高 |
 | Shell 包装层 | `scripts/run_full_analysis.sh`, `scripts/run_module.sh` | 向后兼容的便捷入口 | 中 |
 | 工作流资产 | `steps/**/*.wdl` | 步骤级可移植工作流定义 | 中 |
-| 环境资产 | `deploy/`, `containers/singularity/` | 可重现运行环境 | 中 |
+| 环境资产 | `containers/singularity/` | 可重现运行环境 | 中 |
 | 专家脚本 | `scripts/*.py`, `scripts/*.R` | 主 CLI 之外的扩展分析 | 可变 |
 
 ## 边界感为什么重要
@@ -43,7 +43,7 @@ flowchart TB
     C --> I[results/]
     J[config/*.template] --> B
     K[steps/*.wdl] --> L[workflow engines]
-    M[deploy/docker-compose.example.yml] --> N[containerized services]
+    M[containers/singularity/*.def] --> N[containerized services]
     O[scripts/*.py 和 *.R] --> I
 ```
 

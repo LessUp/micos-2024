@@ -6,7 +6,7 @@
 version: 2
 
 updates:
-  # Python 依赖 (requirements*.txt)
+  # Python 依赖 (pyproject.toml)
   - package-ecosystem: "pip"
     directory: "/"
     schedule:

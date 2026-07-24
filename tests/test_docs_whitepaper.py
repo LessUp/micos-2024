@@ -19,12 +19,9 @@ def test_whitepaper_theme_components_exist() -> None:
     assert (components_dir / "ReferenceList.vue").exists()
 
 
-def test_bilingual_whitepaper_sections_exist() -> None:
-    """Both locales should expose academy, architecture, and research sections."""
+def test_whitepaper_sections_exist() -> None:
+    """The docs site should expose academy, architecture, and research sections."""
     expected_pages = [
-        DOCS_ROOT / "en" / "academy" / "pipeline-foundations.md",
-        DOCS_ROOT / "en" / "architecture" / "system-overview.md",
-        DOCS_ROOT / "en" / "research" / "citations.md",
         DOCS_ROOT / "zh" / "academy" / "pipeline-foundations.md",
         DOCS_ROOT / "zh" / "architecture" / "system-overview.md",
         DOCS_ROOT / "zh" / "research" / "citations.md",
@@ -38,9 +35,6 @@ def test_theme_assets_and_navigation_are_upgraded() -> None:
     """The docs shell should register new IA sections and theme-aware illustrations."""
     config_text = (DOCS_ROOT / ".vitepress" / "config.ts").read_text(encoding="utf-8")
 
-    assert "Academy" in config_text
-    assert "Architecture" in config_text
-    assert "Research" in config_text
     assert "学院" in config_text
     assert "架构" in config_text
     assert "研究" in config_text

@@ -86,7 +86,7 @@ Fixes #123
 
 - **GitHub Issues**：问题报告和功能讨论
 - **GitHub Discussions**：一般讨论和问答
-- **文档**：查看[故障排除指南](docs/en/troubleshooting.md)
+- **文档**：查看[故障排除指南](docs/zh/troubleshooting.md)
 
 ## 许可证
 

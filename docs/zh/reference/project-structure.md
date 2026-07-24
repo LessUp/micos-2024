@@ -14,10 +14,9 @@ title: 项目结构
 | `config/` | 配置模板与样本元数据 |
 | `steps/` | 步骤级 WDL 工作流资产 |
 | `scripts/` | 包装层和主 CLI 之外的专家分析脚本 |
-| `deploy/` | Docker Compose 示例 |
 | `containers/` | Singularity 定义与环境资产 |
 | `tests/` | Python 工具函数与包装层回归测试 |
-| `docs/` | 双语白皮书式文档站 |
+| `docs/` | 白皮书式文档站 |
 
 ## 稳定核心
 

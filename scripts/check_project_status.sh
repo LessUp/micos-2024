@@ -61,16 +61,12 @@ check_required_files() {
         "README.md"
         "LICENSE"
         "CONTRIBUTING.md"
-        "CODE_OF_CONDUCT.md"
         "CITATION.md"
-        "SECURITY.md"
         "CHANGELOG.md"
-        "requirements.txt"
         "environment.yml"
         "pyproject.toml"
         ".gitignore"
         ".pre-commit-config.yaml"
-        "deploy/docker-compose.example.yml"
     )
     
     local missing_files=()
@@ -104,7 +100,6 @@ check_directory_structure() {
         "steps"
         "workflows"
         "containers"
-        "deploy"
         ".github/ISSUE_TEMPLATE"
         "tests"
     )
@@ -175,7 +170,6 @@ check_scripts() {
         "scripts/run_full_analysis.sh"
         "scripts/run_module.sh"
         "scripts/verify_installation.sh"
-        "scripts/run_test_data.sh"
         "scripts/amplicon_analysis.py"
         "scripts/differential_abundance_analysis.R"
         "scripts/metatranscriptome_analysis.py"
@@ -266,31 +260,12 @@ check_code_quality() {
 check_dependencies() {
     log_step "检查依赖文件..."
     
-    # 检查requirements.txt
-    if [[ -f "$PROJECT_ROOT/requirements.txt" ]]; then
-        local req_count=$(grep -c "^[^#]" "$PROJECT_ROOT/requirements.txt" || echo "0")
-        log_success "requirements.txt包含 $req_count 个依赖包"
-    fi
-    
     # 检查environment.yml
     if [[ -f "$PROJECT_ROOT/environment.yml" ]]; then
         if grep -q "dependencies:" "$PROJECT_ROOT/environment.yml"; then
             log_success "environment.yml格式正确"
         else
             log_warning "environment.yml格式可能有问题"
-        fi
-    fi
-    
-    # 检查Docker Compose示例文件
-    if [[ -f "$PROJECT_ROOT/deploy/docker-compose.example.yml" ]]; then
-        if docker compose version &> /dev/null; then
-            if docker compose -f "$PROJECT_ROOT/deploy/docker-compose.example.yml" config &>/dev/null; then
-                log_success "deploy/docker-compose.example.yml 配置有效"
-            else
-                log_warning "deploy/docker-compose.example.yml 配置有问题"
-            fi
-        else
-            log_warning "docker compose 未安装，跳过配置检查"
         fi
     fi
 }

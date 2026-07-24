@@ -1,6 +1,7 @@
 # MICOS-2024 领域词汇表
 
-> 本文件定义项目的核心概念和领域语言，确保代码和文档使用一致的术语。
+> 本文件定义项目的核心概念与领域语言，确保代码和文档使用一致的术语。
+> 架构、分析流程、数据流向、配置层次、错误处理等见 [AGENTS.md](AGENTS.md)。
 
 ---
 
@@ -26,82 +27,8 @@
 
 - **定义**: 样本 × 物种/功能的计数矩阵
 - **格式**: BIOM (Biological Observation Matrix)
-- **生成**: Kraken2 → kraken-biom → feature-table.biom
+- **生成**: Kraken2 -> kraken-biom -> feature-table.biom
 - **用途**: 多样性分析的输入
-
----
-
-## 分析阶段
-
-### 1. 质量控制 (Quality Control)
-
-- **工具**: FastQC + KneadData
-- **输入**: 原始 FASTQ 文件
-- **输出**: FastQC 报告、清洗后的读长
-- **模块**: `micos.quality_control.run_qc()`
-
-### 2. 物种分类 (Taxonomic Profiling)
-
-- **工具**: Kraken2 + Kraken-BIOM + Krona
-- **输入**: 清洗后的读长
-- **输出**: 分类报告、BIOM 文件、Krona 图表
-- **模块**: `micos.taxonomic_profiling.run_taxonomic_profiling()`
-
-### 3. 多样性分析 (Diversity Analysis)
-
-- **工具**: QIIME2
-- **输入**: BIOM 特征表
-- **输出**: Alpha/Beta 多样性指标
-- **模块**: `micos.diversity_analysis.run_diversity_analysis()`
-
-### 4. 功能注释 (Functional Annotation)
-
-- **工具**: HUMAnN
-- **输入**: 清洗后的读长
-- **输出**: 功能通路丰度表
-- **模块**: `micos.functional_annotation.run_functional_annotation()`
-
-### 5. 结果汇总 (Result Summarization)
-
-- **输出**: HTML 报告
-- **模块**: `micos.summarize_results.run_summarize()`
-
----
-
-## 数据流向
-
-```
-原始 FASTQ (input_dir)
-    │
-    ▼
-┌─────────────────────────┐
-│  质量控制 (QC)           │
-│  FastQC + KneadData     │
-└─────────────────────────┘
-    │
-    ▼
-清洗后的读长 (clean reads)
-    │
-    ├──────────────────────────┐
-    │                          │
-    ▼                          ▼
-┌───────────────────┐  ┌───────────────────┐
-│ 物种分类          │  │ 功能注释          │
-│ Kraken2 + Krona   │  │ HUMAnN            │
-└───────────────────┘  └───────────────────┘
-    │
-    ▼
-特征表 (BIOM)
-    │
-    ▼
-┌───────────────────┐
-│ 多样性分析        │
-│ QIIME2            │
-└───────────────────┘
-    │
-    ▼
-HTML 报告
-```
 
 ---
 
@@ -126,40 +53,6 @@ HTML 报告
 - **定义**: 接口存在的地方，行为可以在此被修改
 - **示例**: `run_command_live()` - 命令执行的统一入口，测试可通过 monkeypatch 替换
 - **原则**: 一个 adapter = 假设的接缝；两个 adapter = 真正的接缝
-
----
-
-## 配置层次
-
-### 分析配置 (AnalysisConfig)
-
-- **位置**: `micos.config.AnalysisConfig`
-- **格式**: Pydantic 模型
-- **字段**:
-  - `paths.input_dir`: 输入目录
-  - `paths.output_dir`: 输出目录
-  - `resources.max_threads`: 最大线程数
-  - `paths.databases.kneaddata`: KneadData 数据库路径（可选）
-  - `paths.databases.kraken2`: Kraken2 数据库路径（可选）
-
-### 数据库配置 (DatabasesConfig)
-
-- **位置**: `config/databases.yaml`
-- **字段**:
-  - `quality_control.kneaddata.human_genome`: KneadData 人类基因组数据库
-  - `taxonomy.kraken2.standard`: Kraken2 标准数据库
-
----
-
-## 错误处理
-
-### 自定义异常
-
-项目使用 Python 标准异常，遵循 KISS 原则：
-
-- `subprocess.CalledProcessError`: 工具执行失败
-- `FileNotFoundError`: 文件或工具不存在
-- `ValueError`: 参数验证失败
 
 ---
 

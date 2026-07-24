@@ -101,8 +101,7 @@ cd MICOS-2024
 python -m venv venv
 source venv/bin/activate
 
-# 安装依赖
-pip install -r requirements.txt
+# 安装依赖（核心 + 开发工具）
 pip install -e ".[dev]"
 
 # 安装 pre-commit hooks
@@ -219,9 +218,6 @@ chore(deps): bump pandas to 2.0.0
 ```bash
 # 构建 Kraken2 镜像
 docker build -t micos-kraken2:latest steps/03_taxonomic_profiling_kraken/
-
-# 使用 docker-compose
-docker compose -f deploy/docker-compose.example.yml up -d
 ```
 
 ### Singularity 支持
