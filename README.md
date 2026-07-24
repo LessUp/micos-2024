@@ -8,7 +8,7 @@
 [![WDL](https://img.shields.io/badge/WDL-Workflow-green.svg)](https://openwdl.org/)
 [![QIIME2](https://img.shields.io/badge/QIIME2-2024.5-orange.svg)](https://qiime2.org/)
 [![Kraken2](https://img.shields.io/badge/Kraken2-2.1.3-red.svg)](https://ccb.jhu.edu/software/kraken2/)
-[![GitHub stars](https://img.shields.io/github/stars/BGI-MICOS/MICOS-2024.svg?style=social&label=Star)](https://github.com/BGI-MICOS/MICOS-2024)
+[![GitHub stars](https://img.shields.io/github/stars/LessUp/micos-2024.svg?style=social&label=Star)](https://github.com/LessUp/micos-2024)
 
 **2024“猛犸杯”国际生命科学数据创新大赛 · 参赛作品**
 
@@ -138,7 +138,7 @@ graph LR
 
 ```bash
 # 克隆项目
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
+git clone https://github.com/LessUp/micos-2024.git
 cd MICOS-2024
 
 # 启动核心分析服务（示例 Compose）
@@ -156,7 +156,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 bash Miniforge3-Linux-x86_64.sh
 
 # 创建环境
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
+git clone https://github.com/LessUp/micos-2024.git
 cd MICOS-2024
 mamba env create -f environment.yml
 conda activate micos-2024
@@ -309,14 +309,14 @@ java -jar cromwell.jar run \
 
 我们欢迎社区贡献！请查看 [贡献指南](CONTRIBUTING.md) 了解详情。
 
-- **报告问题**: [提交Issue](https://github.com/BGI-MICOS/MICOS-2024/issues)
-- **功能建议**: [提交Feature Request](https://github.com/BGI-MICOS/MICOS-2024/issues)
+- **报告问题**: [提交Issue](https://github.com/LessUp/micos-2024/issues)
+- **功能建议**: [提交Feature Request](https://github.com/LessUp/micos-2024/issues)
 - **代码贡献**: Fork项目并提交Pull Request
 
 ## 获取帮助
 
-- **GitHub Issues**: [报告问题](https://github.com/BGI-MICOS/MICOS-2024/issues)
-- **GitHub Discussions**: [参与讨论](https://github.com/BGI-MICOS/MICOS-2024/discussions)
+- **GitHub Issues**: [报告问题](https://github.com/LessUp/micos-2024/issues)
+- **GitHub Discussions**: [参与讨论](https://github.com/LessUp/micos-2024/discussions)
 - **故障排除**: [查看常见问题](docs/en/troubleshooting.md)
 - **安全策略**: 查看 `SECURITY.md`
 
@@ -342,7 +342,5 @@ java -jar cromwell.jar run \
 <div align="center">
 
 **MICOS-2024** | 2024“猛犸杯”国际生命科学数据创新大赛参赛作品
-
-[![GitHub stars](https://img.shields.io/github/stars/BGI-MICOS/MICOS-2024.svg?style=social&label=Star)](https://github.com/BGI-MICOS/MICOS-2024)
 
 </div>
