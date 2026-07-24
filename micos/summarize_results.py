@@ -95,16 +95,17 @@ def render_html(
             continue
         parts.append("<ul>")
         for file_path in files:
-            if file_path.is_relative_to(report_dir):
-                rel = file_path.relative_to(report_dir)
+            resolved_file = file_path.resolve()
+            if resolved_file.is_relative_to(report_dir):
+                rel = resolved_file.relative_to(report_dir)
             else:
                 try:
-                    rel = Path(os.path.relpath(file_path, start=report_dir))
+                    rel = Path(os.path.relpath(resolved_file, start=report_dir))
                 except ValueError:
-                    rel = file_path
+                    rel = resolved_file
             parts.append(
                 f'<li><a class="path" href="{html.escape(rel.as_posix())}" target="_blank">'
-                f'{html.escape(rel.as_posix())}</a></li>'
+                f"{html.escape(rel.as_posix())}</a></li>"
             )
         parts.append("</ul>")
 

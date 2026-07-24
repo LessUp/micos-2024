@@ -48,10 +48,15 @@ def run_diversity_analysis(
     logger.info("--> 正在导入 BIOM 表到 QIIME2...")
     feature_table_qza = output_path / "feature-table.qza"
     import_cmd = [
-        "qiime", "tools", "import",
-        "--input-path", str(input_biom_path),
-        "--type", "FeatureTable[Frequency]",
-        "--output-path", str(feature_table_qza)
+        "qiime",
+        "tools",
+        "import",
+        "--input-path",
+        str(input_biom_path),
+        "--type",
+        "FeatureTable[Frequency]",
+        "--output-path",
+        str(feature_table_qza),
     ]
     try:
         run_command_live(import_cmd)
@@ -64,10 +69,15 @@ def run_diversity_analysis(
     logger.info("--> 正在计算 Alpha 多样性 (Shannon)...")
     alpha_div_qza = output_path / "shannon.qza"
     alpha_cmd = [
-        "qiime", "diversity", "alpha",
-        "--i-table", str(feature_table_qza),
-        "--p-metric", "shannon",
-        "--o-alpha-diversity", str(alpha_div_qza)
+        "qiime",
+        "diversity",
+        "alpha",
+        "--i-table",
+        str(feature_table_qza),
+        "--p-metric",
+        "shannon",
+        "--o-alpha-diversity",
+        str(alpha_div_qza),
     ]
     try:
         run_command_live(alpha_cmd)
@@ -79,10 +89,15 @@ def run_diversity_analysis(
     logger.info("--> 正在计算 Beta 多样性 (Bray-Curtis)...")
     beta_div_qza = output_path / "bray-curtis.qza"
     beta_cmd = [
-        "qiime", "diversity", "beta",
-        "--i-table", str(feature_table_qza),
-        "--p-metric", "braycurtis",
-        "--o-distance-matrix", str(beta_div_qza)
+        "qiime",
+        "diversity",
+        "beta",
+        "--i-table",
+        str(feature_table_qza),
+        "--p-metric",
+        "braycurtis",
+        "--o-distance-matrix",
+        str(beta_div_qza),
     ]
     try:
         run_command_live(beta_cmd)
