@@ -8,7 +8,7 @@
 
 ```
 MICOS-2024 Team. (2024). MICOS-2024: Metagenomic Intelligence and Comprehensive Omics Suite. 
-GitHub repository. https://github.com/BGI-MICOS/MICOS-2024
+GitHub repository. https://github.com/LessUp/micos-2024
 ```
 
 ### BibTeX格式
@@ -18,7 +18,7 @@ GitHub repository. https://github.com/BGI-MICOS/MICOS-2024
   title = {MICOS-2024: Metagenomic Intelligence and Comprehensive Omics Suite},
   author = {{MICOS-2024 Team}},
   year = {2024},
-  url = {https://github.com/BGI-MICOS/MICOS-2024},
+  url = {https://github.com/LessUp/micos-2024},
   note = {华大基因"猛犸杯"生物信息学竞赛参赛项目}
 }
 ```
@@ -27,7 +27,7 @@ GitHub repository. https://github.com/BGI-MICOS/MICOS-2024
 
 ```
 MICOS-2024 Team. MICOS-2024: A comprehensive metagenomic analysis suite for microbiome research. 
-Available at: https://github.com/BGI-MICOS/MICOS-2024 (2024).
+Available at: https://github.com/LessUp/micos-2024 (2024).
 ```
 
 ## 相关工具引用
@@ -107,8 +107,8 @@ https://doi.org/10.1371/journal.pone.0061217
 
 如有引用相关问题，请通过以下方式联系：
 
-- GitHub Issues: https://github.com/BGI-MICOS/MICOS-2024/issues
-- GitHub Discussions: https://github.com/BGI-MICOS/MICOS-2024/discussions
+- GitHub Issues: https://github.com/LessUp/micos-2024/issues
+- GitHub Discussions: https://github.com/LessUp/micos-2024/discussions
 
 ---
 
