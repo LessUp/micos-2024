@@ -77,7 +77,7 @@ bash Miniforge3-Linux-x86_64.sh
 
 # 创建环境并激活
 git clone https://github.com/LessUp/micos-2024.git
-cd MICOS-2024
+cd micos-2024
 mamba env create -f environment.yml
 conda activate micos-2024
 

@@ -19,8 +19,8 @@ title: 快速开始
 ### 1. 克隆并安装
 
 ```bash
-git clone https://github.com/BGI-MICOS/MICOS-2024.git
-cd MICOS-2024
+git clone https://github.com/LessUp/micos-2024.git
+cd micos-2024
 pip install -e ".[dev]"
 ```
 
