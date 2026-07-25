@@ -140,9 +140,11 @@ git rm docs/.vitepress/utils/lang.ts
 
       - name: Build
         run: npm run build
+        env:
+          VITEPRESS_BASE: /micos-2024/
 ```
 
-只验证构建成功，不部署。与 `pages.yml` 的部署职责分离。
+只验证构建成功，不部署。与 `pages.yml` 的部署职责分离。`VITEPRESS_BASE` 与 `pages.yml` 保持一致，确保 CI 构建产物与部署环境的 base path 相同（`config.ts` 读取此 env）。
 
 ### 3.2 验证
 

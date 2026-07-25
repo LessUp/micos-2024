@@ -92,3 +92,5 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITEPRESS_BASE: /micos-2024/

@@ -103,3 +103,23 @@
 ### 未 commit
 
 所有变更停留在工作区/暂存区，未提交。git status：12 文件修改、11 文件删除（lang.ts + 10 WDL）、4 新测试文件。
+
+## Session 5 - 2026-07-24（修复评审遗留项）
+
+### 修复内容
+
+补齐 Phase 3 评审遗留项：`ci.yml` docs job 的 Build 步骤缺少 `VITEPRESS_BASE` env，导致 CI 构建时 `config.ts:5` 的 `base` 为 undefined，与 `pages.yml` 部署环境（`/micos-2024/`）不一致，产物内部链接路径错乱且 favicon href 生成 `undefinedbrand/...`。
+
+| 文件 | 改动 |
+|------|------|
+| `.github/workflows/ci.yml` | docs job Build 步骤新增 `env: VITEPRESS_BASE: /micos-2024/`，与 `pages.yml:47` 一致 |
+| `task_plan.md` | Phase 3.1 示例同步补充 env，避免文档与实际脱节 |
+
+### 验证
+
+- YAML 语法校验通过（`yaml.safe_load`）
+- `grep VITEPRESS_BASE`：ci.yml:96 与 pages.yml:47 均为 `/micos-2024/`，一致
+
+### 备注
+
+Session 4 的 7 个 Phase 已于后续提交（commit 369cc40 / c4d57e2 / 62a808b / 5976587）。本次为评审遗留的单点修复。
