@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 task krona {
     input {
@@ -8,8 +8,8 @@ task krona {
 
     command {
         ktImportTaxonomy \
-        -o ${output_filename} \
-        ${input_file}
+        -o ~{output_filename} \
+        ~{input_file}
     }
 
     runtime {
@@ -19,7 +19,7 @@ task krona {
     }
 
     output {
-        File output_html = "${output_filename}"
+        File output_html = "~{output_filename}"
     }
 }
 

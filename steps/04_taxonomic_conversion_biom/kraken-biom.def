@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: python:3.6.15-buster
+From: python:3.9-slim
 
 %post
     # 设置工作目录

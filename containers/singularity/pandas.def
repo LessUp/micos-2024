@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: python:3.8
+From: python:3.9-slim
 
 %post
     # 使用 pip 安装 pandas 版本 1.1.5

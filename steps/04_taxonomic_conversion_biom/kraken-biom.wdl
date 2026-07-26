@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 workflow kraken_biom_workflow {
     input {
@@ -24,16 +24,16 @@ task kraken_biom {
     }
 
     command {
-        kraken-biom ${sep=" " input_files} --fmt hdf5 -o ${output_filename}
+        kraken-biom ~{sep=" " input_files} --fmt hdf5 -o ~{output_filename}
     }
 
     runtime {
-        docker: "shuai/kraken-biom:1.0.0"
+        docker: "shuai/kraken-biom:1.2.0"
         memory: "4 GB"
         cpu: 1
     }
 
     output {
-        File output_biom = "${output_filename}"
+        File output_biom = "~{output_filename}"
     }
 }

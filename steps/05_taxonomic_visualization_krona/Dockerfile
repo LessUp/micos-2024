@@ -20,18 +20,15 @@ ARG https_proxy
 ################## INSTALLATION ######################
 USER root
 
-RUN apt-get clean all && \
+RUN apt-get clean && \
     apt-get update && \
     apt-get install -y apt-utils curl && \
     conda config --set ssl_verify no && \
     conda install -c bioconda krona=2.8.1 && \
     ktUpdateTaxonomy.sh && \
-    apt-get clean all && \
+    apt-get clean && \
     apt-get purge && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# 更新分类学数据库
-RUN ktUpdateTaxonomy.sh
 
 # USER biodocker
 

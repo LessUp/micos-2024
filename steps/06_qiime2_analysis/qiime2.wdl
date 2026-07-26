@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 # 宏基因组分析工作流使用QIIME2工具进行分析
 workflow Qiime2Analysis {
@@ -132,7 +132,7 @@ task ConvertKraken2Tsv {
     }
 
     command {
-        python3 ${taxonomy_convert_script} ${merged_taxonomy_tsv} merge_converted_taxonomy.tsv
+        python3 ~{taxonomy_convert_script} ~{merged_taxonomy_tsv} merge_converted_taxonomy.tsv
     }
 
     output {
@@ -152,7 +152,7 @@ task ImportFeatureTable {
 
     command {
         qiime tools import \
-            --input-path ${input_biom} \
+            --input-path ~{input_biom} \
             --type 'FeatureTable[Frequency]' \
             --input-format BIOMV210Format \
             --output-path feature-table.qza
@@ -175,7 +175,7 @@ task ImportTaxonomy {
 
     command {
         qiime tools import \
-            --input-path ${input_tsv} \
+            --input-path ~{input_tsv} \
             --type 'FeatureData[Taxonomy]' \
             --input-format HeaderlessTSVTaxonomyFormat \
             --output-path taxonomy.qza
@@ -199,8 +199,8 @@ task FilterLowAbundanceFeatures {
 
     command {
         qiime feature-table filter-features \
-            --i-table ${input_table} \
-            --p-min-frequency ${min_frequency} \
+            --i-table ~{input_table} \
+            --p-min-frequency ~{min_frequency} \
             --o-filtered-table filtered-table.qza
     }
 
@@ -222,8 +222,8 @@ task FilterRareFeatures {
 
     command {
         qiime feature-table filter-features \
-            --i-table ${input_table} \
-            --p-min-samples ${min_samples} \
+            --i-table ~{input_table} \
+            --p-min-samples ~{min_samples} \
             --o-filtered-table filtered-table.qza
     }
 
@@ -244,14 +244,14 @@ task RarefyTable {
     }
 
     command {
-        # qiime feature-table rarefy \
-        #     --i-table ${input_table} \
-        #     --p-sampling-depth ${sampling_depth} \
-        #     --o-rarefied-table rarefied-table.qza
+        qiime feature-table rarefy \
+            --i-table ~{input_table} \
+            --p-sampling-depth ~{sampling_depth} \
+            --o-rarefied-table rarefied-table.qza
     }
 
     output {
-        File rarefied_table = input_table
+        File rarefied_table = "rarefied-table.qza"
     }
 
     runtime {
@@ -267,7 +267,7 @@ task CalculateAlphaDiversity {
 
     command {
         qiime diversity alpha \
-            --i-table ${input_table} \
+            --i-table ~{input_table} \
             --p-metric shannon \
             --o-alpha-diversity shannon.qza
     }
@@ -288,8 +288,9 @@ task ExportAlphaDiversity {
     }
 
     command {
+        # stdout 重定向到 stderr 以避免污染 WDL 输出
         qiime tools export \
-            --input-path ${input_qza} \
+            --input-path ~{input_qza} \
             --output-path exported_diversity >&2
         mv exported_diversity/alpha-diversity.tsv exported_diversity/shannon.tsv
     }
@@ -311,7 +312,7 @@ task CalculateBetaDiversity {
 
     command {
         qiime diversity beta \
-            --i-table ${input_table} \
+            --i-table ~{input_table} \
             --p-metric braycurtis \
             --o-distance-matrix braycurtis.qza
     }
@@ -333,7 +334,7 @@ task PerformPCoA {
 
     command {
         qiime diversity pcoa \
-            --i-distance-matrix ${distance_matrix} \
+            --i-distance-matrix ~{distance_matrix} \
             --o-pcoa pcoa.qza
     }
 
@@ -355,8 +356,8 @@ task VisualizeEmperor {
 
     command {
         qiime emperor plot \
-            --i-pcoa ${pcoa_qza} \
-            --m-metadata-file ${metadata} \
+            --i-pcoa ~{pcoa_qza} \
+            --m-metadata-file ~{metadata} \
             --o-visualization braycurtis-emperor.qzv
     }
 
@@ -377,7 +378,7 @@ task AddPseudocount {
 
     command {
         qiime composition add-pseudocount \
-            --i-table ${input_table} \
+            --i-table ~{input_table} \
             --o-composition-table comp-table.qza
     }
 
@@ -399,8 +400,8 @@ task PerformANCOM {
 
     command {
         qiime composition ancom \
-            --i-table ${comp_table} \
-            --m-metadata-file ${metadata} \
+            --i-table ~{comp_table} \
+            --m-metadata-file ~{metadata} \
             --m-metadata-column treatment \
             --o-visualization ancom-results.qzv
     }

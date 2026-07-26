@@ -2,8 +2,8 @@ services:
   krona:
     build:
       args:
-        http_proxy: http://172.19.75.255:7897
-        https_proxy: http://172.19.75.255:7897
+        http_proxy: ${HTTP_PROXY:-}
+        https_proxy: ${HTTPS_PROXY:-}
       context: .
       dockerfile: Dockerfile
     image: shuai/krona:2.8.1

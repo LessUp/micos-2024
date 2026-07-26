@@ -14,8 +14,7 @@ From: biocontainers/biocontainers:v1.2.0_cv2
     about.tags "General"
 
 %environment
-    export http_proxy=${http_proxy}
-    export https_proxy=${https_proxy}
+    export PATH=/opt/conda/bin:$PATH
 
 %post
     # Update and install necessary packages

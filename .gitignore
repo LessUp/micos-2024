@@ -174,15 +174,17 @@ references/
 indices/
 
 # =============================================================================
-# MkDocs / GitHub Pages 特定
+# VitePress 文档站（GitHub Pages）
 # =============================================================================
 
 # 构建输出
 /site/
 /docs/site/
 
-# 社交卡片缓存
-docs/assets/images/social/
-docs/website/node_modules/
-docs/.site/
-docs/website/.next/
+# 依赖与缓存
+docs/node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
+# setuptools-scm 自动生成，不入库
+micos/_version.py

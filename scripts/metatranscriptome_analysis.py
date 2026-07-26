@@ -179,12 +179,13 @@ class MetatranscriptomeAnalyzer:
             genes = df.index.tolist()
 
             # 创建模拟注释结果
+            n_kegg = min(100, len(genes))
             kegg_annotation = pd.DataFrame(
                 {
-                    "gene_id": genes[:100],  # 限制数量
-                    "kegg_id": [f"K{i:05d}" for i in range(100)],
-                    "pathway": [f"Pathway_{i}" for i in range(100)],
-                    "description": [f"KEGG function {i}" for i in range(100)],
+                    "gene_id": genes[:n_kegg],
+                    "kegg_id": [f"K{i:05d}" for i in range(n_kegg)],
+                    "pathway": [f"Pathway_{i}" for i in range(n_kegg)],
+                    "description": [f"KEGG function {i}" for i in range(n_kegg)],
                 }
             )
 
@@ -210,19 +211,20 @@ class MetatranscriptomeAnalyzer:
             df = pd.read_csv(gene_expression_file, sep="\t", index_col=0)
             genes = df.index.tolist()
 
+            n_go = min(100, len(genes))
             go_annotation = pd.DataFrame(
                 {
-                    "gene_id": genes[:100],
-                    "go_id": [f"GO:{i:07d}" for i in range(100)],
+                    "gene_id": genes[:n_go],
+                    "go_id": [f"GO:{i:07d}" for i in range(n_go)],
                     "namespace": [
                         [
                             "biological_process",
                             "molecular_function",
                             "cellular_component",
                         ][i % 3]
-                        for i in range(100)
+                        for i in range(n_go)
                     ],
-                    "description": [f"GO term {i}" for i in range(100)],
+                    "description": [f"GO term {i}" for i in range(n_go)],
                 }
             )
 
@@ -262,7 +264,7 @@ def main():
         logger.error("注释模式需要先运行定量分析")
         sys.exit(1)
     elif args.mode == "complete":
-        # 运行完整分析流程
+        # 运行质量控制；功能注释需先提供基因定量结果文件（见 annotation 模式）
         analyzer.run_quality_control(args.input)
 
     logger.info("分析完成")

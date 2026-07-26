@@ -71,5 +71,5 @@ def full_run(input_dir: str, threads: int):
 
 - **实际生效字段**: `paths.input_dir` / `paths.output_dir` / `paths.databases.{kraken2,kneaddata}` / `resources.max_threads`
 - 其他 analysis.yaml 字段为愿景参数，CLI 当前不读取
-- 样本发现通过 FASTQ 文件名 (`*_R1.fastq.gz`)，不读 samples.tsv
+- 样本发现通过 FASTQ 文件名 (`*_R1.fastq.gz`)；可选 `--metadata config/samples.tsv` 按 `sample-id` 列 join 填充 `Sample.metadata`
 - 配置模型: `micos.config.AnalysisConfig` (Pydantic)

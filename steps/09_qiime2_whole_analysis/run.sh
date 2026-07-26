@@ -1,4 +1,4 @@
-# /bin/bash 
+#!/bin/bash
 # 单独使用qiime2分析的脚本
 
 qiime tools import \
