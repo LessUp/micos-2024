@@ -29,6 +29,12 @@
 | `run_module.sh` | Shell 包装层，调用主 CLI |
 | `run_full_analysis.sh` | 完整分析流程包装 |
 
+### 安装验证
+
+| 脚本 | 功能 |
+|------|------|
+| `verify_installation.sh` | 检查依赖工具、Python/R 包与 Docker 镜像安装状态 |
+
 ---
 
 ## 使用方法
@@ -59,8 +65,10 @@ python scripts/network_analysis.py \
 
 ```bash
 python scripts/phylogenetic_analysis.py \
-    -i results/taxonomic_profiling/ \
-    -o results/phylogenetic/
+    --biom results/taxonomic_profiling/feature-table.biom \
+    --taxonomy results/taxonomic_profiling/taxonomy.tsv \
+    --abundance results/taxonomic_profiling/abundance.tsv \
+    --output results/phylogenetic/
 ```
 
 ---

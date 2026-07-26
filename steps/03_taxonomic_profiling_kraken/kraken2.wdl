@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 workflow Kraken2Workflow {
     input {
@@ -48,14 +48,14 @@ task Kraken2Task {
     }
 
     command {
-        kraken2 --db ${kraken2_db} \
-                --threads ${threads} \
-                --confidence ${confidence} \
-                --minimum-base-quality ${min_base_quality} \
-                --minimum-hit-groups ${min_hit_groups} \
-                --output ${output_tsv_name} \
-                --report ${report_txt_name} \
-                --paired ${input_file_r1} ${input_file_r2} \
+        kraken2 --db ~{kraken2_db} \
+                --threads ~{threads} \
+                --confidence ~{confidence} \
+                --minimum-base-quality ~{min_base_quality} \
+                --minimum-hit-groups ~{min_hit_groups} \
+                --output ~{output_tsv_name} \
+                --report ~{report_txt_name} \
+                --paired ~{input_file_r1} ~{input_file_r2} \
                 --use-names --memory-mapping
     }
 

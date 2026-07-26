@@ -1,5 +1,5 @@
 services:
-  fastqc:
+  megan:
     image: quay.io/biocontainers/megan:6.12.3--0
     container_name: megan 
     tty: true

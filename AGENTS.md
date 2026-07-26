@@ -217,7 +217,7 @@ chore(deps): bump pandas to 2.0.0
 
 ```bash
 # 构建 Kraken2 镜像
-docker build -t micos-kraken2:latest steps/03_taxonomic_profiling_kraken/
+docker build -t micos-kraken2:2.1.3 steps/03_taxonomic_profiling_kraken/
 ```
 
 ### Singularity 支持

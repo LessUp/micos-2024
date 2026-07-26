@@ -25,12 +25,12 @@ log_info() {
 
 log_success() {
     echo -e "${GREEN}[PASS]${NC} $1"
-    ((PASSED++))
+    PASSED=$((PASSED + 1))
 }
 
 log_error() {
     echo -e "${RED}[FAIL]${NC} $1"
-    ((FAILED++))
+    FAILED=$((FAILED + 1))
 }
 
 log_warning() {
@@ -41,7 +41,7 @@ log_warning() {
 test_command() {
     local cmd=$1
     local name=$2
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     
     if command -v "$cmd" &> /dev/null; then
         local version=$($cmd --version 2>/dev/null | head -n1 || echo "版本未知")
@@ -54,7 +54,7 @@ test_command() {
 test_python_package() {
     local package=$1
     local name=$2
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     
     if python -c "import $package" 2>/dev/null; then
         local version=$(python -c "import $package; print(getattr($package, '__version__', '版本未知'))" 2>/dev/null)
@@ -67,7 +67,7 @@ test_python_package() {
 test_r_package() {
     local package=$1
     local name=$2
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     
     if R -e "library($package)" &>/dev/null; then
         log_success "$name (R包) 已安装"
@@ -79,7 +79,7 @@ test_r_package() {
 test_docker_image() {
     local image=$1
     local name=$2
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     
     if docker images --format "table {{.Repository}}:{{.Tag}}" | grep -q "$image"; then
         log_success "$name Docker镜像已存在"
@@ -151,8 +151,8 @@ check_r_packages() {
         test_r_package "biomformat" "biomformat"
     else
         log_error "R 未安装"
-        ((TOTAL+=5))
-        ((FAILED+=5))
+        TOTAL=$((TOTAL + 5))
+        FAILED=$((FAILED + 5))
     fi
     
     echo ""
@@ -164,11 +164,11 @@ check_containers() {
     
     if command -v docker &> /dev/null; then
         test_docker_image "biocontainers/fastqc" "FastQC"
-        test_docker_image "shuai/kneaddata" "KneadData"
-        test_docker_image "shuai/kraken2" "Kraken2"
-        test_docker_image "shuai/kraken-biom" "Kraken-BIOM"
-        test_docker_image "shuai/krona" "Krona"
-        test_docker_image "quay.io/qiime2/metagenome" "QIIME2"
+        test_docker_image "micos-kneaddata:0.12.0" "KneadData"
+        test_docker_image "micos-kraken2:2.1.3" "Kraken2"
+        test_docker_image "micos-kraken-biom:1.2.0" "Kraken-BIOM"
+        test_docker_image "micos-krona:2.8.1" "Krona"
+        test_docker_image "quay.io/qiime2/metagenome:2024.5" "QIIME2"
     else
         log_warning "Docker 未安装，跳过容器检查"
     fi
@@ -192,9 +192,9 @@ check_workflow_engines() {
 # 文件系统检查
 check_filesystem() {
     log_info "检查项目文件结构..."
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     
-    local required_dirs=("docs" "scripts" "workflows" "steps" "config")
+    local required_dirs=("docs" "scripts" "steps" "config")
     local missing_dirs=()
     
     for dir in "${required_dirs[@]}"; do
@@ -210,7 +210,7 @@ check_filesystem() {
     fi
     
     # 检查关键文件
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     local required_files=("README.md" "environment.yml")
     local missing_files=()
     
@@ -234,7 +234,7 @@ run_performance_test() {
     log_info "运行性能测试..."
     
     # 测试Python性能
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     local python_time=$(python -c "
 import time
 import numpy as np
@@ -253,7 +253,7 @@ print(f'{end - start:.2f}')
     fi
     
     # 测试内存
-    ((TOTAL++))
+    TOTAL=$((TOTAL + 1))
     local available_mem=$(free -m 2>/dev/null | awk '/^Mem:/ {print $7}' || echo 0)
     if [ "$available_mem" -gt 8000 ]; then
         log_success "可用内存充足 (${available_mem}MB)"

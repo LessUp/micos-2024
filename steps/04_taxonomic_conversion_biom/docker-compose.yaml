@@ -1,9 +1,9 @@
 services:
-  krona:
+  kraken_biom:
     build:
       context: .
       dockerfile: Dockerfile
-    image: shuai/kraken-biom:1.0.0
+    image: shuai/kraken-biom:1.2.0
     container_name: kraken-biom
     # tty: true
     # stdin_open: true

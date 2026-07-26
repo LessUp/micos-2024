@@ -119,10 +119,12 @@ firefox results/micos_summary_report.html
 
 ### WDL 工作流
 
+各分析步骤的 WDL 任务定义位于 `steps/` 目录（01–09），可用 Cromwell 等引擎运行：
+
 ```bash
 java -jar cromwell.jar run \
-  workflows/wdl_scripts/meta-dev.wdl \
-  --inputs config/analysis.json
+  steps/03_taxonomic_profiling_kraken/kraken2.wdl \
+  --inputs steps/03_taxonomic_profiling_kraken/kraken2.json
 ```
 
 ## 配置说明
@@ -171,11 +173,10 @@ MICOS-2024 依赖以下参考数据库：
 ├── micos/                  # 核心 Python 包（质控、分类、多样性、功能注释）
 ├── scripts/                # 运行脚本与独立分析模块（Shell / Python / R）
 ├── steps/                  # 分步骤 WDL 任务定义（01–09）
-├── workflows/              # WDL 工作流定义
 ├── config/                 # 配置模板（分析参数、数据库路径、样本元数据）
 ├── containers/singularity/ # Singularity 容器定义
 ├── data/raw_input/         # 原始测序数据输入目录
-├── docs/                   # VitePress 文档站（中英双语）
+├── docs/                   # VitePress 文档站（中文）
 ├── tests/                  # 单元测试与集成测试
 └── .github/                # CI 与 Issue 模板
 ```

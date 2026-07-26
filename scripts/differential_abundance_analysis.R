@@ -109,7 +109,7 @@ run_deseq2_analysis <- function(ps, group_column, output_dir) {
   # 生成火山图
   volcano_plot <- ggplot(res_df, aes(x = log2FoldChange, y = -log10(padj))) +
     geom_point(aes(color = padj < 0.05 & abs(log2FoldChange) > 1), alpha = 0.6) +
-    scale_color_manual(values = c("grey", "red")) +
+    scale_color_manual(values = c("grey", "red"), na.value = "grey") +
     labs(title = "DESeq2 Volcano Plot",
          x = "Log2 Fold Change",
          y = "-Log10 Adjusted P-value") +
@@ -332,6 +332,15 @@ main <- function() {
     if (!is.null(results_list[["aldex2"]])) {
       aldex2_sig <- rownames(results_list[["aldex2"]])[results_list[["aldex2"]]$significant]
       all_sig_taxa <- c(all_sig_taxa, aldex2_sig)
+    }
+
+    if (!is.null(results_list[["ancombc"]])) {
+      ancombc_res <- results_list[["ancombc"]]
+      # ANCOM-BC 结果含 q_val 列时按 q_val < 0.05 筛选显著 taxa
+      if (!is.null(ancombc_res$q_val)) {
+        ancombc_sig <- rownames(ancombc_res)[ancombc_res$q_val < 0.05]
+        all_sig_taxa <- c(all_sig_taxa, ancombc_sig)
+      }
     }
     
     # 去重

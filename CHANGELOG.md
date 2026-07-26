@@ -2,9 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+- 统一 GitHub 身份为 LessUp，清除全部遗留 BGI-MICOS 引用
+- 修复文档站英文 404 自动重定向，CI 增加文档构建检查
+- 归档遗留 `workflows/wdl_scripts/`，统一以 `steps/` 为权威 WDL 源
+- 修复 WDL 语法错误（Directory/None 关键字）、统一 `${}` 为 `~{}`、固定生信工具版本
+- 修复 Dockerfile 构建错误与 EOL 基础镜像（Python 3.6、R latest）
+- 补齐 4 个流水线模块单元测试与 skip 选项测试，删除 `load_config` 死代码
+- 修复 scripts 过时路径与 bash `set -e` 陷阱，清理临时工作文档
+
 ## [1.1.0] - 2025-04-16
 
-- Complete bilingual documentation (English/Chinese)
+- Complete Chinese documentation
 - New installation, configuration, and troubleshooting guides
 - API reference for CLI commands
 

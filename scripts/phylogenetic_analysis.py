@@ -184,7 +184,7 @@ class PhylogeneticAnalyzer:
         try:
             # 读取树和丰度表
             Phylo.read(tree_file, "newick")  # 验证树文件可读
-            abundance_df = pd.read_csv(abundance_table, index_col=0)
+            abundance_df = pd.read_csv(abundance_table, index_col=0, sep="\t")
 
             # 计算Faith's PD (简化版本)
             pd_values = {}
@@ -215,7 +215,7 @@ class PhylogeneticAnalyzer:
 
         try:
             # 读取数据
-            abundance_df = pd.read_csv(abundance_table, index_col=0)
+            abundance_df = pd.read_csv(abundance_table, index_col=0, sep="\t")
 
             # 简化的UniFrac距离计算（实际应使用专门的库如scikit-bio）
             samples = abundance_df.columns.tolist()

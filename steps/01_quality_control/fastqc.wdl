@@ -1,4 +1,4 @@
-version 1.0
+version 1.1
 
 workflow fastqc_workflow {
   input {
@@ -13,7 +13,7 @@ workflow fastqc_workflow {
   }
 
   output {
-    Array[File] reports = fastqc_task.report
+    Array[File] reports = flatten(fastqc_task.reports)
   }
 }
 
@@ -23,11 +23,11 @@ task fastqc_task {
   }
 
   command {
-    fastqc ${fastq} --outdir=./ > stdout.log 2> stderr.log
+    fastqc ~{fastq} --outdir=./ > stdout.log 2> stderr.log
   }
 
   output {
-    File report = "${basename(fastq, '.fastq')}_fastqc.html"
+    Array[File] reports = glob("*_fastqc.html")
     File stdout = "stdout.log"
     File stderr = "stderr.log"
   }

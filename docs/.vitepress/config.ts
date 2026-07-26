@@ -25,7 +25,7 @@ const sharedThemeConfig = {
 export default withMermaid(defineConfig({
   base,
   title: 'MICOS-2024',
-  description: 'A bilingual technical whitepaper for the MICOS-2024 metagenomic analysis platform.',
+  description: 'A technical whitepaper for the MICOS-2024 metagenomic analysis platform.',
   cleanUrls: true,
   lastUpdated: true,
 
