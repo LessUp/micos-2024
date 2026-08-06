@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.3.0
+FROM rocker/r-ver:4.6.1
 
 # 更新和安装必要的系统包
 RUN set -e \
