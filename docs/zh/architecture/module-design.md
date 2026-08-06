@@ -1,297 +1,126 @@
+---
+title: 模块设计原理
+---
+
 # 模块设计原理
 
-本文档深入探讨 MICOS-2024 的软件架构设计，面向贡献者和架构评审者。
+本文档描述 MICOS-2024 的实际代码架构，面向贡献者。
 
-## 设计哲学
+## 设计理念
 
-MICOS-2024 遵循 **深层模块 (Deep Modules)** 设计原则：
+各处理模块遵循**深层模块**原则：对外暴露简洁的函数接口，内部隐藏样本发现、命令构建、错误处理等细节。调用者只需提供输入目录、输出目录和必要参数。
 
-> "好的模块应该有简单的接口和强大的实现。" — John Ousterhout
+## CLI 层
 
-### 接口与实现分离
+`micos/cli.py` 使用 Click 框架，结构为两层命令组：
 
-每个模块提供：
-- **简洁的公开接口**：少量参数，清晰的语义
-- **隐藏的实现复杂性**：错误处理、并发、资源管理
+- `main` group：`validate-config`、`full-run`
+- `run` group：`quality-control`、`taxonomic-profiling`、`diversity-analysis`、`functional-annotation`、`summarize-results`
 
-## 核心模块架构
+全局选项包括 `--config`、`--log-file`、`--verbose`、`--dry-run`。`full-run` 额外支持 `--skip-qc`、`--skip-taxonomy`、`--skip-functional`、`--skip-diversity` 跳过指定阶段。
+
+## 编排层
+
+`micos/full_run.py` 的 `run_full_pipeline()` 函数串行调用五个阶段模块：
+
+```
+run_qc → run_taxonomic_profiling → run_diversity_analysis → run_functional_annotation → run_summarize
+```
+
+各阶段间通过 `results/` 子目录传递中间产物：KneadData 清洗读段 -> Kraken2 报告 -> BIOM 表 -> 多样性产物 -> HTML 汇总报告。
+
+## 架构图
 
 <ArchitectureDiagram />
 
-### CLI 层 (`micos/cli.py`)
+## 模块处理模式
 
-CLI 是用户的主要交互入口，负责：
-- 参数解析和验证
-- 配置加载
-- 模块调度
+每个处理模块是一个 `run_*()` 函数，遵循统一模式：
 
-```python
-@click.group()
-def cli():
-    """MICOS-2024: Metagenomic Intelligence and Comprehensive Omics Suite."""
-    pass
+1. 用 `Sample.discover_paired()` 或 `Sample.discover_cleaned()` 发现样本
+2. 串行遍历样本，为每个样本构建工具命令
+3. 调用 `run_command_live()` 执行命令并实时输出
+4. 收集结果文件（如合并所有 `.report` 生成 BIOM 表）
 
-@cli.command()
-@click.option('--input-dir', required=True, type=click.Path())
-@click.option('--results-dir', required=True, type=click.Path())
-@click.option('--threads', default=16)
-def full_run(input_dir, results_dir, threads):
-    """Run the complete analysis pipeline."""
-    config = AnalysisConfig.from_paths(input_dir, results_dir)
-    orchestrator = PipelineOrchestrator(config, threads)
-    orchestrator.run()
-```
-
-### 核心处理层
-
-每个处理模块遵循统一的模式：
-
-<AlgorithmCard
-  title="模块处理模式"
-  description="统一的模块处理流程：验证输入 → 执行处理 → 验证输出 → 返回结果"
-  language="python"
-  codeSnippet="def process(input_path, output_dir, config, runner):
-    validate_input(input_path)
-    result = runner.execute(build_command(input_path, output_dir, config))
-    output_files = validate_output(output_dir)
-    return ModuleResult(success=True, output_files=output_files)"
-/>
-
-## 双执行器模式
-
-MICOS-2024 实现了 **双执行器模式**，支持生产/测试环境切换：
-
-### 抽象接口
+以 `taxonomic_profiling.py` 为例：
 
 ```python
-from abc import ABC, abstractmethod
-
-class ToolRunner(ABC):
-    @abstractmethod
-    def run(
-        self,
-        command: list[str],
-        output_dir: Path,
-        check: bool = True,
-        capture: bool = True,
-    ) -> ToolResult:
-        """执行外部工具命令。"""
-        pass
+def run_taxonomic_profiling(input_dir, output_dir, threads, kraken2_db, confidence=0.1, metadata_path=None):
+    samples = Sample.discover_cleaned(input_path, metadata_path=metadata_arg)
+    for sample in samples:
+        kraken2_cmd = ["kraken2", "--db", str(kraken2_db), "--paired", ...]
+        run_command_live(kraken2_cmd)
+    # 合并报告生成 BIOM + Krona
 ```
 
-### 生产执行器
+## Sample 数据模型
+
+`micos/sample.py` 的 `Sample` 是一个 `@dataclass`：
 
 ```python
-class SubprocessToolRunner(ToolRunner):
-    """真实执行外部工具。"""
+@dataclass
+class Sample:
+    name: str
+    r1_path: Path
+    r2_path: Path | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def run(self, command, output_dir, check=True, capture=True):
-        result = subprocess.run(
-            command,
-            cwd=output_dir,
-            check=check,
-            capture_output=capture,
-            text=True,
-        )
-        return ToolResult(
-            returncode=result.returncode,
-            stdout=result.stdout,
-            stderr=result.stderr,
-        )
+    @property
+    def is_paired(self) -> bool: ...
+    @property
+    def files(self) -> list[Path]: ...
 ```
 
-### 测试执行器
+样本发现通过类方法完成：
 
-```python
-class MockToolRunner(ToolRunner):
-    """模拟执行，用于测试。"""
-
-    def __init__(self, responses: dict[str, ToolResult]):
-        self.responses = responses
-
-    def run(self, command, output_dir, check=True, capture=True):
-        key = ' '.join(command[:3])  # 使用命令前缀作为键
-        return self.responses.get(key, ToolResult.success())
-```
-
-### 依赖注入
-
-```python
-# 生产环境
-runner = SubprocessToolRunner()
-result = process_fastq(input_path, output_dir, runner=runner)
-
-# 测试环境
-mock_runner = MockToolRunner({
-    'kraken2 --db': ToolResult(stdout='mock_output'),
-})
-result = process_fastq(input_path, output_dir, runner=mock_runner)
-```
+- `Sample.discover_paired(input_dir)` — 发现原始配对 FASTQ（R1/R2）
+- `Sample.discover_cleaned(input_dir)` — 发现 KneadData 清洗后的配对读段
+- `Sample.load_metadata(path)` — 加载 TSV 元数据，按 `sample-id` 列关联
 
 ## 配置系统
 
-### Pydantic 模型
-
-使用 Pydantic 实现类型安全的配置：
+`micos/config.py` 使用 Pydantic 模型提供类型安全的配置：
 
 ```python
-from pydantic import BaseModel, Field, field_validator
-
-class PathsConfig(BaseModel):
-    input_dir: Path
-    results_dir: Path
-
-    @field_validator('input_dir')
-    @classmethod
-    def input_dir_exists(cls, v: Path) -> Path:
-        if not v.exists():
-            raise ValueError(f'Input directory does not exist: {v}')
-        return v
-
 class AnalysisConfig(BaseModel):
-    paths: PathsConfig
-    resources: ResourcesConfig
-    databases: DatabasesConfig
+    paths: PathsConfig          # input_dir, output_dir, databases
+    resources: ResourcesConfig  # max_threads, memory_gb
+
+    @classmethod
+    def from_yaml(cls, path: Path) -> "AnalysisConfig": ...
 ```
 
-### 兼容层
+数据库路径通过 `merge_databases_config()` 从 `analysis.yaml` 和 `databases.yaml` 合并提取，支持两种来源：`paths.databases` 直接配置或 `databases.yaml` 分层配置。
 
-支持新旧配置格式：
+## 工具执行
 
-```python
-@classmethod
-def from_yaml(cls, config_path: Path) -> 'AnalysisConfig':
-    data = yaml.safe_load(config_path.read_text())
+`micos/utils.py` 的 `run_command_live()` 用 `subprocess.Popen` 执行外部工具，实时打印 stdout，失败时抛出 `subprocess.CalledProcessError`。各模块捕获该异常后记录错误日志并重新抛出。
 
-    # 新格式
-    if 'paths' in data:
-        return cls(**data)
+## 返回码
 
-    # 旧格式兼容
-    return cls(
-        paths=PathsConfig(
-            input_dir=Path(data['INPUT_DIR']),
-            results_dir=Path(data['RESULTS_DIR']),
-        ),
-        ...
-    )
-```
+`micos/cli.py` 定义了显式退出码常量：
 
-## 样本数据模型
-
-### Sample 类
-
-Sample 类封装样本数据，隐藏文件发现和验证的复杂性：
-
-```python
-class Sample:
-    """样本数据模型。"""
-
-    def __init__(self, name: str, directory: Path):
-        self.name = name
-        self.directory = directory
-        self._files: list[Path] | None = None
-        self._is_paired: bool | None = None
-
-    @property
-    def files(self) -> list[Path]:
-        if self._files is None:
-            self._files = self._discover_files()
-        return self._files
-
-    @property
-    def is_paired(self) -> bool:
-        if self._is_paired is None:
-            self._is_paired = len(self.files) == 2
-        return self._is_paired
-
-    def validate(self) -> None:
-        """验证样本文件完整性。"""
-        for f in self.files:
-            if not f.exists():
-                raise SampleValidationError(f'Missing file: {f}')
-```
-
-## 并行处理
-
-### 样本级并行
-
-使用 `ProcessPoolExecutor` 实现样本级并行：
-
-```python
-from concurrent.futures import ProcessPoolExecutor, as_completed
-
-def process_samples(
-    samples: list[Sample],
-    output_dir: Path,
-    max_workers: int = 16,
-) -> list[ModuleResult]:
-    with ProcessPoolExecutor(max_workers=max_workers) as executor:
-        futures = {
-            executor.submit(process_single_sample, s, output_dir): s.name
-            for s in samples
-        }
-
-        results = []
-        for future in as_completed(futures):
-            sample_name = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-                logger.info(f'Completed: {sample_name}')
-            except Exception as e:
-                logger.error(f'Failed: {sample_name}: {e}')
-
-        return results
-```
-
-## 错误处理
-
-### 自定义异常层次
-
-```python
-class MICosError(Exception):
-    """MICOS 基础异常。"""
-    pass
-
-class ConfigurationError(MICosError):
-    """配置错误。"""
-    pass
-
-class DatabaseError(MICosError):
-    """数据库错误。"""
-    pass
-
-class SampleValidationError(MICosError):
-    """样本验证错误。"""
-    pass
-```
-
-### 返回码定义
-
-| 返回码 | 含义 |
-|:---:|------|
-| 0 | 成功 |
-| 1 | 一般错误 |
-| 2 | 参数无效 |
-| 3 | 配置错误 |
-| 4 | 依赖缺失 |
-| 5 | 数据库错误 |
-| 6 | I/O 错误 |
-| 130 | 被中断 (SIGINT) |
+| 常量 | 码 | 含义 |
+| --- | --- | --- |
+| `EXIT_SUCCESS` | 0 | 成功 |
+| `EXIT_GENERAL_ERROR` | 1 | 一般错误 |
+| `EXIT_INVALID_ARGS` | 2 | 参数无效 |
+| `EXIT_CONFIG_ERROR` | 3 | 配置错误 |
+| `EXIT_MISSING_DEPS` | 4 | 缺少依赖 |
+| `EXIT_DB_ERROR` | 5 | 数据库错误 |
+| `EXIT_IO_ERROR` | 6 | I/O 错误 |
+| `EXIT_INTERRUPTED` | 130 | 用户中断 (SIGINT) |
 
 ## 扩展点
 
-### 添加新模块
+### 添加新分析模块
 
-1. 在 `micos/` 下创建新模块文件
-2. 实现 `process()` 函数
-3. 在 `cli.py` 中添加命令
-4. 添加单元测试
+1. 在 `micos/` 创建模块文件，实现 `run_*()` 函数
+2. 在 `cli.py` 的 `run` group 中添加对应命令
+3. 在 `full_run.py` 中接入编排
+4. 编写 `tests/test_*.py`
 5. 更新文档
 
-### 添加新工具
+### 添加专家分析脚本
 
-1. 在 `tool_runner.py` 中添加命令构建函数
-2. 在 `config.py` 中添加工具配置
-3. 在 `tests/` 中添加测试用例
+`scripts/` 下的脚本（如 `network_analysis.py`、`phylogenetic_analysis.py`）是主 CLI 之外的扩展能力，不属于稳定公共接口。新增时在 `scripts/README.md` 中说明用途和依赖。

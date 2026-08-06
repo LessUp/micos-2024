@@ -1,29 +1,39 @@
-"""Regression tests for the redesigned VitePress documentation site."""
+"""Regression tests for the VitePress documentation site."""
 
 from pathlib import Path
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DOCS_ROOT = PROJECT_ROOT / "docs"
 
 
-def test_whitepaper_theme_components_exist() -> None:
-    """The docs theme should expose the new whitepaper component set."""
+def test_theme_components_exist() -> None:
+    """The docs theme should expose the active component set."""
     components_dir = DOCS_ROOT / ".vitepress" / "theme" / "components"
 
-    assert (components_dir / "SiteHero.vue").exists()
-    assert (components_dir / "SiteSection.vue").exists()
-    assert (components_dir / "MetricGrid.vue").exists()
-    assert (components_dir / "FlowStageGrid.vue").exists()
-    assert (components_dir / "ThemeAsset.vue").exists()
-    assert (components_dir / "ReferenceList.vue").exists()
+    for name in (
+        "ThemeAsset",
+        "ReferenceList",
+        "AlgorithmCard",
+        "CitationBlock",
+        "ArchitectureDiagram",
+    ):
+        assert (components_dir / f"{name}.vue").exists(), f"missing component: {name}"
 
 
-def test_whitepaper_sections_exist() -> None:
-    """The docs site should expose academy, architecture, and research sections."""
+def test_key_pages_exist() -> None:
+    """Key documentation pages should exist."""
     expected_pages = [
         DOCS_ROOT / "zh" / "academy" / "pipeline-foundations.md",
+        DOCS_ROOT / "zh" / "academy" / "data-products.md",
         DOCS_ROOT / "zh" / "architecture" / "system-overview.md",
+        DOCS_ROOT / "zh" / "architecture" / "module-design.md",
+        DOCS_ROOT / "zh" / "architecture" / "testing-strategy.md",
+        DOCS_ROOT / "zh" / "algorithms" / "quality-control.md",
+        DOCS_ROOT / "zh" / "algorithms" / "taxonomic-classification.md",
+        DOCS_ROOT / "zh" / "algorithms" / "diversity-metrics.md",
+        DOCS_ROOT / "zh" / "analysis" / "taxonomic-profiling.md",
+        DOCS_ROOT / "zh" / "analysis" / "diversity-analysis.md",
+        DOCS_ROOT / "zh" / "analysis" / "functional-profiling.md",
         DOCS_ROOT / "zh" / "research" / "citations.md",
     ]
 
@@ -31,12 +41,23 @@ def test_whitepaper_sections_exist() -> None:
         assert page.exists(), f"missing page: {page.relative_to(PROJECT_ROOT)}"
 
 
-def test_theme_assets_and_navigation_are_upgraded() -> None:
-    """The docs shell should register new IA sections and theme-aware illustrations."""
+def test_navigation_sections_configured() -> None:
+    """The config should register navigation sections."""
     config_text = (DOCS_ROOT / ".vitepress" / "config.ts").read_text(encoding="utf-8")
 
-    assert "学院" in config_text
-    assert "架构" in config_text
-    assert "研究" in config_text
+    for section in ("学院", "架构", "算法", "指南", "参考", "研究"):
+        assert section in config_text
 
-    assert (DOCS_ROOT / "public" / "illustrations" / "pipeline-overview-light.svg").exists()
+
+def test_removed_fictional_pages_are_gone() -> None:
+    """Fictional or redundant pages should have been removed."""
+    removed = [
+        DOCS_ROOT / "zh" / "algorithms" / "performance-benchmarks.md",
+        DOCS_ROOT / "zh" / "academy" / "algorithm-deep-dive.md",
+        DOCS_ROOT / "zh" / "architecture" / "runtime-topology.md",
+    ]
+
+    for page in removed:
+        assert (
+            not page.exists()
+        ), f"page should have been removed: {page.relative_to(PROJECT_ROOT)}"

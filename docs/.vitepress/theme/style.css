@@ -1,46 +1,36 @@
 /* ============================================
    MICOS-2024 Visual Design System
-   靛蓝科技感 + 学术严谨 + 极客美学
    ============================================ */
 
-/* ----------------------------------------
-   1. 色彩系统 - 靛蓝系 (oklch 色彩空间)
-   ---------------------------------------- */
+/* 1. 色彩系统 */
 
 :root {
-  /* 品牌色 - 靛蓝系 */
   --vp-c-brand-1: oklch(0.55 0.14 250);
   --vp-c-brand-2: oklch(0.62 0.12 250);
   --vp-c-brand-3: oklch(0.70 0.10 250);
   --vp-c-brand-soft: color-mix(in srgb, var(--vp-c-brand-1) 14%, transparent);
 
-  /* 强调色 - 翡翠绿 */
   --vp-c-accent: oklch(0.65 0.18 160);
   --vp-c-accent-soft: color-mix(in srgb, var(--vp-c-accent) 14%, transparent);
 
-  /* 背景色 - 冷静专业 */
   --vp-c-bg: oklch(0.98 0.006 255);
   --vp-c-bg-alt: oklch(0.96 0.008 255);
   --vp-c-bg-elv: oklch(0.99 0.004 255);
   --vp-c-bg-soft: oklch(0.94 0.010 250);
 
-  /* 文字色 */
   --vp-c-text-1: oklch(0.18 0.018 255);
   --vp-c-text-2: oklch(0.40 0.016 250);
   --vp-c-text-3: oklch(0.58 0.014 250);
 
-  /* 边框和分割线 */
   --vp-c-divider: oklch(0.88 0.010 255);
   --vp-c-border: oklch(0.86 0.012 255);
   --vp-c-gutter: oklch(0.90 0.010 255);
 
-  /* Hero 区域 */
   --vp-home-hero-name-color: var(--vp-c-text-1);
   --vp-home-hero-name-background: none;
   --vp-home-hero-image-background-image: none;
   --vp-home-hero-image-filter: none;
 
-  /* MICOS 自定义变量 */
   --micos-surface-1: oklch(0.99 0.004 255);
   --micos-surface-2: oklch(0.96 0.008 255);
   --micos-surface-3: oklch(0.93 0.012 255);
@@ -59,38 +49,30 @@
   --micos-content-width: 1180px;
 }
 
-/* ----------------------------------------
-   2. 深色模式 - 沉浸极客
-   ---------------------------------------- */
+/* 2. 深色模式 */
 
 .dark {
-  /* 品牌色 - 深色模式 */
   --vp-c-brand-1: oklch(0.72 0.13 250);
   --vp-c-brand-2: oklch(0.78 0.11 250);
   --vp-c-brand-3: oklch(0.84 0.08 250);
   --vp-c-brand-soft: color-mix(in srgb, var(--vp-c-brand-1) 18%, transparent);
 
-  /* 强调色 */
   --vp-c-accent: oklch(0.75 0.14 160);
   --vp-c-accent-soft: color-mix(in srgb, var(--vp-c-accent) 16%, transparent);
 
-  /* 背景色 - 深空黑 */
   --vp-c-bg: oklch(0.14 0.015 255);
   --vp-c-bg-alt: oklch(0.17 0.014 255);
   --vp-c-bg-elv: oklch(0.21 0.014 255);
   --vp-c-bg-soft: oklch(0.25 0.014 255);
 
-  /* 文字色 */
   --vp-c-text-1: oklch(0.95 0.006 250);
   --vp-c-text-2: oklch(0.80 0.008 250);
   --vp-c-text-3: oklch(0.64 0.010 250);
 
-  /* 边框和分割线 */
   --vp-c-divider: oklch(0.30 0.012 255);
   --vp-c-border: oklch(0.32 0.012 255);
   --vp-c-gutter: oklch(0.28 0.012 255);
 
-  /* MICOS 自定义变量 - 深色 */
   --micos-surface-1: oklch(0.16 0.014 255);
   --micos-surface-2: oklch(0.20 0.014 255);
   --micos-surface-3: oklch(0.24 0.014 255);
@@ -105,9 +87,7 @@
   --micos-shadow-card: 0 20px 48px rgba(2, 8, 23, 0.26);
 }
 
-/* ----------------------------------------
-   3. 排版系统
-   ---------------------------------------- */
+/* 3. 排版与布局 */
 
 html {
   scroll-behavior: smooth;
@@ -147,9 +127,7 @@ body {
   color: var(--vp-c-brand-1);
 }
 
-/* ----------------------------------------
-   4. 文档页面样式
-   ---------------------------------------- */
+/* 4. 文档页面样式 */
 
 .VPHome {
   padding-bottom: 72px;
@@ -165,12 +143,8 @@ body {
   max-width: 800px;
 }
 
-.VPDoc h1,
-.micos-hero__title {
-  letter-spacing: -0.03em;
-}
-
 .VPDoc h1 {
+  letter-spacing: -0.03em;
   font-size: clamp(2.5rem, 4vw, 3.65rem);
   line-height: 1.02;
   margin-bottom: 0.9rem;
@@ -213,7 +187,6 @@ body {
   color: var(--vp-c-brand-2);
 }
 
-/* 表格样式 */
 .VPDoc table {
   display: table;
   width: 100%;
@@ -237,7 +210,6 @@ body {
   font-weight: 600;
 }
 
-/* 自定义块样式 */
 .VPDoc .custom-block {
   margin: 1.75rem 0;
   border: 1px solid var(--vp-c-border);
@@ -269,7 +241,6 @@ body {
   border-left-color: var(--micos-error);
 }
 
-/* 代码块样式 */
 .VPDoc code {
   border-radius: 8px;
   padding: 0.18rem 0.4rem;
@@ -284,275 +255,15 @@ body {
   box-shadow: var(--micos-shadow-card);
 }
 
-/* ----------------------------------------
-   5. 首页组件样式
-   ---------------------------------------- */
+/* 5. 组件样式: ThemeAsset */
 
-.micos-home {
-  display: grid;
-  gap: 2rem;
-  padding: 2rem 0 1rem;
-}
-
-.micos-hero {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--vp-c-border);
-  border-radius: var(--micos-radius-lg);
-  background:
-    radial-gradient(circle at top right, color-mix(in srgb, var(--micos-glow) 52%, transparent), transparent 40%),
-    linear-gradient(180deg, color-mix(in srgb, var(--micos-surface-2) 68%, transparent), color-mix(in srgb, var(--micos-surface-1) 94%, transparent));
-  box-shadow: var(--micos-shadow-soft);
-}
-
-.micos-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), var(--micos-grid-line) calc(100% - 1px)),
-    linear-gradient(transparent 0, transparent calc(100% - 1px), var(--micos-grid-line) calc(100% - 1px));
-  background-size: 28px 28px;
-  opacity: 0.45;
-  pointer-events: none;
-}
-
-.micos-hero__shell {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
-  gap: 2rem;
-  padding: clamp(1.5rem, 3vw, 2.6rem);
-}
-
-.micos-hero__eyebrow,
-.micos-section__eyebrow,
-.micos-stage__eyebrow {
-  margin: 0 0 0.9rem;
-  color: var(--vp-c-brand-1);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.micos-hero__title {
+.micos-theme-asset {
   margin: 0;
-  font-size: clamp(2.7rem, 5vw, 4.6rem);
-  line-height: 0.95;
-  color: var(--micos-ink-strong);
-}
-
-.micos-hero__lede,
-.micos-section__lede {
-  max-width: 62ch;
-  margin: 1rem 0 0;
-  font-size: 1.05rem;
-  line-height: 1.9;
-  color: var(--micos-ink-soft);
-}
-
-.micos-hero__caption {
-  max-width: 58ch;
-  margin: 1rem 0 0;
-  color: var(--vp-c-text-2);
-}
-
-.micos-hero__pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin: 1.35rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.micos-hero__pills li {
-  border: 1px solid var(--vp-c-border);
-  border-radius: 999px;
-  padding: 0.45rem 0.75rem;
-  background: color-mix(in srgb, var(--micos-surface-1) 70%, transparent);
-  color: var(--micos-ink-strong);
-  font-size: 0.92rem;
-}
-
-.micos-hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-}
-
-/* 按钮样式 */
-.micos-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  padding: 0.75rem 1.1rem;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--micos-surface-1) 94%, transparent);
-  color: var(--micos-ink-strong);
-  text-decoration: none;
-  font-weight: 500;
-  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.micos-button:hover {
-  transform: translateY(-2px);
-  border-color: var(--vp-c-brand-1);
-  box-shadow: 0 8px 24px rgba(79, 110, 247, 0.15);
-}
-
-.micos-button.is-brand {
-  background: var(--vp-c-brand-1);
-  color: oklch(0.98 0.004 255);
-  border-color: transparent;
-}
-
-.micos-button.is-brand:hover {
-  background: var(--vp-c-brand-2);
-}
-
-.micos-button.is-alt {
-  background: color-mix(in srgb, var(--micos-glow) 44%, var(--micos-surface-2));
-}
-
-.micos-hero__aside {
-  display: grid;
-  gap: 0.9rem;
-  align-content: start;
-}
-
-/* 卡片样式 */
-.micos-rail-card,
-.micos-panel,
-.micos-theme-asset,
-.micos-metric,
-.micos-stage,
-.micos-reference {
+  padding: 1rem;
   border: 1px solid var(--vp-c-border);
   border-radius: var(--micos-radius-md);
   background: color-mix(in srgb, var(--micos-surface-1) 94%, transparent);
   box-shadow: var(--micos-shadow-card);
-}
-
-.micos-rail-card,
-.micos-panel {
-  padding: 1rem 1.1rem;
-}
-
-.micos-rail-card h3,
-.micos-panel h3 {
-  margin: 0 0 0.4rem;
-  font-size: 0.98rem;
-}
-
-.micos-rail-card p,
-.micos-panel p,
-.micos-metric p,
-.micos-stage p,
-.micos-reference p {
-  margin: 0;
-}
-
-/* 网格布局 */
-.micos-grid,
-.micos-section,
-.micos-metric-grid,
-.micos-stage-grid,
-.micos-note-grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.micos-grid--2,
-.micos-note-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.micos-grid--3,
-.micos-metric-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.micos-stage-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.micos-section {
-  gap: 1.25rem;
-  padding: 0.4rem 0 0.2rem;
-}
-
-.micos-section__header {
-  max-width: 70ch;
-}
-
-.micos-section__title {
-  margin: 0;
-  font-size: clamp(1.6rem, 2vw, 2.35rem);
-  line-height: 1.08;
-  color: var(--micos-ink-strong);
-}
-
-/* 指标卡片 */
-.micos-metric {
-  padding: 1.1rem 1.15rem;
-}
-
-.micos-metric__label {
-  color: var(--vp-c-text-3);
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.micos-metric__value {
-  margin: 0.55rem 0 0.4rem;
-  color: var(--micos-ink-strong);
-  font-size: 1.4rem;
-  line-height: 1.15;
-}
-
-.micos-metric__detail {
-  color: var(--vp-c-text-2);
-  line-height: 1.7;
-}
-
-/* 阶段卡片 */
-.micos-stage {
-  padding: 1.15rem 1.2rem;
-}
-
-.micos-stage h3 {
-  margin: 0;
-  font-size: 1.08rem;
-}
-
-.micos-stage h3 a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.micos-stage__summary {
-  margin-top: 0.7rem;
-  color: var(--vp-c-text-2);
-}
-
-.micos-stage ul,
-.micos-inline-list {
-  margin: 0.9rem 0 0;
-  padding-left: 1.1rem;
-  color: var(--vp-c-text-2);
-}
-
-/* 主题资源样式 */
-.micos-theme-asset {
-  margin: 0;
-  padding: 1rem;
 }
 
 .micos-theme-asset img,
@@ -569,7 +280,8 @@ body {
   font-size: 0.92rem;
 }
 
-/* 引用列表 */
+/* 6. 组件样式: ReferenceList */
+
 .micos-references {
   display: grid;
   gap: 0.95rem;
@@ -580,6 +292,10 @@ body {
 
 .micos-reference {
   padding: 1rem 1.1rem;
+  border: 1px solid var(--vp-c-border);
+  border-radius: var(--micos-radius-md);
+  background: color-mix(in srgb, var(--micos-surface-1) 94%, transparent);
+  box-shadow: var(--micos-shadow-card);
 }
 
 .micos-reference__authors,
@@ -603,147 +319,7 @@ body {
   margin-top: 0.6rem;
 }
 
-/* 面板列表 */
-.micos-panel-list {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.micos-divider {
-  height: 1px;
-  margin: 0.75rem 0 0;
-  background: var(--vp-c-divider);
-}
-
-.micos-kicker {
-  color: var(--vp-c-brand-1);
-  font-weight: 600;
-}
-
-.micos-caption {
-  margin-top: 0.55rem;
-  font-size: 0.94rem;
-  color: var(--vp-c-text-3);
-}
-
-.micos-page-intro {
-  margin-bottom: 2rem;
-  color: var(--vp-c-text-2);
-  font-size: 1.03rem;
-}
-
-/* 提示框样式 */
-.micos-callout {
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--vp-c-border);
-  border-radius: var(--micos-radius-md);
-  background: color-mix(in srgb, var(--micos-surface-2) 88%, transparent);
-  box-shadow: var(--micos-shadow-card);
-}
-
-.micos-callout strong {
-  color: var(--micos-ink-strong);
-}
-
-.micos-callout.success {
-  background: color-mix(in srgb, var(--micos-success) 10%, var(--micos-surface-2));
-  border-left: 3px solid var(--micos-success);
-}
-
-.micos-callout.warning {
-  background: color-mix(in srgb, var(--micos-warning) 10%, var(--micos-surface-2));
-  border-left: 3px solid var(--micos-warning);
-}
-
-.micos-stack {
-  display: grid;
-  gap: 1rem;
-}
-
-/* ----------------------------------------
-   6. 响应式设计
-   ---------------------------------------- */
-
-@media (max-width: 1100px) {
-  .micos-grid--3,
-  .micos-metric-grid,
-  .micos-stage-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 860px) {
-  .micos-hero__shell,
-  .micos-grid--2,
-  .micos-grid--3,
-  .micos-note-grid,
-  .micos-metric-grid,
-  .micos-stage-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .VPDoc {
-    padding-top: 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .micos-home {
-    gap: 1.4rem;
-  }
-
-  .micos-hero__title {
-    font-size: clamp(2.15rem, 11vw, 3rem);
-  }
-
-  .micos-button {
-    width: 100%;
-  }
-
-  .micos-hero__actions {
-    display: grid;
-  }
-}
-
-/* ----------------------------------------
-   7. 动画和过渡
-   ---------------------------------------- */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.micos-hero,
-.micos-metric,
-.micos-stage,
-.micos-reference,
-.micos-panel,
-.micos-rail-card {
-  animation: fadeIn 0.4s ease-out;
-}
-
-/* 交互式 SVG 悬停效果 */
-.pipeline-overview-svg .stage-card,
-.runtime-topology-svg .topology-node {
-  transition: all 0.25s ease;
-}
-
-.pipeline-overview-svg:hover .stage-card:hover,
-.runtime-topology-svg:hover .topology-node:hover {
-  filter: brightness(1.05);
-  transform: scale(1.01);
-}
-
-/* ----------------------------------------
-   8. Mermaid 图表主题适配
-   ---------------------------------------- */
+/* 7. Mermaid 图表 */
 
 .mermaid {
   text-align: center;

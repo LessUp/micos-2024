@@ -4,117 +4,62 @@ title: 功能注释分析
 
 # 功能注释分析
 
-MICOS-2024 功能注释与通路分析完整指南。
-
----
+功能注释通过 HUMAnN 定量基因家族和代谢通路，回答"它们能做什么？"。
 
 ## 概述
 
-功能注释通过定量基因家族和代谢通路来表征微生物群落的代谢潜力。物种分类回答"谁在那里？"，而功能注释回答"它们能做什么？"
+模块为每个样本合并清洗后的读段，运行 HUMAnN 生成基因家族和通路丰度。
 
-### 核心特性
-
-- **基因家族定量**: UniRef90 蛋白簇
-- **通路分析**: MetaCyc 代谢通路
-- **物种分层**: 将功能归属到特定分类群
-- **多样本整合**: 比较样本间功能谱
-
----
-
-## 方法论
-
-### HUMAnN 分析流程
+## HUMAnN 分析流程
 
 ```
-输入 Reads
+清洗读段
     │
     ▼
-[MetaPhlAn] → 物种谱
+合并 reads -> concatenated.fastq.gz
     │
     ▼
-[Mapping] → 按物种分割 reads
+HUMAnN
     │
-    ▼
-[ChocoPhlAn] → 比对到泛基因组 (核酸)
-    │
-    ▼
-[UniRef90] → 未比对序列比对到蛋白质
-    │
-    ▼
-[通路重构] → MinPath + gap filling
-    │
-    ▼
-基因家族 + 通路丰度 + 覆盖度
+    ├── 基因家族丰度 (UniRef90)
+    ├── 通路丰度 (MetaCyc)
+    └── 通路覆盖度
 ```
 
----
-
-## 输入要求
-
-### 数据库要求
-
-| 数据库 | 大小 | 描述 |
-|:---|:---:|:---|
-| ChocoPhlAn | ~10 GB | 核酸泛基因组数据库 |
-| UniRef90 | ~20 GB | 蛋白家族 (>90% 一致性) |
-| MetaCyc | 内置 | 代谢通路定义 |
-
----
+模块会自动合并每个样本的配对读段和 unmatched 读段到一个 gzip 文件中作为 HUMAnN 输入。
 
 ## 运行分析
 
-### 方式 1: MICOS CLI
+### 完整流程
+
+在 `full-run` 中，功能注释在多样性分析之后执行，输入为 `results/quality_control/kneaddata/`。
+
+### 仅功能注释
 
 ```bash
-# 仅功能注释
-python -m micos.cli run functional-annotation \
+micos run functional-annotation \
   --input-dir results/quality_control/kneaddata \
   --output-dir results/functional_annotation \
   --threads 16
 ```
 
-### 方式 2: 直接 HUMAnN
+## 数据库要求
 
-```bash
-humann --input sample.fastq \
-  --output output_dir/ \
-  --nucleotide-database /db/chocophlan \
-  --protein-database /db/uniref90 \
-  --threads 16
-```
+HUMAnN 运行需要以下数据库（由 HUMAnN 自身管理，不在 MICOS-2024 配置中）：
 
----
-
-## 参数配置
-
-```yaml
-functional_annotation:
-  enabled: true
-
-  humann:
-    enabled: true
-    threads: 16
-    search_mode: "diamond"
-    diamond_options: "--mid-sensitive"
-    pathway_coverage: true
-    gap_fill: true
-    minpath: true
-```
-
----
+| 数据库 | 大小 | 描述 |
+|:---|:---:|:---|
+| ChocoPhlAn | ~10 GB | 核酸泛基因组数据库 |
+| UniRef90 | ~20 GB | 蛋白家族 (>90% 一致性) |
 
 ## 输出文件
 
 ```
 results/functional_annotation/
-├── sample_genefamilies.tsv
-├── sample_genefamilies-cpm.tsv
-├── sample_pathabundance.tsv
-├── sample_pathcoverage.tsv
-└── sample.log
+├── sample_genefamilies.tsv        # 基因家族丰度
+├── sample_pathabundance.tsv       # 通路丰度
+└── sample_pathcoverage.tsv        # 通路覆盖度
 ```
-
----
 
 ## 结果解读
 
@@ -127,24 +72,10 @@ results/functional_annotation/
 | 50-70% | 良好 | 标准性能 |
 | > 70% | 优秀 | 高质量参考基因组 |
 
----
-
-## 故障排除
-
-### 问题: 运行太慢
-
-```yaml
-functional_annotation:
-  humann:
-    diamond_options: "--fast"
-    threads: 32
-    protein_database: "/db/uniref50"
-```
-
----
+HUMAnN 运行较慢，大型数据集建议增加线程数。如需更快速度，可在 HUMAnN 层面使用 `--protein-database uniref50`（精度略低但更快）。
 
 ## 相关文档
 
 - [物种分类](./taxonomic-profiling.md) - 物种分类
 - [多样性分析](./diversity-analysis.md) - 群落结构
-- [配置指南](../configuration.md) - 参数详情
+- [配置系统](../configuration.md) - 参数参考

@@ -4,8 +4,6 @@ title: 项目结构
 
 # 项目结构
 
-这一页不是按目录名字解释目录，而是按“职责”解释仓库。
-
 ## 顶层地图
 
 | 路径 | 职责 |
@@ -15,8 +13,8 @@ title: 项目结构
 | `steps/` | 步骤级 WDL 工作流资产 |
 | `scripts/` | 包装层和主 CLI 之外的专家分析脚本 |
 | `containers/` | Singularity 定义与环境资产 |
-| `tests/` | Python 工具函数与包装层回归测试 |
-| `docs/` | 白皮书式文档站 |
+| `tests/` | Python 测试 |
+| `docs/` | 文档站 |
 
 ## 稳定核心
 
@@ -28,12 +26,13 @@ micos/
 ├── taxonomic_profiling.py
 ├── diversity_analysis.py
 ├── functional_annotation.py
-└── summarize_results.py
+├── summarize_results.py
+├── sample.py
+├── config.py
+└── utils.py
 ```
 
-这是最需要保持内聚的一棵子树，因为它承担了当前最清晰的公共契约。
-
-## 更广的平台表面
+## 扩展脚本
 
 ```text
 scripts/
@@ -44,15 +43,8 @@ scripts/
 ├── network_analysis.py
 ├── phylogenetic_analysis.py
 ├── amplicon_analysis.py
-└── metatranscriptome_analysis.py
+├── metatranscriptome_analysis.py
+└── differential_abundance_analysis.R
 ```
 
-这棵子树里既有兼容层，也有专家扩展分析。它很重要，但不应被误读为与主 CLI 同等级稳定。
-
-## 文档如何映射仓库
-
-- 学院，解释分析模型，
-- 架构，解释代码和资产分层，
-- 指南，解释如何运行，
-- 参考，解释精确接口，
-- 研究，解释知识来源与演进方向。
+这棵子树既有兼容层，也有专家扩展分析。它不属于稳定公共接口。

@@ -1,230 +1,121 @@
+---
+title: 测试策略
+---
+
 # 测试策略
 
-本文档描述 MICOS-2024 的测试方法论和覆盖率目标。
+本文档描述 MICOS-2024 的实际测试方法。
 
-## 测试哲学
+## 测试理念
 
-MICOS-2024 追求 **>80% 的测试覆盖率**，采用测试金字塔策略：
-
-```
-            /\
-           /  \    E2E Tests (少量)
-          /____\   - 完整流程验证
-         /      \
-        /        \ Integration Tests (中等)
-       /__________\ - 模块间交互
-      /            \
-     /              \ Unit Tests (大量)
-    /________________\ - 函数级别验证
-```
-
-## 测试层次
-
-### 单元测试
-
-测试单个函数和类的行为：
-
-```python
-# tests/test_sample.py
-import pytest
-from micos.sample import Sample
-
-def test_sample_discover_paired():
-    """测试配对样本发现。"""
-    sample = Sample('test_sample', Path('tests/fixtures/paired'))
-    assert sample.is_paired is True
-    assert len(sample.files) == 2
-
-def test_sample_validate_missing_file():
-    """测试缺失文件验证。"""
-    sample = Sample('missing', Path('tests/fixtures/empty'))
-    with pytest.raises(SampleValidationError):
-        sample.validate()
-```
-
-### 集成测试
-
-测试模块间的交互：
-
-```python
-# tests/test_integration.py
-@pytest.fixture
-def mock_runner():
-    return MockToolRunner({
-        'kraken2 --db': ToolResult(stdout='classified:100'),
-    })
-
-def test_taxonomic_profiling_pipeline(mock_runner, tmp_path):
-    """测试物种分类完整流程。"""
-    result = run_taxonomic_profiling(
-        input_dir=Path('tests/fixtures/cleaned'),
-        output_dir=tmp_path,
-        runner=mock_runner,
-    )
-    assert result.success is True
-    assert (tmp_path / 'kraken_report.txt').exists()
-```
-
-### 端到端测试
-
-测试完整的分析流程：
-
-```python
-# tests/test_e2e.py
-@pytest.mark.slow
-@pytest.mark.integration
-def test_full_run_small_dataset(tmp_path):
-    """测试小型数据集的完整流程。"""
-    result = subprocess.run(
-        ['micos', 'full-run',
-         '--input-dir', 'tests/fixtures/small',
-         '--results-dir', str(tmp_path),
-         '--threads', '4'],
-        capture_output=True,
-    )
-    assert result.returncode == 0
-    assert (tmp_path / 'results_summary.html').exists()
-```
+测试聚焦**命令拼装层**：验证各模块正确构建工具命令、正确发现样本、正确串联步骤，而不依赖实际生信工具（FastQC、Kraken2 等）的安装。这使得测试可以在任何有 Python 环境的 CI 上快速运行。
 
 ## Mock 策略
 
-### ToolRunner Mock
-
-使用 `MockToolRunner` 隔离外部依赖：
+核心手段是用 pytest 的 `monkeypatch` 替换 `run_command_live`，捕获模块构建的命令列表并断言其内容：
 
 ```python
-class MockToolRunner(ToolRunner):
-    """用于测试的模拟执行器。"""
+def test_run_qc_assembles_fastqc_and_kneaddata_commands(tmp_path, monkeypatch):
+    commands = []
 
-    def __init__(self, responses: dict[str, ToolResult] | None = None):
-        self.responses = responses or {}
-        self.calls: list[list[str]] = []
+    def fake_run(cmd):
+        commands.append(list(cmd))
 
-    def run(self, command, output_dir, check=True, capture=True):
-        self.calls.append(command)
+    monkeypatch.setattr(quality_control, "run_command_live", fake_run)
 
-        # 创建预期的输出文件
-        for pattern, result in self.responses.items():
-            if ' '.join(command[:3]).startswith(pattern):
-                if result.output_files:
-                    for f in result.output_files:
-                        (output_dir / f).touch()
-                return result
+    # 创建临时配对 FASTQ 文件
+    (input_dir / "sample001_R1.fastq.gz").write_text("r1")
+    (input_dir / "sample001_R2.fastq.gz").write_text("r2")
 
-        return ToolResult.success()
+    quality_control.run_qc(input_dir=input_dir, output_dir=output_dir, ...)
+
+    # 断言命令拼装正确
+    assert commands[0][0] == "fastqc"
+    assert commands[1][0] == "kneaddata"
 ```
 
-### 文件系统 Mock
-
-使用 `tmp_path` fixture 创建临时文件：
+对于需要串联后续步骤的场景（如 Kraken2 生成 `.report` 后触发 kraken-biom），mock 函数会模拟工具生成输出文件：
 
 ```python
-def test_with_temp_files(tmp_path):
-    input_file = tmp_path / 'sample_R1.fastq'
-    input_file.write_text('@read1\nACGT\n+\nIIII\n')
-
-    result = process_fastq(input_file, tmp_path)
-    assert result.success
+def fake_run(cmd):
+    commands.append(list(cmd))
+    if cmd[0] == "kraken2":
+        Path(cmd[cmd.index("--report") + 1]).write_text("report")
 ```
+
+样本发现逻辑通过替换 `Sample` 类来隔离测试：
+
+```python
+class FakeSample:
+    @staticmethod
+    def discover_cleaned(input_dir, ...):
+        captured["metadata_path"] = metadata_path
+        return []
+```
+
+## 测试文件
+
+| 测试文件 | 覆盖模块 |
+| --- | --- |
+| `test_cli.py` | CLI 命令注册和参数解析 |
+| `test_config.py` | Pydantic 配置模型和 YAML 加载 |
+| `test_sample.py` | Sample 数据模型和样本发现 |
+| `test_utils.py` | run_command_live、日志、默认值提取 |
+| `test_quality_control.py` | FastQC + KneadData 命令拼装 |
+| `test_taxonomic_profiling.py` | Kraken2 + kraken-biom + Krona 命令拼装 |
+| `test_diversity_analysis.py` | QIIME2 命令拼装 |
+| `test_functional_annotation.py` | HUMAnN 命令拼装 |
+| `test_summarize_results.py` | HTML 报告生成 |
+| `test_full_run.py` | 流程编排和步骤跳过 |
+| `test_shell_wrappers.py` | Shell 包装层回归 |
+| `test_docs_whitepaper.py` | 文档站组件和页面完整性 |
 
 ## 测试标记
 
-使用 pytest 标记分类测试：
-
-```python
-# pytest.ini
-[pytest]
-markers =
-    unit: Unit tests (fast)
-    integration: Integration tests (medium)
-    slow: Slow tests (skip by default)
-```
-
-运行特定类型的测试：
-
-```bash
-# 运行单元测试
-pytest -m unit
-
-# 跳过慢测试
-pytest -m "not slow"
-
-# 运行所有测试
-pytest
-```
-
-## 覆盖率报告
-
-### 配置
+`pyproject.toml` 中注册了三个 pytest 标记：
 
 ```toml
-# pyproject.toml
-[tool.pytest.ini_options]
-addopts = "--cov=micos --cov-report=term-missing --cov-fail-under=80"
-
-[tool.coverage.run]
-source = ["micos"]
-omit = ["micos/_version.py", "micos/__main__.py"]
-
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "def __repr__",
-    "raise NotImplementedError",
-    "if TYPE_CHECKING:",
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
 ]
 ```
 
-### 生成报告
+运行特定类型：
 
 ```bash
-# 终端报告
-pytest --cov=micos --cov-report=term-missing
-
-# HTML 报告
-pytest --cov=micos --cov-report=html
-open htmlcov/index.html
+pytest -m unit          # 仅单元测试
+pytest -m "not slow"    # 跳过慢测试
+pytest tests/ -v        # 全部测试
 ```
 
-## CI/CD 集成
+## 覆盖率
 
-```yaml
-# .github/workflows/ci.yml
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+CI 中覆盖率阈值为 55%：
 
-      - name: Install dependencies
-        run: pip install -e ".[dev]"
-
-      - name: Run tests
-        run: pytest --cov=micos --cov-fail-under=80
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v4
+```bash
+pytest tests/ --cov=micos --cov-report=xml --cov-fail-under=55
 ```
 
-## 测试最佳实践
+生成本地覆盖率报告：
 
-1. **每个 Bug 一个测试**：修复 bug 前先写失败的测试
-2. **测试行为而非实现**：关注输出，而非内部状态
-3. **使用描述性名称**：`test_validate_rejects_negative_values`
-4. **保持测试独立**：不依赖其他测试的执行顺序
-5. **快速失败**：使用断言而非条件判断
-
-## 测试数据管理
-
+```bash
+pytest tests/ --cov=micos --cov-report=html
 ```
-tests/
-├── fixtures/
-│   ├── small/          # 小型测试数据集
-│   ├── paired/         # 配对样本
-│   └── cleaned/        # 预处理后的样本
-├── conftest.py         # pytest 配置和 fixtures
-└── test_*.py           # 测试文件
+
+## 测试数据
+
+测试用 `tmp_path` fixture 创建临时 FASTQ 文件，不依赖外部数据集：
+
+```python
+def test_xxx(tmp_path, monkeypatch):
+    input_dir = tmp_path / "input"
+    input_dir.mkdir()
+    (input_dir / "sample001_R1.fastq.gz").write_text("r1")
+    (input_dir / "sample001_R2.fastq.gz").write_text("r2")
 ```
+
+## CI 集成
+
+GitHub Actions 在 Python 3.9/3.10/3.11 三个版本上运行测试矩阵，执行 Black、isort、Flake8、MyPy 检查和 pytest，覆盖率上传至 Codecov。

@@ -4,125 +4,66 @@ title: 多样性分析
 
 # 多样性分析
 
-MICOS-2024 微生物群落多样性分析完整指南。
-
----
+多样性分析将物种丰度表转化为生态学指标，揭示微生物群落的结构和差异。
 
 ## 概述
 
-多样性分析测量微生物群落的**丰富度**（类群数量）和**均匀度**（丰度分布）。这些指标提供以下洞察：
+模块通过 QIIME2 计算两种多样性指标：
 
-- **群落健康**: 较高多样性通常与稳定性相关
-- **处理效应**: 不同条件下多样性的变化
-- **生态模式**: 空间和时间变异
-- **比较研究**: 生态系统间差异
+- **Alpha 多样性（Shannon 指数）**：度量单个样本内的物种多样性，同时考虑丰富度和均匀度
+- **Beta 多样性（Bray-Curtis 相异度）**：度量样本间的群落组成差异
 
----
+## 工作流程
 
-## 多样性类型
-
-### Alpha 多样性 (样本内)
-
-| 指标 | 测量内容 | 最佳用途 |
-|:---|:---|:---|
-| 丰富度 | 类群数量 | 群落复杂性 |
-| Shannon | 丰富度 + 均匀度 | 通用多样性 |
-| Simpson | 优势度 | 检测优势类群 |
-
-### Beta 多样性 (样本间)
-
-| 指标 | 加权方式 | 最佳用途 |
-|:---|:---|:---|
-| Bray-Curtis | 丰度 | 群落组成 |
-| Jaccard | 存在/缺失 | 物种重叠 |
-| UniFrac | 系统发育 | 进化周转 |
-
----
+```mermaid
+graph TD
+    A[feature-table.biom] --> B[QIIME2 导入]
+    B --> C[feature-table.qza]
+    C --> D[Alpha: Shannon]
+    C --> E[Beta: Bray-Curtis]
+    D --> F[shannon.qza]
+    E --> G[bray-curtis.qza]
+```
 
 ## 运行分析
 
-### 方式 1: MICOS CLI
+### 完整流程
+
+在 `full-run` 中，多样性分析在物种分类之后自动执行，输入为 `results/taxonomic_profiling/feature-table.biom`。
+
+### 仅多样性分析
 
 ```bash
-python -m micos.cli run diversity-analysis \
+micos run diversity-analysis \
   --input-biom results/taxonomic_profiling/feature-table.biom \
-  --output-dir results/diversity_analysis \
-  --metadata metadata.tsv
+  --output-dir results/diversity_analysis
 ```
 
-### 方式 2: 直接 QIIME2
+## 输出文件
 
-```bash
-qiime tools import \
-  --input-path feature-table.biom \
-  --type 'FeatureTable[Frequency]' \
-  --output-path table.qza
-
-qiime feature-table rarefy \
-  --i-table table.qza \
-  --p-sampling-depth 10000 \
-  --o-rarefied-table table-rarefied.qza
+```
+results/diversity_analysis/
+├── feature-table.qza     # QIIME2 特征表
+├── shannon.qza           # Shannon Alpha 多样性
+└── bray-curtis.qza       # Bray-Curtis Beta 多样性距离矩阵
 ```
 
----
+## 结果解读
 
-## Alpha 多样性
+### Shannon 指数
 
-### 指标概述
+Shannon 值越高表示样本内多样性越高。人类肠道样本的典型范围为 2.5-4.5，> 4 通常表示高多样性。
 
-| 指标 | 描述 | 解读 |
-|:---|:---|:---|
-| 观察特征数 | 原始类群计数 | 简单丰富度 |
-| Chao1 | 估计总丰富度 | 考虑未观察类群 |
-| Shannon | -Σ(pᵢ × ln(pᵢ)) | 越高越多样 |
-| Simpson | 1 - Σ(pᵢ²) | 越低越均匀 |
+### Bray-Curtis 距离矩阵
 
-### 典型值（人类肠道）
+距离值域为 [0, 1]，0 表示两个样本组成完全相同，1 表示完全不同。距离矩阵可用于后续的排序分析（如 PCoA）和组间差异检验（如 PERMANOVA），这些分析可通过 QIIME2 命令行或 `scripts/` 扩展脚本完成。
 
-| 指标 | 范围 | 说明 |
-|:---|:---:|:---|
-| 观察特征数 | 50-200 | 随测序深度变化 |
-| Shannon | 2.5-4.5 | >4 表示高多样性 |
-| Chao1 | 100-400 | 总丰富度估计 |
+## 扩展指标
 
----
-
-## Beta 多样性
-
-### PERMANOVA
-
-检验组间是否在多维空间存在差异：
-
-```bash
-qiime diversity beta-group-significance \
-  --i-distance-matrix braycurtis.qza \
-  --m-metadata-file metadata.tsv \
-  --m-metadata-column group \
-  --p-method permanova \
-  --o-visualization braycurtis-permanova.qzv
-```
-
-**解读**:
-- **p < 0.05**: 组间显著差异
-- **R²**: 分组解释的方差比例
-
----
-
-## 解读指南
-
-### PCoA 解读
-
-| 模式 | 解读 |
-|:---|:---|
-| 按组紧密聚类 | 强组效应 |
-| 聚类重叠 | 相似群落 |
-| 梯度模式 | 连续环境驱动因子 |
-| 离群点 | 独特群落组成 |
-
----
+QIIME2 支持更多多样性指标（Simpson、Chao1、UniFrac 等）和排序分析（PCoA、NMDS）。MICOS-2024 当前仅集成 Shannon 和 Bray-Curtis，如需其他指标可直接操作生成的 `.qza` 文件。
 
 ## 相关文档
 
-- [物种分类](./taxonomic-profiling.md) - 物种分类
-- [功能注释](./functional-profiling.md) - 功能分析
-- [配置指南](../configuration.md) - 参数设置
+- [多样性度量](../algorithms/diversity-metrics.md) - 指标计算原理
+- [物种分类](./taxonomic-profiling.md) - 上游分类分析
+- [配置系统](../configuration.md) - 参数参考
