@@ -72,7 +72,11 @@ micos/
 └─────────────────────────────────┘
 ```
 
-### WDL 工作流步骤
+### WDL 任务定义（实验性单步骤参考）
+
+> **注意**：以下 WDL 文件是实验性单步骤参考，不是生产工作流。
+> 当前没有顶层 WDL workflow、固定运行时输入或执行验证 CI。
+> 生产分析请使用 `micos full-run`。
 
 | 目录 | 步骤 | 工具 |
 |------|------|------|
@@ -234,17 +238,17 @@ sudo singularity build kraken2.sif steps/03_taxonomic_profiling_kraken/kraken2.d
 ### 添加新分析模块
 
 1. 在 `micos/` 创建模块文件
-2. 在 `steps/` 创建 WDL 工作流
-3. 添加 Dockerfile
-4. 编写测试 `tests/test_new_module.py`
-5. 更新文档
+2. 编写测试 `tests/test_new_module.py`
+3. 更新 `micos/full_run.py` 编排
+4. 更新文档
+5. （可选）在 `steps/` 创建实验性 WDL 单步骤参考
 
 ### 修改分析流程
 
 1. 更新 `micos/full_run.py`
-2. 更新 WDL 工作流文件
-3. 运行回归测试
-4. 更新 CHANGELOG
+2. 运行回归测试
+3. 更新 CHANGELOG
+4. （可选）同步实验性 WDL 单步骤参考
 
 ### 添加新数据库
 

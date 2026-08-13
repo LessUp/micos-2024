@@ -6,7 +6,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://hub.docker.com/)
-[![WDL](https://img.shields.io/badge/WDL-Workflow-green.svg)](https://openwdl.org/)
+[![WDL](https://img.shields.io/badge/WDL-Experimental-yellow.svg)](https://openwdl.org/)
 [![QIIME2](https://img.shields.io/badge/QIIME2-2024.5-orange.svg)](https://qiime2.org/)
 [![Kraken2](https://img.shields.io/badge/Kraken2-2.1.3-red.svg)](https://ccb.jhu.edu/software/kraken2/)
 
@@ -22,7 +22,7 @@
 
 MICOS-2024 是面向宏基因组学研究的端到端分析平台，整合 Kraken2、QIIME2、KneadData、HUMAnN 等主流工具，覆盖从原始测序数据到生物学洞察的完整流程。
 
-- **标准化工作流** — 基于 WDL 的可重现分析流程，支持断点续传与错误恢复
+- **Python CLI 编排** - `micos full-run` 是唯一生产编排入口；WDL 为实验性单步骤参考；当前不支持断点续传
 - **容器化部署** — Docker / Singularity 支持，确保环境一致性与结果可重现
 - **模块化设计** — 各分析组件可独立运行，也可按需组合为自定义流程
 - **高性能计算** — 多线程并行处理，适配 HPC 集群环境
@@ -76,7 +76,7 @@ wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge
 bash Miniforge3-Linux-x86_64.sh
 
 # 创建环境并激活
-git clone https://github.com/LessUp/micos-2024.git
+git clone https://github.com/open-genomics/micos-2024.git
 cd micos-2024
 mamba env create -f environment.yml
 conda activate micos-2024
@@ -117,9 +117,13 @@ firefox results/micos_summary_report.html
 ./scripts/run_module.sh summarize_results     # 结果汇总
 ```
 
-### WDL 工作流
+### WDL 任务定义（实验性）
 
-各分析步骤的 WDL 任务定义位于 `steps/` 目录（01–09），可用 Cromwell 等引擎运行：
+> **注意**：`steps/` 中的 WDL 文件是**实验性单步骤参考**，不是生产工作流。
+> 当前没有顶层 WDL workflow、固定的运行时输入或执行验证 CI。
+> 生产分析请使用 `micos full-run`。
+
+各分析步骤的 WDL 任务定义位于 `steps/` 目录（01–06），可用 Cromwell 等引擎单独运行：
 
 ```bash
 java -jar cromwell.jar run \
@@ -172,7 +176,7 @@ MICOS-2024 依赖以下参考数据库：
 .
 ├── micos/                  # 核心 Python 包（质控、分类、多样性、功能注释）
 ├── scripts/                # 运行脚本与独立分析模块（Shell / Python / R）
-├── steps/                  # 分步骤 WDL 任务定义（01–09）
+├── steps/                  # 实验性分步骤 WDL 任务定义（01–06）
 ├── config/                 # 配置模板（分析参数、数据库路径、样本元数据）
 ├── containers/singularity/ # Singularity 容器定义
 ├── data/raw_input/         # 原始测序数据输入目录
@@ -235,14 +239,14 @@ MICOS-2024 依赖以下参考数据库：
 
 ### 本项目与猛犸杯
 
-MICOS-2024 是参加 2024 届"猛犸杯"大赛的参赛作品，聚焦**宏基因组学**方向。项目整合 Kraken2、QIIME2、KneadData 等主流工具，基于 WDL 工作流和 Docker 容器化，提供从原始测序数据到生物学洞察的**完整、可重现、易用**的分析流程。
+MICOS-2024 是参加 2024 届"猛犸杯"大赛的参赛作品，聚焦**宏基因组学**方向。项目整合 Kraken2、QIIME2、KneadData 等主流工具，以 Python CLI 为生产编排入口，辅以实验性 WDL 单步骤参考和 Docker 容器化，提供从原始测序数据到生物学洞察的**完整、可重现、易用**的分析流程。
 
 ## 贡献与帮助
 
 欢迎社区贡献！详情请参阅[贡献指南](CONTRIBUTING.md)。
 
-- **报告问题 / 功能建议**：[GitHub Issues](https://github.com/LessUp/micos-2024/issues)
-- **参与讨论**：[GitHub Discussions](https://github.com/LessUp/micos-2024/discussions)
+- **报告问题 / 功能建议**：[GitHub Issues](https://github.com/open-genomics/micos-2024/issues)
+- **参与讨论**：[GitHub Discussions](https://github.com/open-genomics/micos-2024/discussions)
 - **故障排除**：[常见问题](docs/zh/troubleshooting.md)
 
 ## 许可证
