@@ -53,10 +53,10 @@ scripts = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/LessUp/micos-2024"
-Repository = "https://github.com/LessUp/micos-2024"
+Homepage = "https://github.com/open-genomics/micos-2024"
+Repository = "https://github.com/open-genomics/micos-2024"
 Documentation = "https://lessup.github.io/micos-2024/"
-"Bug Tracker" = "https://github.com/LessUp/micos-2024/issues"
+"Bug Tracker" = "https://github.com/open-genomics/micos-2024/issues"
 
 [project.scripts]
 micos = "micos.cli:main"

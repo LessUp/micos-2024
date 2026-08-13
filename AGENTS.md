@@ -8,7 +8,7 @@
 
 | 属性 | 值 |
 |------|-----|
-| **组织** | LessUp |
+| **组织** | open-genomics |
 | **许可证** | MIT |
 | **语言** | Python 3.9+ / R 4.3.0 |
 | **文档** | https://lessup.github.io/micos-2024/ |
@@ -98,7 +98,7 @@ micos/
 
 ```bash
 # 克隆项目
-git clone https://github.com/LessUp/micos-2024.git
+git clone https://github.com/open-genomics/micos-2024.git
 cd micos-2024
 
 # 创建虚拟环境
