@@ -9,6 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -142,8 +143,6 @@ class AnalysisConfig(BaseModel):
         Raises:
             FileNotFoundError: 文件不存在
         """
-        import yaml
-
         if not path.exists():
             raise FileNotFoundError(f"配置文件不存在: {path}")
 
@@ -198,8 +197,6 @@ def load_databases_config_from_yaml(path: Path) -> DatabasesConfig:
     Returns:
         DatabasesConfig 实例
     """
-    import yaml
-
     if not path.exists():
         return DatabasesConfig()
 

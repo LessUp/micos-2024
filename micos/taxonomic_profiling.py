@@ -82,28 +82,29 @@ def run_taxonomic_profiling(
         ]
         run_command_live(kraken2_cmd)
 
-    # 3. 生成 BIOM 文件
-    logger.info("--> 正在生成 BIOM 文件...")
     report_files = list(output_path.glob("*.report"))
-    if report_files:
-        biom_output = output_path / "feature-table.biom"
-        kraken_biom_cmd = [
+    if not report_files:
+        logger.warning("未找到 Kraken2 报告文件，跳过 BIOM 文件生成。")
+        logger.warning("未找到 Kraken2 报告文件，跳过 Krona 图表生成。")
+        logger.info("物种分类分析完成。")
+        return
+
+    logger.info("--> 正在生成 BIOM 文件...")
+    biom_output = output_path / "feature-table.biom"
+    run_command_live(
+        [
             "kraken-biom",
             *[str(f) for f in report_files],
             "-o",
             str(biom_output),
         ]
-        run_command_live(kraken_biom_cmd)
-    else:
-        logger.warning("未找到 Kraken2 报告文件，跳过 BIOM 文件生成。")
+    )
 
-    # 4. 生成 Krona 图表
     logger.info("--> 正在生成 Krona 图表...")
-    if report_files:
-        for report_file in report_files:
-            base = report_file.stem
-            krona_output = output_path / f"{base}.krona.html"
-            ktimport_cmd = [
+    for report_file in report_files:
+        krona_output = output_path / f"{report_file.stem}.krona.html"
+        run_command_live(
+            [
                 "ktImportTaxonomy",
                 "-q",
                 "2",
@@ -113,8 +114,6 @@ def run_taxonomic_profiling(
                 "-o",
                 str(krona_output),
             ]
-            run_command_live(ktimport_cmd)
-    else:
-        logger.warning("未找到 Kraken2 报告文件，跳过 Krona 图表生成。")
+        )
 
     logger.info("物种分类分析完成。")

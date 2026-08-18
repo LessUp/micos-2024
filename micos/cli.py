@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 import click
@@ -34,6 +35,35 @@ EXIT_MISSING_DEPS = 4
 EXIT_DB_ERROR = 5
 EXIT_IO_ERROR = 6
 EXIT_INTERRUPTED = 130
+
+_PLACEHOLDER_PREFIX = "/path/to/"
+
+
+def _print_dry_run(
+    title: str,
+    details: dict[str, object],
+    footer: str | None = None,
+) -> None:
+    """打印 dry-run 预览，不执行实际分析."""
+    click.secho(f"=== {title} ===", fg="cyan")
+    for label, value in details.items():
+        click.echo(f"{label}: {value}")
+    if footer:
+        click.echo(footer)
+
+
+def _invoke(label: str, action: Callable[[], None]) -> None:
+    """执行模块并在失败时输出统一的错误信息."""
+    try:
+        action()
+    except Exception as exc:
+        click.secho(f"{label}执行失败: {exc}", fg="red")
+        raise
+
+
+def _is_placeholder_path(path: str | None) -> bool:
+    """判断数据库路径是否仍是模板占位符."""
+    return path is not None and path.startswith(_PLACEHOLDER_PREFIX)
 
 
 @click.group()
@@ -67,16 +97,14 @@ def main(
     ctx.obj["dry_run"] = dry_run
 
     # 使用 Pydantic 配置加载默认值
-    if config_path:
-        config_file = Path(config_path)
-    else:
-        config_file = Path("config/analysis.yaml")
+    config_file = Path(config_path) if config_path else Path("config/analysis.yaml")
 
     if config_file.exists():
         try:
             config = AnalysisConfig.from_yaml(config_file)
-            db_config_path = config_file.parent / "databases.yaml"
-            db_config = load_databases_config_from_yaml(db_config_path)
+            db_config = load_databases_config_from_yaml(
+                config_file.parent / "databases.yaml"
+            )
             db_paths = merge_databases_config(config, db_config)
 
             ctx.default_map = ctx.default_map or {}
@@ -108,24 +136,17 @@ def validate_config(ctx: click.Context, config_path: str | None) -> None:
     """验证配置文件的有效性."""
     warnings: list[str] = []
 
-    # 确定配置文件路径
-    config_file = config_path or ctx.obj.get("config_path")
-    if not config_file:
-        config_file = "config/analysis.yaml"
-
+    config_file = config_path or ctx.obj.get("config_path") or "config/analysis.yaml"
     config_path_obj = Path(config_file)
 
-    # 检查文件是否存在
     if not config_path_obj.exists():
         click.secho(f"✗ 配置文件不存在: {config_file}", fg="red")
         sys.exit(EXIT_CONFIG_ERROR)
 
-    # 使用 Pydantic 验证配置
     try:
         config = AnalysisConfig.from_yaml(config_path_obj)
         click.secho("✓ 配置文件语法有效", fg="green")
 
-        # 检查必要配置
         if not config.input_dir:
             warnings.append("未配置输入目录 (input_dir)")
         if not config.results_dir:
@@ -139,33 +160,30 @@ def validate_config(ctx: click.Context, config_path: str | None) -> None:
         click.secho(f"✗ 配置文件验证失败: {e}", fg="red")
         sys.exit(EXIT_CONFIG_ERROR)
 
-    # 检查数据库配置文件
     db_config_path = config_path_obj.parent / "databases.yaml"
     if db_config_path.exists():
         try:
             db_config = load_databases_config_from_yaml(db_config_path)
-            # 检查占位符路径
-            if db_config.quality_control and db_config.quality_control.kneaddata:
-                if db_config.quality_control.kneaddata.human_genome:
-                    if db_config.quality_control.kneaddata.human_genome.startswith(
-                        "/path/to/"
-                    ):
-                        warnings.append(
-                            "数据库路径为占位符: quality_control.kneaddata.human_genome"
-                        )
-            if db_config.taxonomy and db_config.taxonomy.kraken2:
-                if db_config.taxonomy.kraken2.standard:
-                    if db_config.taxonomy.kraken2.standard.startswith("/path/to/"):
-                        warnings.append("数据库路径为占位符: taxonomy.kraken2.standard")
+            kneaddata = (
+                db_config.quality_control.kneaddata
+                if db_config.quality_control
+                else None
+            )
+            if kneaddata and _is_placeholder_path(kneaddata.human_genome):
+                warnings.append(
+                    "数据库路径为占位符: quality_control.kneaddata.human_genome"
+                )
+
+            kraken2 = db_config.taxonomy.kraken2 if db_config.taxonomy else None
+            if kraken2 and _is_placeholder_path(kraken2.standard):
+                warnings.append("数据库路径为占位符: taxonomy.kraken2.standard")
         except Exception as e:
             warnings.append(f"无法读取数据库配置: {e}")
     else:
         warnings.append("数据库配置文件 (databases.yaml) 不存在")
 
-    # 输出结果
-    if warnings:
-        for warning in warnings:
-            click.secho(f"⚠ 警告: {warning}", fg="yellow")
+    for warning in warnings:
+        click.secho(f"⚠ 警告: {warning}", fg="yellow")
 
     click.secho("\n✓ 配置验证完成!", fg="green")
     sys.exit(EXIT_SUCCESS)
@@ -225,7 +243,6 @@ def full_run(
     skip_diversity: bool,
 ) -> None:
     """运行完整的 MICOS 分析流程."""
-    # 检查数据库路径
     if not kneaddata_db and not skip_qc:
         raise click.UsageError(
             "错误: 必须通过命令行参数 --kneaddata-db 或配置文件提供 KneadData 数据库路径。"
@@ -235,21 +252,26 @@ def full_run(
             "错误: 必须通过命令行参数 --kraken2-db 或配置文件提供 Kraken2 数据库路径。"
         )
 
-    # Dry run 模式
     if ctx.obj.get("dry_run"):
-        click.secho("=== Dry Run 模式 ===", fg="cyan")
-        click.echo(f"输入目录: {input_dir}")
-        click.echo(f"输出目录: {results_dir}")
-        click.echo(f"线程数: {threads}")
-        click.echo(f"元数据: {metadata_path or '(未指定)'}")
-        click.echo(
-            f"跳过步骤: QC={skip_qc}, Taxonomy={skip_taxonomy}, Functional={skip_functional}, Diversity={skip_diversity}"
+        _print_dry_run(
+            "Dry Run 模式",
+            {
+                "输入目录": input_dir,
+                "输出目录": results_dir,
+                "线程数": threads,
+                "元数据": metadata_path or "(未指定)",
+                "跳过步骤": (
+                    f"QC={skip_qc}, Taxonomy={skip_taxonomy}, "
+                    f"Functional={skip_functional}, Diversity={skip_diversity}"
+                ),
+            },
+            footer="不执行实际操作。",
         )
-        click.echo("不执行实际操作。")
         return
 
-    try:
-        run_full_pipeline(
+    _invoke(
+        "完整分析流程",
+        lambda: run_full_pipeline(
             input_dir,
             results_dir,
             threads,
@@ -260,10 +282,8 @@ def full_run(
             skip_functional=skip_functional,
             skip_diversity=skip_diversity,
             metadata_path=metadata_path,
-        )
-    except Exception as exc:
-        click.secho(f"完整分析流程执行失败: {exc}", fg="red")
-        raise
+        ),
+    )
 
 
 @main.group()
@@ -302,18 +322,21 @@ def quality_control(
 ) -> None:
     """运行质量控制 (FastQC + KneadData)."""
     if ctx.obj.get("dry_run"):
-        click.secho("=== Dry Run: Quality Control ===", fg="cyan")
-        click.echo(f"输入目录: {input_dir}")
-        click.echo(f"输出目录: {output_dir}")
-        click.echo(f"线程数: {threads}")
-        click.echo(f"KneadData 数据库: {kneaddata_db}")
+        _print_dry_run(
+            "Dry Run: Quality Control",
+            {
+                "输入目录": input_dir,
+                "输出目录": output_dir,
+                "线程数": threads,
+                "KneadData 数据库": kneaddata_db,
+            },
+        )
         return
 
-    try:
-        run_qc(input_dir, output_dir, threads, kneaddata_db)
-    except Exception as exc:
-        click.secho(f"质量控制模块执行失败: {exc}", fg="red")
-        raise
+    _invoke(
+        "质量控制模块",
+        lambda: run_qc(input_dir, output_dir, threads, kneaddata_db),
+    )
 
 
 @run.command("taxonomic-profiling")
@@ -353,19 +376,24 @@ def taxonomic_profiling(
 ) -> None:
     """运行物种分类 (Kraken2 + Krona)."""
     if ctx.obj.get("dry_run"):
-        click.secho("=== Dry Run: Taxonomic Profiling ===", fg="cyan")
-        click.echo(f"输入目录: {input_dir}")
-        click.echo(f"输出目录: {output_dir}")
-        click.echo(f"线程数: {threads}")
-        click.echo(f"Kraken2 数据库: {kraken2_db}")
-        click.echo(f"置信度阈值: {confidence}")
+        _print_dry_run(
+            "Dry Run: Taxonomic Profiling",
+            {
+                "输入目录": input_dir,
+                "输出目录": output_dir,
+                "线程数": threads,
+                "Kraken2 数据库": kraken2_db,
+                "置信度阈值": confidence,
+            },
+        )
         return
 
-    try:
-        run_taxonomic_profiling(input_dir, output_dir, threads, kraken2_db, confidence)
-    except Exception as exc:
-        click.secho(f"物种分类模块执行失败: {exc}", fg="red")
-        raise
+    _invoke(
+        "物种分类模块",
+        lambda: run_taxonomic_profiling(
+            input_dir, output_dir, threads, kraken2_db, confidence
+        ),
+    )
 
 
 @run.command("diversity-analysis")
@@ -385,16 +413,16 @@ def taxonomic_profiling(
 def diversity_analysis(ctx: click.Context, input_biom: str, output_dir: str) -> None:
     """运行多样性分析 (QIIME2)."""
     if ctx.obj.get("dry_run"):
-        click.secho("=== Dry Run: Diversity Analysis ===", fg="cyan")
-        click.echo(f"输入 BIOM 文件: {input_biom}")
-        click.echo(f"输出目录: {output_dir}")
+        _print_dry_run(
+            "Dry Run: Diversity Analysis",
+            {"输入 BIOM 文件": input_biom, "输出目录": output_dir},
+        )
         return
 
-    try:
-        run_diversity_analysis(input_biom, output_dir)
-    except Exception as exc:
-        click.secho(f"多样性分析模块执行失败: {exc}", fg="red")
-        raise
+    _invoke(
+        "多样性分析模块",
+        lambda: run_diversity_analysis(input_biom, output_dir),
+    )
 
 
 @run.command("functional-annotation")
@@ -422,17 +450,20 @@ def functional_annotation(
 ) -> None:
     """运行功能注释 (HUMAnN)."""
     if ctx.obj.get("dry_run"):
-        click.secho("=== Dry Run: Functional Annotation ===", fg="cyan")
-        click.echo(f"输入目录: {input_dir}")
-        click.echo(f"输出目录: {output_dir}")
-        click.echo(f"线程数: {threads}")
+        _print_dry_run(
+            "Dry Run: Functional Annotation",
+            {
+                "输入目录": input_dir,
+                "输出目录": output_dir,
+                "线程数": threads,
+            },
+        )
         return
 
-    try:
-        run_functional_annotation(input_dir, output_dir, threads)
-    except Exception as exc:
-        click.secho(f"功能注释模块执行失败: {exc}", fg="red")
-        raise
+    _invoke(
+        "功能注释模块",
+        lambda: run_functional_annotation(input_dir, output_dir, threads),
+    )
 
 
 @run.command("summarize-results")
@@ -452,16 +483,16 @@ def functional_annotation(
 def summarize_results(ctx: click.Context, results_dir: str, output_file: str) -> None:
     """汇总所有分析结果并生成 HTML 报告."""
     if ctx.obj.get("dry_run"):
-        click.secho("=== Dry Run: Summarize Results ===", fg="cyan")
-        click.echo(f"结果目录: {results_dir}")
-        click.echo(f"输出文件: {output_file}")
+        _print_dry_run(
+            "Dry Run: Summarize Results",
+            {"结果目录": results_dir, "输出文件": output_file},
+        )
         return
 
-    try:
-        run_summarize(results_dir, output_file)
-    except Exception as exc:
-        click.secho(f"结果汇总模块执行失败: {exc}", fg="red")
-        raise
+    _invoke(
+        "结果汇总模块",
+        lambda: run_summarize(results_dir, output_file),
+    )
 
 
 if __name__ == "__main__":

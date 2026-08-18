@@ -113,49 +113,22 @@ class Sample:
             >>> for sample in samples:
             ...     print(f"{sample.name}: {sample.r1_path.name}, group={sample.metadata.get('group')}")
         """
-        metadata_map = (
-            cls.load_metadata(metadata_path, sample_id_column)
-            if metadata_path is not None
-            else {}
-        )
-
+        metadata_map = cls._optional_metadata(metadata_path, sample_id_column)
+        r1_suffix = r1_pattern.lstrip("*")
         samples: list[Self] = []
 
-        # 从 r1_pattern 推导 R1 后缀（如 "*_R1.fastq.gz" → "_R1.fastq.gz"）
-        r1_suffix = r1_pattern.lstrip("*")
-
         for r1_file in sorted(input_dir.glob(r1_pattern)):
-            # 提取样本名
             name = cls._extract_sample_name(r1_file.name, r1_pattern)
-
-            # 推导 R2 文件路径：将 R1 后缀替换为 R2 后缀
             r1_name = r1_file.name
             if r1_suffix and r1_name.endswith(r1_suffix):
                 r2_name = r1_name[: -len(r1_suffix)] + r2_suffix
             else:
-                # 回退：将首个 _R1 替换为 _R2
                 r2_name = r1_name.replace("_R1", "_R2", 1)
-            r2_file = r1_file.parent / r2_name
-
-            if r2_file.exists():
-                samples.append(
-                    cls(
-                        name=name,
-                        r1_path=r1_file,
-                        r2_path=r2_file,
-                        metadata=metadata_map.get(name, {}),
-                    )
+            samples.append(
+                cls._from_discovered(
+                    name, r1_file, r1_file.parent / r2_name, metadata_map
                 )
-            else:
-                # R2 不存在，创建单端样本
-                samples.append(
-                    cls(
-                        name=name,
-                        r1_path=r1_file,
-                        r2_path=None,
-                        metadata=metadata_map.get(name, {}),
-                    )
-                )
+            )
 
         return samples
 
@@ -179,42 +152,48 @@ class Sample:
         Returns:
             发现的样本列表
         """
-        metadata_map = (
-            cls.load_metadata(metadata_path, sample_id_column)
-            if metadata_path is not None
-            else {}
-        )
-
+        metadata_map = cls._optional_metadata(metadata_path, sample_id_column)
         samples: list[Self] = []
 
         for r1_file in sorted(input_dir.glob(pattern)):
-            # 提取样本名
-            name = cls._extract_cleaned_sample_name(r1_file.name)
-
-            # 推导 _paired_2 文件路径
             r2_name = r1_file.name.replace("_paired_1", "_paired_2")
-            r2_file = r1_file.parent / r2_name
-
-            if r2_file.exists():
-                samples.append(
-                    cls(
-                        name=name,
-                        r1_path=r1_file,
-                        r2_path=r2_file,
-                        metadata=metadata_map.get(name, {}),
-                    )
+            samples.append(
+                cls._from_discovered(
+                    cls._extract_cleaned_sample_name(r1_file.name),
+                    r1_file,
+                    r1_file.parent / r2_name,
+                    metadata_map,
                 )
-            else:
-                samples.append(
-                    cls(
-                        name=name,
-                        r1_path=r1_file,
-                        r2_path=None,
-                        metadata=metadata_map.get(name, {}),
-                    )
-                )
+            )
 
         return samples
+
+    @classmethod
+    def _optional_metadata(
+        cls,
+        metadata_path: Path | None,
+        sample_id_column: str,
+    ) -> dict[str, dict[str, Any]]:
+        """加载可选元数据；未提供路径时返回空映射."""
+        if metadata_path is None:
+            return {}
+        return cls.load_metadata(metadata_path, sample_id_column)
+
+    @classmethod
+    def _from_discovered(
+        cls,
+        name: str,
+        r1_path: Path,
+        r2_path: Path,
+        metadata_map: dict[str, dict[str, Any]],
+    ) -> Self:
+        """由发现到的 R1/R2 路径构建样本，R2 缺失时视为单端."""
+        return cls(
+            name=name,
+            r1_path=r1_path,
+            r2_path=r2_path if r2_path.exists() else None,
+            metadata=metadata_map.get(name, {}),
+        )
 
     @staticmethod
     def _extract_sample_name(filename: str, pattern: str) -> str:
