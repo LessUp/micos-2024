@@ -1,70 +1,23 @@
 # MICOS-2024 分析配置文件模板
 # 复制此文件为 analysis.yaml 并根据需要修改参数
 #
-# ⚠️ 当前 CLI (micos.cli) 仅读取以下字段：
-#     paths.input_dir / paths.output_dir / paths.databases.{kraken2,kneaddata}
+# ✅ 本模板只包含已接入 CLI 的字段（enforce-effective-configuration）：
+#     paths.input_dir / paths.output_dir / paths.databases.{kneaddata,kraken2}
 #     resources.max_threads
-#   其他分析参数（QC 阈值、Kraken2 confidence、QIIME2 多样性指标、
-#   HUMAnN/DESeq2/网络分析等）尚未接入 CLI，对应模块使用内部默认值。
-#   愿景参数规划见 docs/zh/roadmap.md（如有）。
-
-# 项目信息
-project:
-  name: "MICOS_Analysis"
-  description: "宏基因组分析项目"
-  version: "1.0.0"
-  author: "Your Name"
-  email: "your.email@example.com"
+#   生产配置对未知字段 fail-closed（extra="forbid"），模板外字段会被拒绝。
+#   其余愿景参数（QC 阈值、Kraken2 confidence、QIIME2 指标、HUMAnN/DESeq2、
+#   max_memory/max_time 等）见 docs/zh/roadmap.md，接入对应 CLI 后再放回模板。
 
 # 输入输出路径
-# ✅ 实际生效：input_dir / output_dir / databases.{kraken2,kneaddata}
 paths:
   input_dir: "data/raw_input"
   output_dir: "results"
-  temp_dir: "tmp"
-  log_dir: "logs"
 
   # 数据库路径（也可在 databases.yaml 中配置，二者任选其一）
   databases:
-    kraken2: "/path/to/kraken2_db"
     kneaddata: "/path/to/kneaddata_db"
+    kraken2: "/path/to/kraken2_db"
 
 # 计算资源配置
-# ✅ 实际生效：max_threads
 resources:
   max_threads: 16
-  max_memory: "32GB"
-  max_time: "24h"
-
-# ============================================================================
-# ⚠️ 以下为愿景参数，当前 CLI 代码不读取，修改不影响实际分析行为。
-#    保留作为后续模块接入时的参数模板。对应模块当前使用内部默认值。
-# ============================================================================
-
-# 质量控制参数（micos.quality_control 当前使用固定默认值）
-quality_control:
-  fastqc:
-    enabled: true
-    threads: 4
-  kneaddata:
-    enabled: true
-    threads: 8
-    min_quality: 20
-    min_length: 50
-
-# 物种分类参数（micos.taxonomic_profiling 通过 CLI --confidence 传入）
-taxonomic_profiling:
-  kraken2:
-    confidence: 0.1
-    threads: 16
-
-# 多样性分析参数（micos.diversity_analysis 当前使用 QIIME2 默认参数）
-qiime2:
-  diversity:
-    sampling_depth: 1000
-
-# 功能注释参数（micos.functional_annotation 当前使用 HUMAnN 默认参数）
-functional_analysis:
-  humann:
-    enabled: false
-    threads: 16
