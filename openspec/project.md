@@ -27,6 +27,14 @@ mypy micos --ignore-missing-imports
 pytest tests/ -v
 ```
 
+## Archived changes
+
+Completed, merged, and moved under `openspec/changes/archive/`:
+
+| Date | Change | Capability |
+|---|---|---|
+| 2026-08-19 | `declare-python-production-orchestrator` | `workflow-orchestration` |
+
 ## Authority rules
 
 - `micos/` Python source is the implementation source of truth.
